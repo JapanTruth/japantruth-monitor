@@ -437,6 +437,10 @@ source_url: "{source_url}"
 
 def git_push(filename):
     os.chdir(GITHUB_REPO_PATH)
+    github_token = os.environ.get("GITHUB_TOKEN", "")
+    if github_token:
+        remote_url = f"https://JapanTruth:{github_token}@github.com/JapanTruth/japantruth-nextjs.git"
+        subprocess.run(["git", "remote", "set-url", "origin", remote_url], capture_output=True)
     subprocess.run(["git", "config", "user.email", "bot@japan-truth.com"], check=False)
     subprocess.run(["git", "config", "user.name", "JapanTruth Bot"], check=False)
     print(f"🔄 git pull...")
