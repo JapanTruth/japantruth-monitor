@@ -497,7 +497,12 @@ def collect_new_articles(seen):
         try:
             import socket
             socket.setdefaulttimeout(10)
+            print(f"📡 取得中: {feed_info['source']}")
+            import socket
+            socket.setdefaulttimeout(10)
             feed = feedparser.parse(feed_info["url"], request_headers={"User-Agent": "Mozilla/5.0"})
+            socket.setdefaulttimeout(None)
+            print(f"✅ 取得完了: {feed_info['source']} ({len(feed.entries)}件)")
             socket.setdefaulttimeout(None)
             for entry in feed.entries[:2]:
                 url = entry.link
