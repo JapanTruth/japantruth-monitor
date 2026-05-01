@@ -437,6 +437,8 @@ source_url: "{source_url}"
 
 def git_push(filename):
     os.chdir(GITHUB_REPO_PATH)
+    subprocess.run(["git", "config", "user.email", "bot@japan-truth.com"], check=False)
+    subprocess.run(["git", "config", "user.name", "JapanTruth Bot"], check=False)
     print(f"🔄 git pull...")
     subprocess.run(["git", "pull", "origin", "main", "--rebase"], capture_output=True)
     print(f"➕ git add...")
