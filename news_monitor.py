@@ -35,12 +35,15 @@ X_ACCESS_TOKEN_SECRET = os.environ.get("X_ACCESS_TOKEN_SECRET", "")
 GITHUB_REPO_PATH = os.environ.get("GITHUB_REPO_PATH", os.path.expanduser("~/japantruth-nextjs"))
 
 # Renderデプロイ時に自動でclone
-if not os.path.exists(GITHUB_REPO_PATH):
-    import subprocess
+import subprocess
+if not os.path.exists(os.path.join(GITHUB_REPO_PATH, "src")):
     github_token = os.environ.get("GITHUB_TOKEN", "")
     clone_url = f"https://JapanTruth:{github_token}@github.com/JapanTruth/japantruth-nextjs.git"
-    subprocess.run(["git", "clone", clone_url, GITHUB_REPO_PATH], check=True)
-    print(f"✅ リポジトリをclone: {GITHUB_REPO_PATH}")
+    print(f"🔄 リポジトリをclone中: {GITHUB_REPO_PATH}")
+    subprocess.run(["git", "clone", "--depth=1", clone_url, GITHUB_REPO_PATH], check=True)
+    print(f"✅ リポジトリをclone完了: {GITHUB_REPO_PATH}")
+else:
+    print(f"✅ リポジトリ既存: {GITHUB_REPO_PATH}")
 SEEN_FILE = os.path.expanduser("~/seen_articles.json")
 
 RSS_FEEDS = [
