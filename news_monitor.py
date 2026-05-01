@@ -489,7 +489,10 @@ def collect_new_articles(seen):
     new_articles = []
     for feed_info in RSS_FEEDS:
         try:
+            import socket
+            socket.setdefaulttimeout(10)
             feed = feedparser.parse(feed_info["url"], request_headers={"User-Agent": "Mozilla/5.0"})
+            socket.setdefaulttimeout(None)
             for entry in feed.entries[:2]:
                 url = entry.link
                 article_id = hashlib.md5(url.encode()).hexdigest()
