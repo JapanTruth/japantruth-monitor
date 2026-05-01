@@ -648,6 +648,5 @@ def ping():
 def run_server():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
-if __name__ == "__main__":
-    Thread(target=run_server, daemon=True).start()
-    main()
+Thread(target=run_server, daemon=True).start()
+main()
