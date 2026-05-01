@@ -140,7 +140,7 @@ def summarize_article(title, content, category):
         "あなたはJapanTruthのシニアジャーナリストです。政治・経済・国際情勢の専門家として英語記事を高品質な日本語記事に変換してください。\n\n"
         "ABSOLUTE RULES / 絶対ルール:\n"
         "- Output language: Japanese only（「だ・である」体、例外なし）\n"
-        "- 固有名詞（人名・企業名・地名）は日本語で一般的に使われる表記を使用する。例：Sri Lanka→スリランカ、Powell→パウエル、Ukraine→ウクライナ。日本語の慣用表記が存在する場合はそれを優先し、ない場合のみカタカナに音訳する\n"
+        "- 固有名詞（人名・企業名・地名）は日本語で一般的に使われる表記を使用する。例：Sri Lanka→スリランカ、Powell→パウエル、Ukraine→ウクライナ、Berkshire→バークシャー、Warren Buffett→ウォーレン・バフェット、Donald Trump→ドナルド・トランプ、Federal Reserve→連邦準備制度、Iran→イラン、Israel→イスラエル、Gaza→ガザ、Elon Musk→イーロン・マスク、Tesla→テスラ、Apple→アップル、Microsoft→マイクロソフト、Google→グーグル、Amazon→アマゾン、Samsung→サムスン、TSMC→TSMC、NATO→NATO、OPEC→OPEC、IMF→IMF、WHO→WHO、EU→EU、UN→国連、CIA→CIA、FBI→FBI、Pentagon→ペンタゴン、Wall Street→ウォール街、Silicon Valley→シリコンバレー、White House→ホワイトハウス、Congress→議会、Senate→上院、Hamas→ハマス、Hezbollah→ヒズボラ、Putin→プーチン、Zelensky→ゼレンスキー、Modi→モディ、Macron→マクロン、Starmer→スターマー。日本語の慣用表記が存在する場合はそれを優先し、ない場合のみカタカナに音訳する\n"
         "- 数字・日付・固有名詞は必ず元記事に存在するものだけを使用する\n"
         "- 元記事にない情報・文脈・統計・人名を一切追加しない\n"
         "- Do NOT invent any proper nouns, dates, names, or statistics not present in the source\n"
@@ -320,7 +320,21 @@ def get_image(keyword, slug, category, seen_images=None):
                 res2 = requests.get(url2, headers=headers, timeout=10)
                 results = res2.json().get("results", [])
                 kw_used = proper_kw
-        # 3. それも失敗時はデフォルト画像
+        # 3. カテゴリキーワードで再検索
+        if not results:
+            kw_map2 = {
+                "politics": "government parliament president",
+                "economy": "stock market wall street finance",
+                "international": "world globe diplomacy",
+                "investment": "stock exchange trading finance",
+                "culture": "city people society",
+            }
+            cat_kw = kw_map2.get(category, "world news global")
+            url3 = f"https://api.unsplash.com/search/photos?query={requests.utils.quote(cat_kw)}&per_page=10&orientation=landscape"
+            res3 = requests.get(url3, headers=headers, timeout=10)
+            results = res3.json().get("results", [])
+            kw_used = cat_kw
+        # 4. それも失敗時はデフォルト画像
         if not results:
             return "/japantruth.png"
         # 使用済み画像を除外
@@ -605,5 +619,21 @@ def main():
         print("💤 15分待機中...")
         time.sleep(900)
 
+
+
+# Render スリープ防止用Webサーバー
+from flask import Flask
+from threading import Thread
+
+app = Flask(__name__)
+
+@app.route('/')
+def ping():
+    return "OK", 200
+
+def run_server():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
 if __name__ == "__main__":
+    Thread(target=run_server, daemon=True).start()
     main()

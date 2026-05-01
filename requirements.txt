@@ -1,0 +1,7 @@
+requests
+feedparser
+pillow
+tweepy
+flask
+beautifulsoup4
+lxml
