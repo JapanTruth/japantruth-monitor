@@ -501,7 +501,12 @@ def collect_new_articles(seen):
             print(f"📡 取得中: {feed_info['source']}")
             import socket
             socket.setdefaulttimeout(10)
-            feed = feedparser.parse(feed_info["url"], request_headers={"User-Agent": "Mozilla/5.0"})
+            try:
+                rss_res = requests.get(feed_info["url"], headers={"User-Agent": "Mozilla/5.0"}, timeout=8)
+                feed = feedparser.parse(rss_res.text)
+            except Exception:
+                print(f"⚠️ タイムアウト: {feed_info['source']} → スキップ")
+                continue
             socket.setdefaulttimeout(None)
             print(f"✅ 取得完了: {feed_info['source']} ({len(feed.entries)}件)")
             socket.setdefaulttimeout(None)
