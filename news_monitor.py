@@ -535,7 +535,6 @@ def main():
         print(f"📡 RSSフィード取得中... (14ソース)")
         new_articles = collect_new_articles(seen)
         print(f"📋 新着記事: {len(new_articles)}件")
-    print(f"🔍 デバッグ: フィード取得完了 articles={len(articles)}")
         # 全件チェック（最大10件）
 
         cycle_count = 0
