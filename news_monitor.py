@@ -48,8 +48,9 @@ SEEN_FILE = os.path.expanduser("~/seen_articles.json")
 
 RSS_FEEDS = [
     # 国際
-    {"url": "https://www.aljazeera.com/xml/rss/all.xml", "category": "international", "source": "Al Jazeera"},
+
     {"url": "https://www.scmp.com/rss/91/feed", "category": "international", "source": "South China Morning Post"},
+    {"url": "https://www.aljazeera.com/xml/rss/all.xml", "category": "international", "source": "Al Jazeera"},
     {"url": "http://feeds.bbci.co.uk/news/world/rss.xml", "category": "international", "source": "BBC"},
     # 経済
     {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "category": "economy", "source": "CNBC"},
