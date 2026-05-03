@@ -32,25 +32,13 @@ X_API_KEY = os.environ.get("X_API_KEY", "")
 X_API_SECRET = os.environ.get("X_API_SECRET", "")
 X_ACCESS_TOKEN = os.environ.get("X_ACCESS_TOKEN", "")
 X_ACCESS_TOKEN_SECRET = os.environ.get("X_ACCESS_TOKEN_SECRET", "")
-GITHUB_REPO_PATH = os.environ.get("GITHUB_REPO_PATH", os.path.expanduser("~/japantruth-nextjs"))
-
-# Renderデプロイ時に自動でclone
-import subprocess
-if not os.path.exists(os.path.join(GITHUB_REPO_PATH, "src")):
-    github_token = os.environ.get("GITHUB_TOKEN", "")
-    clone_url = f"https://JapanTruth:{github_token}@github.com/JapanTruth/japantruth-nextjs.git"
-    print(f"🔄 リポジトリをclone中: {GITHUB_REPO_PATH}")
-    subprocess.run(["git", "clone", "--depth=1", clone_url, GITHUB_REPO_PATH], check=True)
-    print(f"✅ リポジトリをclone完了: {GITHUB_REPO_PATH}")
-else:
-    print(f"✅ リポジトリ既存: {GITHUB_REPO_PATH}")
-SEEN_FILE = os.path.expanduser("~/seen_articles.json")
+GITHUB_REPO_PATH = os.path.expanduser("~/japantruth-nextjs")
+SEEN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seen_articles.json")
 
 RSS_FEEDS = [
     # 国際
-
-    {"url": "https://www.scmp.com/rss/91/feed", "category": "international", "source": "South China Morning Post"},
     {"url": "https://www.aljazeera.com/xml/rss/all.xml", "category": "international", "source": "Al Jazeera"},
+    {"url": "https://www.scmp.com/rss/91/feed", "category": "international", "source": "South China Morning Post"},
     {"url": "http://feeds.bbci.co.uk/news/world/rss.xml", "category": "international", "source": "BBC"},
     # 経済
     {"url": "https://www.cnbc.com/id/10000664/device/rss/rss.html", "category": "economy", "source": "CNBC"},
@@ -442,7 +430,7 @@ def git_push(filename):
     if github_token:
         remote_url = f"https://JapanTruth:{github_token}@github.com/JapanTruth/japantruth-nextjs.git"
         subprocess.run(["git", "remote", "set-url", "origin", remote_url], capture_output=True)
-    subprocess.run(["git", "config", "user.email", "bot@japan-truth.com"], check=False)
+    subprocess.run(["git", "config", "user.email", "thisisjapan@proton.me"], check=False)
     subprocess.run(["git", "config", "user.name", "JapanTruth Bot"], check=False)
     print(f"🔄 git pull...")
     subprocess.run(["git", "pull", "origin", "main", "--rebase"], capture_output=True)
@@ -496,20 +484,13 @@ def collect_new_articles(seen):
     new_articles = []
     for feed_info in RSS_FEEDS:
         try:
-            import socket
-            socket.setdefaulttimeout(10)
-            print(f"📡 取得中: {feed_info['source']}")
-            import socket
-            socket.setdefaulttimeout(10)
             try:
                 rss_res = requests.get(feed_info["url"], headers={"User-Agent": "Mozilla/5.0"}, timeout=8)
                 feed = feedparser.parse(rss_res.text)
             except Exception:
                 print(f"⚠️ タイムアウト: {feed_info['source']} → スキップ")
+                time.sleep(2)
                 continue
-            socket.setdefaulttimeout(None)
-            print(f"✅ 取得完了: {feed_info['source']} ({len(feed.entries)}件)")
-            socket.setdefaulttimeout(None)
             for entry in feed.entries[:2]:
                 url = entry.link
                 article_id = hashlib.md5(url.encode()).hexdigest()
@@ -665,5 +646,6 @@ def ping():
 def run_server():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
-Thread(target=run_server, daemon=True).start()
-main()
+if __name__ == "__main__":
+    Thread(target=run_server, daemon=True).start()
+    main()
