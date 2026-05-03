@@ -496,6 +496,7 @@ def collect_new_articles(seen):
     for feed_info in RSS_FEEDS:
         try:
             try:
+                print(f"🔑 RSS2JSON KEY: {'set' if os.environ.get('RSS2JSON_API_KEY') else 'NOT SET'}")
                 rss2json_key = os.environ.get("RSS2JSON_API_KEY", "")
                 if rss2json_key:
                     api_url = f"https://api.rss2json.com/v1/api.json?rss_url={requests.utils.quote(feed_info['url'])}&api_key={rss2json_key}&count=10"
