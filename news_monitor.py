@@ -32,8 +32,19 @@ X_API_KEY = os.environ.get("X_API_KEY", "")
 X_API_SECRET = os.environ.get("X_API_SECRET", "")
 X_ACCESS_TOKEN = os.environ.get("X_ACCESS_TOKEN", "")
 X_ACCESS_TOKEN_SECRET = os.environ.get("X_ACCESS_TOKEN_SECRET", "")
-GITHUB_REPO_PATH = os.path.expanduser("~/japantruth-nextjs")
-SEEN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seen_articles.json")
+GITHUB_REPO_PATH = os.environ.get("GITHUB_REPO_PATH", os.path.expanduser("~/japantruth-nextjs"))
+
+if not os.path.exists(os.path.join(GITHUB_REPO_PATH, "src")):
+    import subprocess as _sp
+    _token = os.environ.get("GITHUB_TOKEN", "")
+    _clone_url = f"https://JapanTruth:{_token}@github.com/JapanTruth/japantruth-nextjs.git"
+    print(f"🔄 リポジトリをclone中: {GITHUB_REPO_PATH}")
+    _sp.run(["git", "clone", "--depth=1", _clone_url, GITHUB_REPO_PATH], check=True)
+    print(f"✅ リポジトリをclone完了: {GITHUB_REPO_PATH}")
+else:
+    print(f"✅ リポジトリ既存: {GITHUB_REPO_PATH}")
+_seen_dir = GITHUB_REPO_PATH if os.path.exists(os.path.join(GITHUB_REPO_PATH, "src")) else os.path.dirname(os.path.abspath(__file__))
+SEEN_FILE = os.path.join(_seen_dir, "seen_articles.json")
 
 RSS_FEEDS = [
     # 国際
