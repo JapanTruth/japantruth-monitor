@@ -496,10 +496,26 @@ def collect_new_articles(seen):
     for feed_info in RSS_FEEDS:
         try:
             try:
-                rss_res = requests.get(feed_info["url"], headers={"User-Agent": "Mozilla/5.0"}, timeout=8)
-                feed = feedparser.parse(rss_res.text)
-            except Exception:
-                print(f"⚠️ タイムアウト: {feed_info['source']} → スキップ")
+                rss2json_key = os.environ.get("RSS2JSON_API_KEY", "")
+                if rss2json_key:
+                    api_url = f"https://api.rss2json.com/v1/api.json?rss_url={requests.utils.quote(feed_info['url'])}&api_key={rss2json_key}&count=10"
+                    rss_res = requests.get(api_url, timeout=10)
+                    rss_data = rss_res.json()
+                    if rss_data.get("status") == "ok":
+                        feed = type("Feed", (), {"entries": [
+                            type("Entry", (), {
+                                "link": item.get("link", ""),
+                                "title": item.get("title", ""),
+                                "summary": item.get("description", item.get("title", "")),
+                            })() for item in rss_data.get("items", [])
+                        ]})()
+                    else:
+                        raise Exception(f"rss2json error: {rss_data.get('message')}")
+                else:
+                    rss_res = requests.get(feed_info["url"], headers={"User-Agent": "Mozilla/5.0"}, timeout=8)
+                    feed = feedparser.parse(rss_res.text)
+            except Exception as e:
+                print(f"⚠️ タイムアウト: {feed_info['source']} → スキップ ({e})")
                 time.sleep(2)
                 continue
             for entry in feed.entries[:2]:
@@ -640,7 +656,7 @@ def main():
             time.sleep(30)
 
         print("💤 15分待機中...")
-        time.sleep(900)
+        time.sleep(1800)
 
 
 
