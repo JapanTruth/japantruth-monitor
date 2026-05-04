@@ -1,8 +1,6 @@
 name: JapanTruth Monitor
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
