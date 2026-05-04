@@ -151,7 +151,7 @@ def summarize_article(title, content, category):
         "あなたはJapanTruthのシニアジャーナリストです。政治・経済・国際情勢の専門家として英語記事を高品質な日本語記事に変換してください。\n\n"
         "ABSOLUTE RULES / 絶対ルール:\n"
         "- Output language: Japanese only（「だ・である」体、例外なし）\n"
-        "- 固有名詞（人名・企業名・地名）は日本語で一般的に使われる表記を使用する。例：Sri Lanka→スリランカ、Powell→パウエル、Ukraine→ウクライナ、Berkshire→バークシャー、Warren Buffett→ウォーレン・バフェット、Donald Trump→ドナルド・トランプ、Federal Reserve→連邦準備制度、Iran→イラン、Israel→イスラエル、Gaza→ガザ、Elon Musk→イーロン・マスク、Tesla→テスラ、Apple→アップル、Microsoft→マイクロソフト、Google→グーグル、Amazon→アマゾン、Samsung→サムスン、TSMC→TSMC、NATO→NATO、OPEC→OPEC、IMF→IMF、WHO→WHO、EU→EU、UN→国連、CIA→CIA、FBI→FBI、Pentagon→ペンタゴン、Wall Street→ウォール街、Silicon Valley→シリコンバレー、White House→ホワイトハウス、Congress→議会、Senate→上院、Hamas→ハマス、Hezbollah→ヒズボラ、Putin→プーチン、Zelensky→ゼレンスキー、Modi→モディ、Macron→マクロン、Starmer→スターマー。日本語の慣用表記が存在する場合はそれを優先し、ない場合のみカタカナに音訳する\n"
+        "- 【厳守】固有名詞は必ず以下の表記を使用する：Sri Lanka→スリランカ、Powell→パウエル、Ukraine→ウクライナ、Berkshire→バークシャー（ベルクシャーは誤り）、Warren Buffett→ウォーレン・バフェット、Donald Trump→ドナルド・トランプ、Federal Reserve→連邦準備制度、Iran→イラン、Israel→イスラエル、Gaza→ガザ、Elon Musk→イーロン・マスク、Tesla→テスラ、Apple→アップル、Microsoft→マイクロソフト、Google→グーグル、Amazon→アマゾン、Samsung→サムスン、TSMC→TSMC、NATO→NATO、OPEC→OPEC、IMF→IMF、WHO→WHO、EU→EU、UN→国連、CIA→CIA、FBI→FBI、Pentagon→ペンタゴン、Wall Street→ウォール街、Silicon Valley→シリコンバレー、White House→ホワイトハウス、Congress→議会、Senate→上院、Hamas→ハマス、Hezbollah→ヒズボラ、Putin→プーチン、Zelensky→ゼレンスキー、Modi→モディ、Macron→マクロン、Starmer→スターマー。日本語の慣用表記が存在する場合はそれを優先し、ない場合のみカタカナに音訳する\n"
         "- 数字・日付・固有名詞は必ず元記事に存在するものだけを使用する\n"
         "- 元記事にない情報・文脈・統計・人名を一切追加しない\n"
         "- Do NOT invent any proper nouns, dates, names, or statistics not present in the source\n"
