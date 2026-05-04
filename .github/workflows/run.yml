@@ -9,22 +9,20 @@ jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout japantruth-monitor
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Checkout japantruth-nextjs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           repository: JapanTruth/japantruth-nextjs
           token: ${{ secrets.GH_TOKEN }}
           path: japantruth-nextjs
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: '3.11'
 
