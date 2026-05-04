@@ -1,18 +1,23 @@
-import os, sys, time, json, hashlib, re, requests, feedparser, subprocess
-from datetime import datetime, timezone, timedelta
-from PIL import Image
-from io import BytesIO
+import os, sys
 
-# news_monitor.pyを読み込んで実行（Flaskなし、ループなし）
 with open(os.path.join(os.path.dirname(__file__), 'news_monitor.py')) as f:
-    code = f.read()
+    lines = f.readlines()
 
-# Flaskサーバー部分を除去
-code = code.replace('Thread(target=run_server, daemon=True).start()\nmain()', 'main()')
+new_lines = []
+skip_next = False
+for i, line in enumerate(lines):
+    # Flaskスレッド起動とmain()を置換
+    if line.strip() == 'Thread(target=run_server, daemon=True).start()':
+        continue
+    # while Trueをif Trueに
+    if '    while True:' in line:
+        new_lines.append(line.replace('    while True:', '    if True:'))
+        continue
+    # 15分待機とtime.sleepをスキップ
+    if 'time.sleep(1800)' in line:
+        new_lines.append(line.replace('time.sleep(1800)', 'sys.exit(0)'))
+        continue
+    new_lines.append(line)
 
-# whileループを1回だけに
-code = code.replace('    while True:', '    if True:')
-code = code.replace("        print('💤 15分待機中...')\n        time.sleep(1800)", "        print('✅ 1サイクル完了')\n        break")
-code = code.replace('        print("💤 15分待機中...")\n        time.sleep(1800)', '        print("✅ 1サイクル完了")\n        break')
-
+code = ''.join(new_lines)
 exec(compile(code, 'news_monitor.py', 'exec'))
