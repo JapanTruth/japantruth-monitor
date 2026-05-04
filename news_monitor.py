@@ -80,6 +80,20 @@ def load_seen():
 def save_seen(seen, seen_images):
     with open(SEEN_FILE, "w") as f:
         json.dump({"articles": list(seen)[-500:], "images": list(seen_images)[-200:]}, f)
+    # GitHub Actionsでseen_articles.jsonをcommitして永続化
+    if os.environ.get("GITHUB_ACTIONS"):
+        try:
+            repo_path = os.path.dirname(SEEN_FILE)
+            subprocess.run(["git", "config", "user.email", "thisisjapan@proton.me"], cwd=repo_path, capture_output=True)
+            subprocess.run(["git", "config", "user.name", "JapanTruth Bot"], cwd=repo_path, capture_output=True)
+            subprocess.run(["git", "add", SEEN_FILE], cwd=repo_path, capture_output=True)
+            subprocess.run(["git", "commit", "-m", "chore: update seen_articles.json"], cwd=repo_path, capture_output=True)
+            token = os.environ.get("GH_TOKEN", "")
+            remote_url = f"https://JapanTruth:{token}@github.com/JapanTruth/japantruth-nextjs.git"
+            subprocess.run(["git", "push", remote_url, "main"], cwd=repo_path, capture_output=True)
+            print("✅ seen_articles.json保存完了")
+        except Exception as e:
+            print(f"⚠️ seen_articles.json保存失敗: {e}")
 
 
 def parse_rate_limit_msg(msg):
@@ -152,6 +166,7 @@ def summarize_article(title, content, category):
         "ABSOLUTE RULES:\n"
         "- Output language: Japanese only, using declarative style (だ・である). No exceptions.\n"
         "- Only use numbers, dates, and proper nouns that exist in the source article.\n"
+        "- CRITICAL proper noun translations: Modi=ナレンドラ・モディ, BJP=インド人民党（BJP）, TMC=全インド草の根会議派（TMC）, Berkshire=バークシャー, Fed=連邦準備制度（FRB）, Congress=インド国民会議派（政党の場合）\n"
         "- Do NOT add any information, context, statistics, or names not present in the source.\n"
         "- If the source article lacks detail, write fewer sentences rather than fabricating content.\n\n"
         "FACT INTEGRITY:\n"
@@ -495,7 +510,6 @@ def collect_new_articles(seen):
     for feed_info in RSS_FEEDS:
         try:
             try:
-                print(f"🔑 RSS2JSON KEY: {'set' if os.environ.get('RSS2JSON_API_KEY') else 'NOT SET'}")
                 rss2json_key = os.environ.get("RSS2JSON_API_KEY", "")
                 if rss2json_key:
                     api_url = f"https://api.rss2json.com/v1/api.json?rss_url={requests.utils.quote(feed_info['url'])}&api_key={rss2json_key}&count=10"
