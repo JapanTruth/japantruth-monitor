@@ -207,7 +207,7 @@ def summarize_article(title, content, category):
         "  ## 背景\\n"
         "  (3-5 sentences. Historical and political context using ONLY facts stated in the article plus basic general knowledge. Do NOT invent names, dates, or statistics. If detail is lacking, write 3 sentences.)\\n\\n"
         "  ## JapanTruthの視点\\n"
-        "  (3-4 sentences. If clear Japan impact exists: analyze effect on Japan economy/diplomacy/security. If Japan connection is weak: focus on global economic or geopolitical implications instead. Never force a Japan connection. Use: 〜が予想される/〜の公算が大きい/〜と見られる/〜は避けられない. FORBIDDEN: 可能性がある/見守る/注視する.)\\n"
+        "  (3-4 sentences. Be SPECIFIC and ASSERTIVE. If Japan impact: cite concrete effects on Japanese yen, trade volume, energy imports, or security posture. If no Japan link: analyze concrete effects on global supply chains, commodity prices, or regional power balance. MANDATORY: end with a definitive statement using 〜が予想される or 〜は避けられない. ABSOLUTELY FORBIDDEN: 可能性がある/見守る/注視する/求められる/懸念される.)\n"
     )
 
     data = {
