@@ -576,7 +576,10 @@ def upload_to_cloudinary(local_path, slug):
             overwrite=True,
             resource_type="image"
         )
-        url = result.get("secure_url", "")
+        # バージョン番号なしのURLに変換
+        raw_url = result.get("secure_url", "")
+        public_id = result.get("public_id", "")
+        url = f"https://res.cloudinary.com/dnqswecpg/image/upload/{public_id}.jpg" if public_id else raw_url
         print(f"☁️ Cloudinaryアップロード完了: {url}")
         return url
     except Exception as e:
