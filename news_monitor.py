@@ -557,6 +557,32 @@ def save_to_supabase(slug, title, date_str, time_str, category, excerpt, image_p
         print(f"⚠️ Supabase保存エラー: {e}")
         return False
 
+
+def upload_to_cloudinary(local_path, slug):
+    """画像をCloudinaryにアップロードしてURLを返す"""
+    try:
+        import cloudinary
+        import cloudinary.uploader
+        
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", ""),
+            api_key=os.environ.get("CLOUDINARY_API_KEY", ""),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET", ""),
+        )
+        
+        result = cloudinary.uploader.upload(
+            local_path,
+            public_id=slug,
+            overwrite=True,
+            resource_type="image"
+        )
+        url = result.get("secure_url", "")
+        print(f"☁️ Cloudinaryアップロード完了: {url}")
+        return url
+    except Exception as e:
+        print(f"⚠️ Cloudinaryアップロード失敗: {e}")
+        return None
+
 def create_md(date_str, time_str, slug, title, excerpt, category, image_path, source_url, body, source_name="Unknown", tags=""):
     title = title.replace('"', '′')
     excerpt = excerpt.replace('"', '′')
@@ -777,6 +803,13 @@ def main():
             print(f"📥 Unsplash画像取得中...")
             image_path = get_image(image_kw, slug, cat, seen_images)
             print(f"🖼️ 画像保存完了: {image_path}")
+            # Cloudinaryにアップロード
+            if image_path and image_path != "/japantruth.png":
+                local_img = os.path.join(GITHUB_REPO_PATH, "public", image_path.lstrip("/"))
+                if os.path.exists(local_img):
+                    cloud_url = upload_to_cloudinary(local_img, slug)
+                    if cloud_url:
+                        image_path = cloud_url
             print(f"🏷️ タグ生成中 [8b]...")
             tags = generate_tags(result.get("title", article["title"]), cat)
             if image_path != "/japantruth.png":
