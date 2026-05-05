@@ -510,6 +510,53 @@ def post_process_article(result):
     return {k: _process_value(v) for k, v in result.items()}
 
 
+
+def save_to_supabase(slug, title, date_str, time_str, category, excerpt, image_path, source_url, body, source_name, tags):
+    """記事をSupabaseに保存"""
+    try:
+        import requests as _req
+        SUPABASE_URL = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
+        SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+        if not SUPABASE_KEY:
+            print("⚠️ SUPABASE_SERVICE_KEY未設定")
+            return False
+        
+        post_data = {
+            "slug": slug,
+            "title": title,
+            "date": f"{date_str} {time_str}",
+            "category": category,
+            "excerpt": excerpt,
+            "premium": False,
+            "image": image_path,
+            "source": source_name,
+            "tags": tags,
+            "source_url": source_url,
+            "body": body,
+        }
+        
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates"
+        }
+        
+        res = _req.post(
+            f"{SUPABASE_URL}/rest/v1/posts",
+            headers=headers,
+            json=post_data
+        )
+        if res.status_code in [200, 201]:
+            print(f"✅ Supabase保存完了: {slug}")
+            return True
+        else:
+            print(f"⚠️ Supabase保存失敗: {res.status_code} {res.text[:100]}")
+            return False
+    except Exception as e:
+        print(f"⚠️ Supabase保存エラー: {e}")
+        return False
+
 def create_md(date_str, time_str, slug, title, excerpt, category, image_path, source_url, body, source_name="Unknown", tags=""):
     title = title.replace('"', '′')
     excerpt = excerpt.replace('"', '′')
@@ -747,6 +794,13 @@ def main():
             )
             print(f"📄 MDファイル作成完了: {filename}")
             git_push(filename)
+            save_to_supabase(
+                slug, result.get("title", article["title"]),
+                date_str, time_str, cat,
+                result.get("excerpt", ""), image_path,
+                article["url"], result.get("body", ""),
+                article["source"], tags
+            )
             article_url = f"https://www.japan-truth.com/posts/{slug}"
             # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
             daily_count += 1

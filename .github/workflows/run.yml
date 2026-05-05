@@ -43,4 +43,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_REPO_PATH: ${{ github.workspace }}/japantruth-nextjs
           RSS2JSON_API_KEY: ${{ secrets.RSS2JSON_API_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python news_monitor_once.py
