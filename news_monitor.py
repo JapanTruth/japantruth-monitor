@@ -759,7 +759,7 @@ def main():
             if not result.get("title"):
                 result["title"] = article["title"]
             date_str = datetime.now(JST).strftime("%Y-%m-%d")
-            time_str = datetime.now(JST).strftime("%Y-%m-%d %H:%M")
+            time_str = datetime.now(JST).strftime("%H:%M")
             # Unicodeクォートを正規化
             article["title"] = article["title"].replace("\u2019", "'").replace("\u2018", "'").replace("\u201c", "\"").replace("\u201d", "\"")
             slug = re.sub(r'[^a-z0-9]+', '-', article["title"].lower())[:40].strip('-')
