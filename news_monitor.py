@@ -275,7 +275,7 @@ def summarize_article(title, content, category):
             parsed = _json.loads(raw)
             cat_raw = parsed.get("category", "international").lower()
             cat = next((c for c in ["politics","economy","international","culture","investment"] if c in cat_raw), "international")
-            return {
+            _article = {
                 "title": parsed.get("title", "").strip(),
                 "excerpt": parsed.get("excerpt", "").strip(),
                 "keyword": parsed.get("keyword", "news"),
@@ -285,6 +285,7 @@ def summarize_article(title, content, category):
                 "tokens_input": result.get("usage", {}).get("prompt_tokens", 0),
                 "tokens_output": result.get("usage", {}).get("completion_tokens", 0),
             }
+            return post_process_article(_article)
         except Exception as e:
             print(f"⚠️ 試行{attempt+1}失敗: {type(e).__name__}: {e}")
             time.sleep(10)
@@ -453,6 +454,61 @@ def format_body(body):
                 result.append('')
             sentence_count = 0
     return '\n'.join(result).strip()
+
+
+import re as _re
+
+# 後処理：最小限のセーフティネット（固有名詞の誤字のみ）
+# ⚠️ 後処理はプロンプトで防げなかった明確な誤字のみ対象
+# 意味が変わる可能性のある禁止表現の置換はしない（プロンプトに任せる）
+
+PROPER_NOUN_FIXES = {
+    "ハンターバイラス": "ハンタウイルス",
+    "ハンターウイルス": "ハンタウイルス",
+    "ネラージュ・モディ": "ナレンドラ・モディ",
+    "ベルクシャー": "バークシャー",
+}
+
+# 禁止表現は意味変化リスクが低いものだけ最小限に絞る
+FORBIDDEN_REPLACEMENTS = {
+    "可能性がある": "と見られる",
+    "グローバル市場": "世界市場",
+}
+
+def _safe_replace(text, wrong, correct):
+    """日本語対応の安全な置換（前後の文字を確認）"""
+    return _re.sub(
+        rf'(?<![ァ-ンぁ-ん一-龥ー]){_re.escape(wrong)}(?![ァ-ンぁ-ん一-龥ー])',
+        correct,
+        text
+    )
+
+def _safe_proper_noun(text, wrong, correct):
+    """固有名詞の安全な置換（完全一致のみ）"""
+    return _re.sub(
+        rf'(?<![ァ-ンぁ-ん一-龥ー]){_re.escape(wrong)}(?![ァ-ンぁ-ん一-龥ー])',
+        correct,
+        text
+    )
+
+def _process_value(value):
+    """再帰的に文字列を処理（str/list/dict対応）"""
+    if isinstance(value, str):
+        for wrong, correct in PROPER_NOUN_FIXES.items():
+            value = _safe_proper_noun(value, wrong, correct)
+        for wrong, correct in FORBIDDEN_REPLACEMENTS.items():
+            value = _safe_replace(value, wrong, correct)
+        return value
+    elif isinstance(value, list):
+        return [_process_value(v) for v in value]
+    elif isinstance(value, dict):
+        return {k: _process_value(v) for k, v in value.items()}
+    return value
+
+def post_process_article(result):
+    """生成された記事の後処理（最小限のセーフティネット）"""
+    return {k: _process_value(v) for k, v in result.items()}
+
 
 def create_md(date_str, time_str, slug, title, excerpt, category, image_path, source_url, body, source_name="Unknown", tags=""):
     title = title.replace('"', '′')
