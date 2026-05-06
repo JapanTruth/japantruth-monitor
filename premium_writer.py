@@ -173,8 +173,7 @@ def generate_premium_article(theme, articles):
     for i, article in enumerate(articles[:4], 1):
         title = article.get("title", "")
         desc = article.get("description", "")
-        content = desc[:300]
-        sources_text += f"\n【ソース{i}】{title}\n{content}\n"
+        sources_text += f"- {title}\n"
 
     system_prompt = (
         "You are a senior analyst at JapanTruth, an independent Japanese-language media. "
