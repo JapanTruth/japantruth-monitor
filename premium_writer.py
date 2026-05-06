@@ -118,7 +118,7 @@ def search_related_articles(theme):
             related.append(article)
 
     print(f"✅ 関連記事: {len(related)}件 / 全{len(all_articles)}件")
-    return related[:8]  # 最大8件
+    return related[:4]  # 最大4件
 
 def scrape_content(url):
     try:
@@ -170,7 +170,7 @@ def upload_to_cloudinary(local_path, slug):
 def generate_premium_article(theme, articles):
     # 収集した記事の内容をまとめる
     sources_text = ""
-    for i, article in enumerate(articles[:6], 1):
+    for i, article in enumerate(articles[:4], 1):
         title = article.get("title", "")
         desc = article.get("description", "")
         content = desc[:300]
