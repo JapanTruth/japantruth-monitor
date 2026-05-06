@@ -817,19 +817,6 @@ def main():
             tags = generate_tags(result.get("title", article["title"]), cat)
             if image_path != "/japantruth.png":
                 seen_images.add(image_path)
-            print(f"📝 MDファイル作成中...")
-            filename = create_md(
-                date_str, time_str, slug,
-                result.get("title", article["title"]),
-                result.get("excerpt", ""),
-                cat, image_path,
-                article["url"],
-                result.get("body", ""),
-                article["source"],
-                tags=tags,
-            )
-            print(f"📄 MDファイル作成完了: {filename}")
-            git_push(filename)
             save_to_supabase(
                 slug, result.get("title", article["title"]),
                 date_str, time_str, cat,
