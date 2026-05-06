@@ -80,20 +80,7 @@ def load_seen():
 def save_seen(seen, seen_images):
     with open(SEEN_FILE, "w") as f:
         json.dump({"articles": list(seen)[-500:], "images": list(seen_images)[-200:]}, f)
-    # GitHub Actionsでseen_articles.jsonをcommitして永続化
-    if os.environ.get("GITHUB_ACTIONS"):
-        try:
-            repo_path = os.path.dirname(SEEN_FILE)
-            subprocess.run(["git", "config", "user.email", "thisisjapan@proton.me"], cwd=repo_path, capture_output=True)
-            subprocess.run(["git", "config", "user.name", "JapanTruth Bot"], cwd=repo_path, capture_output=True)
-            subprocess.run(["git", "add", SEEN_FILE], cwd=repo_path, capture_output=True)
-            subprocess.run(["git", "commit", "-m", "chore: update seen_articles.json"], cwd=repo_path, capture_output=True)
-            token = os.environ.get("GH_TOKEN", "")
-            remote_url = f"https://JapanTruth:{token}@github.com/JapanTruth/japantruth-nextjs.git"
-            subprocess.run(["git", "push", remote_url, "main"], cwd=repo_path, capture_output=True)
-            print("✅ seen_articles.json保存完了")
-        except Exception as e:
-            print(f"⚠️ seen_articles.json保存失敗: {e}")
+    print("✅ seen_articles.json保存完了")
 
 
 def parse_rate_limit_msg(msg):
