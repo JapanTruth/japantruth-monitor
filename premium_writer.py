@@ -141,6 +141,7 @@ def scrape_content(url):
 
 # ── 画像取得 ──────────────────────────────────────────
 def get_image(keyword, slug):
+    # Unsplash試行
     try:
         res = requests.get(
             f"https://api.unsplash.com/search/photos?query={keyword}&per_page=1",
@@ -154,9 +155,28 @@ def get_image(keyword, slug):
             local_path = f"/tmp/{slug}.jpg"
             with open(local_path, "wb") as f:
                 f.write(img_data)
+            print(f"🖼️ Unsplash画像取得完了: {local_path}")
             return local_path
-    except:
-        pass
+    except Exception as e:
+        print(f"⚠️ Unsplash失敗: {e}")
+    # Pexels試行
+    try:
+        res = requests.get(
+            f"https://api.pexels.com/v1/search?query={keyword}&per_page=1",
+            headers={"Authorization": PEXELS_KEY},
+            timeout=10
+        )
+        data = res.json()
+        if data.get("photos"):
+            url = data["photos"][0]["src"]["large"]
+            img_data = requests.get(url, timeout=15).content
+            local_path = f"/tmp/{slug}.jpg"
+            with open(local_path, "wb") as f:
+                f.write(img_data)
+            print(f"🖼️ Pexels画像取得完了: {local_path}")
+            return local_path
+    except Exception as e:
+        print(f"⚠️ Pexels失敗: {e}")
     return None
 
 def upload_to_cloudinary(local_path, slug):
