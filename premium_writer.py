@@ -46,14 +46,21 @@ def call_groq(messages, model="qwen/qwen3-32b", temperature=0.5, max_tokens=6000
             "max_tokens": max_tokens,
             "temperature": temperature,
             }
-        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
-        result = res.json()
-        if "error" in result:
-            if "rate_limit" in str(result["error"]):
-                GROQ_KEY_INDEX += 1
-                time.sleep(5)
-                continue
-        return result
+        try:
+            res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data, timeout=120)
+            result = res.json()
+            if "error" in result:
+                print(f"⚠️ Groqエラー: {result['error']}")
+                if "rate_limit" in str(result["error"]) or "413" in str(result["error"]):
+                    GROQ_KEY_INDEX += 1
+                    time.sleep(5)
+                    continue
+                return None
+            return result
+        except Exception as e:
+            print(f"⚠️ Groq接続エラー: {type(e).__name__}: {e}")
+            return None
+    print("⚠️ 全APIキー失敗")
     return None
 
 # ── ニュース収集 ──────────────────────────────────────
