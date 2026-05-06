@@ -295,6 +295,7 @@ def auto_select_theme():
     raw = re.sub(r"```json|```", "", raw).strip()
     parsed = json.loads(raw)
     theme = parsed.get("theme", "円安と日本人投資家の資産防衛策")
+    theme = theme[:30]  # 30字以内に制限
     print(f"✅ 自動選択テーマ: {theme}")
     return theme
 
