@@ -193,20 +193,16 @@ def generate_premium_article(theme, articles):
     )
 
     prompt = (
-        f"以下の複数の英語ニュースソースを統合して、テーマ「{theme}」についての深掘りプレミアム記事を作成せよ。\n\n"
-        f"収集ソース:\n{sources_text}\n\n"
-        "記事フォーマット（bodyは3000〜5000字）:\n"
-        "## 何が起きているのか\n(事実の整理・複数ソースを統合)\n\n"
-        "## 背景と構造的問題\n(歴史的文脈・隠れた利害関係)\n\n"
-        "## 日本への具体的影響\n(円・エネルギー・貿易・株式への数値的影響)\n\n"
-        "## JapanTruthの分析\n(主流メディアが報じない視点・構造的矛盾)\n\n"
-        "## 投資家・市民が今すべき行動\n(具体的かつ実践的なアドバイス)\n"
+        f"テーマ「{theme}」の深掘り投資分析記事を日本語で書け。\n"
+        f"参考ニュース:{sources_text}\n"
+        "bodyに以下5セクションを含めること(合計2000字以上):\n"
+        "## 何が起きているのか ## 背景と構造的問題 ## 日本への具体的影響 ## JapanTruthの分析 ## 投資家が今すべき行動"
     )
 
     result = call_groq(
         [{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}],
         temperature=0.5,
-        max_tokens=6000
+        max_tokens=4000
     )
 
     if not result:
