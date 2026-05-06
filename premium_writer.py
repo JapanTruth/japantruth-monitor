@@ -203,6 +203,7 @@ def generate_premium_article(theme, articles):
     )
 
     if not result:
+        print(f"⚠️ Groq結果なし: {result}")
         return None
 
     try:
@@ -226,7 +227,7 @@ def generate_premium_article(theme, articles):
         return parsed
     except Exception as e:
         print(f"⚠️ JSONパース失敗: {e}")
-        print(f"RAW: {raw[:200]}")
+        print(f"RAW FULL: {raw}")
         return None
 
 # ── Supabase保存 ──────────────────────────────────────
