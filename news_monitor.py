@@ -147,7 +147,6 @@ def screen_article(title, summary=""):
     return False, ""  # 全キー失敗時はスキップ扱い
 
 def summarize_article(title, content, category):
-    from translations import TRANSLATIONS as _TRANSLATIONS
     system_prompt = (
         "You are a senior journalist at JapanTruth, an independent Japanese-language news media.\n"
         "Mission: Cover stories that mainstream Japanese media would not prioritize or would underreport.\n"
@@ -162,7 +161,6 @@ def summarize_article(title, content, category):
         "CRITICAL PROPER NOUN RULES:\n"
         "- ALL person names, place names, org names: transliterate from EXACT spelling in source. Do NOT guess.\n"
         "- If you are unsure of Japanese rendering: write the English name in katakana phonetically from spelling, do not invent.\n"
-        f"KNOWN CORRECT TRANSLATIONS:\n{_TRANSLATIONS}\n"
         "CRITICAL ROLE/INSTITUTION TRANSLATIONS:\n"
         "- Senate=上院、House of Representatives=下院（混同厳禁）\n"
         "- Speaker of the House=下院議長\n"
@@ -228,7 +226,7 @@ def summarize_article(title, content, category):
         f"Convert the following English article into a Japanese article and return as JSON.\n"
         f"CRITICAL: Do NOT add any proper nouns, numbers, or dates not in the source. If source lacks detail, write fewer sentences.\n\n"
         "/no_think\n"
-        f"Title: {title}\nContent: {content[:2500]}\n\n"
+        f"Title: {title}\nContent: {content[:1500]}\n\n"
         "JSON fields:\n"
         "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり.\n"
         "- excerpt: The single most surprising or counterintuitive fact from this story. NOT a plain summary.\n"
