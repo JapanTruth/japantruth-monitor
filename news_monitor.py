@@ -910,8 +910,8 @@ def main():
                 _sb_url = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
                 _sb_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
                 _h = {"apikey": _sb_key, "Authorization": f"Bearer {_sb_key}"}
-                _cutoff = (_now - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S")
-                _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=30", headers=_h, timeout=5)
+                _cutoff = (_now - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+                _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=100", headers=_h, timeout=5)
                 _recent_posts = _res.json() if isinstance(_res.json(), list) else []
                 _recent_titles = [p.get("title","") for p in _recent_posts]
                 _recent_urls = [p.get("source_url","") or "" for p in _recent_posts]
