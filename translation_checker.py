@@ -15,7 +15,7 @@ headers_sb = {
 }
 
 res = requests.get(
-    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt&order=date.desc&limit=50",
+    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt&order=date.desc&limit=100",
     headers=headers_sb
 )
 posts = res.json()
