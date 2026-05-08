@@ -304,7 +304,8 @@ def summarize_article(title, content, category):
                 "tokens_output": result.get("usage", {}).get("completion_tokens", 0),
             }
             _processed = post_process_article(_article)
-            _processed = verify_and_fix_proper_nouns(title, _processed)
+            # verify_and_fix_proper_nouns は逆修正のリスクがあるため無効化
+            # _processed = verify_and_fix_proper_nouns(title, _processed)
             return _processed
         except Exception as e:
             import traceback
