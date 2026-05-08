@@ -876,7 +876,7 @@ def main():
             # 類似トピックチェック（3時間以内）
             _now = datetime.now(JST)
             _title_words = set(article["title"].lower().split())
-            _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).seconds < 10800}
+            _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).total_seconds() < 10800}
             used_topics = _recent
             _is_similar = any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent)
             if _is_similar:
