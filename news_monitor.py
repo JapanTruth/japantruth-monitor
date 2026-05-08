@@ -232,8 +232,8 @@ def summarize_article(title, content, category):
     prompt = (
         f"Convert the following English article into a Japanese article and return as JSON.\n"
         f"CRITICAL: Do NOT add any proper nouns, numbers, or dates not in the source. If source lacks detail, write fewer sentences.\n\n"
-        f"Title: {title}\nContent: {content[:4000]}\n\n"
         "/no_think\n"
+        f"Title: {title}\nContent: {content[:4000]}\n\n"
         "JSON fields:\n"
         "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり.\n"
         "- excerpt: The single most surprising or counterintuitive fact from this story. NOT a plain summary.\n"
@@ -751,7 +751,7 @@ def collect_new_articles(seen):
                     })
         except Exception as e:
             print(f"⚠️ フィード取得エラー: {e}")
-        time.sleep(2)
+        time.sleep(1)
     return new_articles
 
 def main():
@@ -800,25 +800,7 @@ def main():
                 print(f"⚠️ スクレイピング失敗 → RSSサマリーで代替")
             print(f"📰 処理中 [Qwen3-32b]: {article['title'][:60]}")
             result = summarize_article(article["title"], article["content"], article["category"])
-            if result == "rate_limit":
-                print("⏳ レート制限により生成不可 → failed_articles.jsonに保存")
-                import json as _json
-                skip_count += 1
-                log_file = os.path.expanduser("~/failed_articles.json")
-                failed = []
-                if os.path.exists(log_file):
-                    with open(log_file) as _f:
-                        failed = _json.load(_f)
-                failed.append({
-                    "title": article["title"],
-                    "url": article["url"],
-                    "category": article["category"],
-                    "source": article["source"],
-                    "time": datetime.now(JST).strftime("%Y-%m-%d %H:%M")
-                })
-                with open(log_file, "w") as _f:
-                    _json.dump(failed, _f, ensure_ascii=False, indent=2)
-                continue
+            # summarize_articleはrate_limit時もNoneを返す（rate_limit文字列は返さない）
             if not result:
                 print("⚠️ 要約失敗（レート制限以外の原因）、スキップ")
                 continue
@@ -875,7 +857,7 @@ def main():
             daily_count += 1
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
-            time.sleep(30)
+            time.sleep(20)
 
         print("💤 15分待機中...")
         time.sleep(1800)
