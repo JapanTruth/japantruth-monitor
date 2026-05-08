@@ -11,7 +11,6 @@ JST = timezone(timedelta(hours=9))
 from PIL import Image
 from io import BytesIO
 
-import os
 GROQ_API_KEYS = [
     os.environ.get("GROQ_API_KEY_1", ""),
     os.environ.get("GROQ_API_KEY_2", ""),
@@ -144,7 +143,7 @@ def screen_article(title, summary=""):
             return is_breaking, image_kw
         except:
             return False, ""
-    return "rate_limit"
+    return False, ""  # 全キー失敗時はスキップ扱い
 
 def summarize_article(title, content, category):
     system_prompt = (
@@ -617,6 +616,7 @@ def upload_to_cloudinary(local_path, slug):
         print(f"⚠️ Cloudinaryアップロード失敗: {e}")
         return None
 
+# 以下2関数はSupabase移行後は未使用（削除候補）
 def create_md(date_str, time_str, slug, title, excerpt, category, image_path, source_url, body, source_name="Unknown", tags=""):
     title = title.replace('"', '′')
     excerpt = excerpt.replace('"', '′')
@@ -748,7 +748,6 @@ def collect_new_articles(seen):
 
 def main():
     print("🚀 JapanTruth自動投稿システム起動")
-    feed_index = 0
     daily_count = 0
     skip_count = 0
     tpd_used = 0
@@ -815,9 +814,15 @@ def main():
             if not result:
                 print("⚠️ 要約失敗（レート制限以外の原因）、スキップ")
                 continue
-            # titleが空の場合は処理続行
+            # titleが空または英語の場合はスキップ
             if not result.get("title"):
-                result["title"] = article["title"]
+                print("⚠️ タイトル生成失敗 → スキップ")
+                continue
+            # タイトルが英語のみの場合もスキップ（日本語文字が含まれていない）
+            import unicodedata as _ud
+            if not any(_ud.name(c, '').startswith(('CJK', 'HIRAGANA', 'KATAKANA')) for c in result["title"]):
+                print(f"⚠️ タイトルが日本語でない: {result['title'][:50]} → スキップ")
+                continue
             date_str = datetime.now(JST).strftime("%Y-%m-%d")
             time_str = datetime.now(JST).strftime("%H:%M")
             # Unicodeクォートを正規化
