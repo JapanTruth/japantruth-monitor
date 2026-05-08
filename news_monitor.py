@@ -901,10 +901,12 @@ def main():
                 _sb_url = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
                 _sb_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
                 _h = {"apikey": _sb_key, "Authorization": f"Bearer {_sb_key}"}
-                _cutoff = (_now - timedelta(hours=3)).isoformat()
-                _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title&date=gte.{_cutoff[:10]}&order=date.desc&limit=20", headers=_h, timeout=5)
-                _recent_titles = [p.get("title","") for p in _res.json() if isinstance(_res.json(), list)]
-                _is_similar = any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles)
+                _cutoff = (_now - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S")
+                _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=30", headers=_h, timeout=5)
+                _recent_posts = _res.json() if isinstance(_res.json(), list) else []
+                _recent_titles = [p.get("title","") for p in _recent_posts]
+                _recent_urls = [p.get("source_url","") for p in _recent_posts]
+                _is_similar = (article["url"] in _recent_urls) or any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles)
             if _is_similar:
                 seen.add(article["id"])
                 save_seen(seen, seen_images)
