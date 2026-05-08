@@ -882,18 +882,4 @@ def main():
 
 
 
-# Render スリープ防止用Webサーバー
-from flask import Flask
-from threading import Thread
-
-app = Flask(__name__)
-
-@app.route('/')
-def ping():
-    return "OK", 200
-
-def run_server():
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
-
-Thread(target=run_server, daemon=True).start()
 main()
