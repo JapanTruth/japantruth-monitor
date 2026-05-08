@@ -822,7 +822,9 @@ def main():
             time_str = datetime.now(JST).strftime("%H:%M")
             # Unicodeクォートを正規化
             article["title"] = article["title"].replace("\u2019", "'").replace("\u2018", "'").replace("\u201c", "\"").replace("\u201d", "\"")
-            slug = re.sub(r'[^a-z0-9]+', '-', article["title"].lower())[:40].strip('-')
+            # slug = 日付+時刻+タイトル先頭30文字（重複防止）
+            _slug_base = re.sub(r'[^a-z0-9]+', '-', article["title"].lower())[:30].strip('-')
+            slug = f"{date_str}-{datetime.now(JST).strftime('%H%M%S')}-{_slug_base}"
             cat = next((c for c in ["politics","economy","international","culture","investment"] if c in result.get("category", article["category"]).lower()), article["category"])
             image_kw = result.get("keyword") or article.get("image_kw") or "news"
             if image_kw == last_keyword:
