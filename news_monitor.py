@@ -773,14 +773,25 @@ def main():
 
         print(f"\n🔍 全ソースをチェック中... ({datetime.now(JST).strftime('%H:%M')})")
         print(f"📡 RSSフィード取得中... (14ソース)")
+        import random as _random
         new_articles = collect_new_articles(seen)
+        _random.shuffle(new_articles)
         print(f"📋 新着記事: {len(new_articles)}件")
         # 全件チェック（最大10件）
 
         cycle_count = 0
+        used_topics = []
         for article in new_articles:
             if cycle_count >= 2:
                 break
+            # 類似トピックチェック
+            _title_words = set(article["title"].lower().split())
+            _is_similar = any(len(_title_words & set(t.lower().split())) >= 3 for t in used_topics)
+            if _is_similar:
+                seen.add(article["id"])
+                save_seen(seen, seen_images)
+                print(f"⏭️ 類似トピックをスキップ: {article['title'][:50]}")
+                continue
             seen.add(article["id"])
             save_seen(seen, seen_images)
             print(f"🔎 判定中 [8b]: {article['title'][:60]}")
@@ -854,6 +865,7 @@ def main():
             article_url = f"https://www.japan-truth.com/posts/{slug}"
             # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
             daily_count += 1
+            used_topics.append(article["title"])
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
             time.sleep(20)
