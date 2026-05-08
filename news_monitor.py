@@ -128,8 +128,9 @@ def screen_article(title, summary=""):
             if "error" in result:
                 if "rate_limit" in str(result["error"]):
                     msg = result["error"].get("message", "")
+                    print(f"⏳ レート制限エラー全文: {msg[:200]}")
                     remaining, reset_time = parse_rate_limit_msg(msg)
-                    print(f"⏳ レート制限 | 残り: {remaining:,}トークン | リセット: {reset_time}") if remaining is not None else print(f"⏳ レート制限 | リセット: {reset_time}")
+                    print(f"⏳ レート制限 | 残り: {remaining} | リセット: {reset_time}")
                     get_next_key()
                     continue
                 return False, ""
@@ -452,8 +453,9 @@ def summarize_article(title, content, category):
             if "error" in result:
                 if "rate_limit" in str(result["error"]):
                     msg = result["error"].get("message", "")
+                    print(f"⏳ レート制限エラー全文: {msg[:200]}")
                     remaining, reset_time = parse_rate_limit_msg(msg)
-                    print(f"⏳ レート制限 | 残り: {remaining:,}トークン | リセット: {reset_time}") if remaining is not None else print(f"⏳ レート制限 | リセット: {reset_time}")
+                    print(f"⏳ レート制限 | 残り: {remaining} | リセット: {reset_time}")
                     get_next_key()
                     continue
             text = result["choices"][0]["message"]["content"]
