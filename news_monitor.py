@@ -522,12 +522,8 @@ def _safe_replace(text, wrong, correct):
     )
 
 def _safe_proper_noun(text, wrong, correct):
-    """固有名詞の安全な置換（完全一致のみ）"""
-    return _re.sub(
-        rf'(?<![ァ-ンぁ-ん一-龥ー]){_re.escape(wrong)}(?![ァ-ンぁ-ん一-龥ー])',
-        correct,
-        text
-    )
+    """固有名詞の安全な置換"""
+    return text.replace(wrong, correct)
 
 def _process_value(value):
     """再帰的に文字列を処理（str/list/dict対応）"""
