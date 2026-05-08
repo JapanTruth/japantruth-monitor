@@ -477,7 +477,9 @@ def summarize_article(title, content, category):
             }
             return post_process_article(_article)
         except Exception as e:
+            import traceback
             print(f"⚠️ 試行{attempt+1}失敗: {type(e).__name__}: {e}")
+            traceback.print_exc()
             time.sleep(10)
     return None
 
