@@ -254,7 +254,10 @@ def summarize_article(title, content, category):
         "  (Exactly 3 sentences. No lists. No bullet points.\n"
         "   Sentence 1: BEGIN with specific number/company/country from source. Never: 同社/同国/同氏/この/その.\n"
         "   Sentence 2: Hidden context — policy inconsistency, historical contradiction, or corporate incentive. Must be specific.\n"
-        "   Sentence 3: ONE of: 〜が予想される / 〜と見られる / sharp reader question ending 〜はどう動くべきか / 〜はこのリスクに備えられているか / 〜はどこへ向かうのか)\n"
+        "   Sentence 3: ONE of these ONLY (rotate, never repeat same ending twice):\n"
+        "     〜が予想される / 〜と見られる / 〜は避けられない状況だ / 〜という判断は妥当だ\n"
+        "     〜はどう動くべきか / 〜はこのリスクに備えられているか / 〜という問いに答えが出ていない / 〜が試される局面だ\n"
+        "   NEVER: 〜はどこへ向かうのか / 〜方向性はどこへ / 〜はどこに向かうのか)\n"
     )
 
 
