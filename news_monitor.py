@@ -915,7 +915,7 @@ def main():
                 _recent_posts = _res.json() if isinstance(_res.json(), list) else []
                 _recent_titles = [p.get("title","") for p in _recent_posts]
                 _recent_urls = [p.get("source_url","") for p in _recent_posts]
-                _is_similar = (article["url"] in _recent_urls) or any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles)
+                _is_similar = (article["url"] in _recent_urls) or any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles) or any(article["url"] in (p.get("source_url","") or "") for p in _recent_posts)
             if _is_similar:
                 seen.add(article["id"])
                 save_seen(seen, seen_images)
