@@ -760,6 +760,7 @@ def main():
     tpd_used = 0
     last_keyword = ""
     last_date = datetime.now(JST).strftime("%Y-%m-%d")
+    used_topics = {}  # {title: datetime} 3時間以内の類似トピック管理
     seen, seen_images = load_seen()
 
     while True:
@@ -780,17 +781,19 @@ def main():
         # 全件チェック（最大10件）
 
         cycle_count = 0
-        used_topics = []
         for article in new_articles:
             if cycle_count >= 2:
                 break
-            # 類似トピックチェック
+            # 類似トピックチェック（3時間以内）
+            _now = datetime.now(JST)
             _title_words = set(article["title"].lower().split())
-            _is_similar = any(len(_title_words & set(t.lower().split())) >= 3 for t in used_topics)
+            _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).seconds < 10800}
+            used_topics = _recent
+            _is_similar = any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent)
             if _is_similar:
                 seen.add(article["id"])
                 save_seen(seen, seen_images)
-                print(f"⏭️ 類似トピックをスキップ: {article['title'][:50]}")
+                print(f"⏭️ 類似トピック（3時間以内）をスキップ: {article['title'][:50]}")
                 continue
             seen.add(article["id"])
             save_seen(seen, seen_images)
@@ -865,7 +868,7 @@ def main():
             article_url = f"https://www.japan-truth.com/posts/{slug}"
             # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
             daily_count += 1
-            used_topics.append(article["title"])
+            used_topics[article["title"]] = datetime.now(JST)
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
             time.sleep(20)
