@@ -815,7 +815,7 @@ def scrape_article(url):
         # 短すぎる場合は失敗扱い
         if len(full_text) < 300:
             return None
-        return full_text[:4000]
+        return full_text[:3500]
     except Exception as e:
         return None
 
@@ -914,8 +914,12 @@ def main():
                 _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=30", headers=_h, timeout=5)
                 _recent_posts = _res.json() if isinstance(_res.json(), list) else []
                 _recent_titles = [p.get("title","") for p in _recent_posts]
-                _recent_urls = [p.get("source_url","") for p in _recent_posts]
-                _is_similar = (article["url"] in _recent_urls) or any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles) or any(article["url"] in (p.get("source_url","") or "") for p in _recent_posts)
+                _recent_urls = [p.get("source_url","") or "" for p in _recent_posts]
+                # URLのクエリパラメータを除去して比較
+                import urllib.parse as _up
+                _article_url_base = _up.urlparse(article["url"])._replace(query="", fragment="").geturl()
+                _recent_urls_base = [_up.urlparse(u)._replace(query="", fragment="").geturl() for u in _recent_urls]
+                _is_similar = (_article_url_base in _recent_urls_base) or any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles)
             if _is_similar:
                 seen.add(article["id"])
                 save_seen(seen, seen_images)
