@@ -157,7 +157,7 @@ def summarize_article(title, content, category):
         "- Never fabricate. Never speculate beyond source. If information is insufficient, reduce output length rather than speculate.\n"
         "- Never use numbered lists or bullet points anywhere in the body text.\n"
         "- All newline characters inside JSON values MUST be escaped as \\n, never actual line breaks.\n"
-        "- CRITICAL translations: Modi=ナレンドラ・モディ, BJP=インド人民党（BJP）, TMC=全インド草の根会議派（TMC）, Fed=連邦準備制度（FRB）, Berkshire=バークシャー, Hantavirus=ハンタウイルス\n\n"
+        "- CRITICAL translations: Modi=ナレンドラ・モディ, BJP=インド人民党（BJP）, TMC=全インド草の根会議派（TMC）, Fed=連邦準備制度（FRB）, Berkshire=バークシャー, Hantavirus=ハンタウイルス, Elon Musk=イーロン・マスク, Mark Hamill=マーク・ハミル, Hakeem Jeffries=ハキーム・ジェフリーズ（下院民主党院内総務）, Political Commissar=政治委員（委員長ではない）, Pezeshkian=ペゼシュキアン, Mogami=もがみ型（固有名詞。最上級と訳さないこと）\n\n"
         "STRICTLY FORBIDDEN PHRASES — automatic failure if any appear:\n"
         "- 可能性がある / かもしれない / 見守る / 注視する / 検討する\n"
         "- 注目が集まる / 求められる / 懸念される / 期待が高まる / 重要性を示す\n"
@@ -450,10 +450,24 @@ import re as _re
 # 意味が変わる可能性のある禁止表現の置換はしない（プロンプトに任せる）
 
 PROPER_NOUN_FIXES = {
+    # ウイルス
     "ハンターバイラス": "ハンタウイルス",
     "ハンターウイルス": "ハンタウイルス",
+    # 政治家
     "ネラージュ・モディ": "ナレンドラ・モディ",
+    "エロン・マスク": "イーロン・マスク",
+    "マーカス・ハミル": "マーク・ハミル",
+    "ヘイキム・ジェフリー": "ハキーム・ジェフリーズ",
+    "モーセン・マダウィ": "モフセン・マダウィ",
+    "ペゼーシキアン": "ペゼシュキアン",
+    # 企業
     "ベルクシャー": "バークシャー",
+    # 役職
+    "上院民主党議長": "下院民主党院内総務",
+    "政治委員長": "政治委員",
+    # 艦艇・レース
+    "最上級護衛艦": "もがみ型護衛艦",
+    "ノースウェスト200マイルスーパー・バイクレース": "ノースウェスト200スーパーバイクレース",
 }
 
 # 禁止表現は意味変化リスクが低いものだけ最小限に絞る
