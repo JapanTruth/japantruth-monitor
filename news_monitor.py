@@ -303,7 +303,9 @@ def summarize_article(title, content, category):
                 "tokens_input": result.get("usage", {}).get("prompt_tokens", 0),
                 "tokens_output": result.get("usage", {}).get("completion_tokens", 0),
             }
-            return post_process_article(_article)
+            _processed = post_process_article(_article)
+            _processed = verify_and_fix_proper_nouns(title, _processed)
+            return _processed
         except Exception as e:
             import traceback
             print(f"⚠️ 試行{attempt+1}失敗: {type(e).__name__}: {e}")
@@ -546,6 +548,66 @@ def _process_value(value):
 def post_process_article(result):
     """生成された記事の後処理（最小限のセーフティネット）"""
     return {k: _process_value(v) for k, v in result.items()}
+
+def verify_and_fix_proper_nouns(source_title, result):
+    """8bモデルで固有名詞の誤訳をチェック・修正"""
+    import requests as _req
+    title_jp = result.get("title", "")
+    body_jp = result.get("body", "")[:800]
+
+    prompt = (
+        f"Source English title: {source_title}\n"
+        f"Japanese title: {title_jp}\n"
+        f"Japanese body (first 800 chars): {body_jp}\n\n"
+        f"Find ONLY clearly wrong transliterations of person names, organization names, or medical terms.\n"
+        f"Common errors to check: Hantavirus(ハンタウイルス), Anthropic(アンソロピック), "
+        f"Nigel Farage(ナイジェル・ファラージュ), names ending in wrong katakana.\n"
+        f"If you find errors, respond ONLY in this format (one per line):\n"
+        f"FIX: [wrong]|[correct]\n"
+        f"If no errors, respond: OK"
+    )
+
+    for key in GROQ_API_KEYS:
+        if not key:
+            continue
+        try:
+            res = _req.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json={
+                    "model": "llama-3.1-8b-instant",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 200,
+                    "temperature": 0
+                },
+                timeout=10
+            )
+            data = res.json()
+            if "error" in data:
+                continue
+            response = data["choices"][0]["message"]["content"].strip()
+            if response == "OK":
+                return result
+            fixes = {}
+            for line in response.split("\n"):
+                if line.startswith("FIX:") and "|" in line:
+                    parts = line[4:].strip().split("|")
+                    if len(parts) == 2:
+                        wrong, correct = parts[0].strip(), parts[1].strip()
+                        if wrong and correct and wrong != correct:
+                            fixes[wrong] = correct
+            if fixes:
+                print(f"🔧 固有名詞修正: {fixes}")
+                for k, v in result.items():
+                    if isinstance(v, str):
+                        for wrong, correct in fixes.items():
+                            v = v.replace(wrong, correct)
+                        result[k] = v
+            return result
+        except Exception as e:
+            print(f"⚠️ 固有名詞チェックエラー: {e}")
+            continue
+    return result
 
 
 
