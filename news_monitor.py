@@ -977,7 +977,7 @@ def collect_new_articles(seen):
                 summary = getattr(entry, "summary", entry.title)
                 if len(summary) < 100:
                     continue
-                if article_id not in seen and article.get("url","") not in seen:
+                if article_id not in seen and url not in seen:
                     new_articles.append({
                         "id": article_id,
                         "title": entry.title,
