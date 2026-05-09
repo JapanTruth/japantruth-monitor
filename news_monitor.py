@@ -978,7 +978,16 @@ def collect_new_articles(seen):
                 summary = getattr(entry, "summary", entry.title)
                 if len(summary) < 100:
                     continue
-                if article_id not in seen and url not in seen:
+                # 同じドメインからの類似記事チェック
+                import urllib.parse as _urlp
+                _domain = _urlp.urlparse(url).netloc
+                _domain_recent = [p for p in _recent_posts if _domain in (p.get("source_url","") or "")]
+                _domain_title_words = set(w for w in entry.title.lower().split() if w not in {"the","a","an","of","in","on","at","to","for","and","or","is","are","was"} and len(w) > 3)
+                _domain_similar = any(
+                    len(_domain_title_words & set(w for w in (p.get("title","") or "").lower().split() if len(w) > 3)) >= 2
+                    for p in _domain_recent
+                )
+                if article_id not in seen and url not in seen and not _domain_similar:
                     new_articles.append({
                         "id": article_id,
                         "title": entry.title,
