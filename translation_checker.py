@@ -119,6 +119,7 @@ print('=' * 50)
 
 import re as _re
 cyrillic_pattern = _re.compile(r'[А-Яа-яЁёІіЇїЄєҐґ]+')
+hangul_pattern = _re.compile(r'[가-힣ㄱ-ㅎㅏ-ㅣ]+')
 
 cyrillic_issues = []
 for post in posts:
@@ -127,19 +128,25 @@ for post in posts:
     body = post.get('body', '') or ''
     excerpt = post.get('excerpt', '') or ''
     full_text = title + body + excerpt
-    matches = cyrillic_pattern.findall(full_text)
-    if matches:
+    c_matches = cyrillic_pattern.findall(full_text)
+    h_matches = hangul_pattern.findall(full_text)
+    if c_matches or h_matches:
         cyrillic_issues.append({
             'slug': slug,
             'title': title,
-            'matches': list(set(matches))[:5],
+            'cyrillic': list(set(c_matches))[:3],
+            'hangul': list(set(h_matches))[:3],
             'url': f'https://www.japan-truth.com/posts/{slug}'
         })
-        print(f'🔴 キリル文字検出: {title[:40]}')
-        print(f'   検出文字: {list(set(matches))[:5]}')
+        if c_matches:
+            print(f'🔴 キリル文字検出: {title[:40]}')
+            print(f'   検出: {list(set(c_matches))[:3]}')
+        if h_matches:
+            print(f'🔴 ハングル検出: {title[:40]}')
+            print(f'   検出: {list(set(h_matches))[:3]}')
 
 if not cyrillic_issues:
-    print('✅ キリル文字なし')
+    print('✅ キリル文字・ハングルなし')
 
 # =============================
 # 3. 既知誤訳パターンチェック
