@@ -355,6 +355,11 @@ def summarize_article(title, content, category):
             _processed = post_process_article(_article)
             # verify_and_fix_proper_nouns は逆修正のリスクがあるため無効化
             # _processed = verify_and_fix_proper_nouns(title, _processed)
+            _score, _reasons = score_article(_processed)
+            print(f"📊 記事品質スコア: {_score}/10" + (f" | {chr(39).join(_reasons)}" if _reasons else " | 問題なし"))
+            if _score < 5:
+                print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
+                return None
             return _processed
         except Exception as e:
             import traceback
