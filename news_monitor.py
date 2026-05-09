@@ -930,7 +930,8 @@ def main():
                      "as","by","with","from","that","this","it","be","has","have","had",
                      "and","or","but","not","will","says","say","said","after","over",
                      "new","us","its","their","his","her","s","how","why","what","who"}
-            _title_words = set(w for w in article["title"].lower().split() if w not in _stop and len(w) > 2)
+            _title_norm = article["title"].lower().replace("three-day","3-day").replace("three day","3 day")
+            _title_words = set(w for w in _title_norm.split() if w not in _stop and len(w) > 2)
             _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).total_seconds() < 10800}
             used_topics = _recent
             _is_similar = any(len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2 for t in _recent)
