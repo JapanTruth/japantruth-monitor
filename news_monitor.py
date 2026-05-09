@@ -925,25 +925,33 @@ def main():
                 break
             # 類似トピックチェック（Supabaseで過去3時間の記事と比較）
             _now = datetime.now(JST)
-            _title_words = set(article["title"].lower().split())
+            # ストップワードを除外してコアキーワードで比較
+            _stop = {"the","a","an","of","in","on","at","to","for","is","are","was","were",
+                     "as","by","with","from","that","this","it","be","has","have","had",
+                     "and","or","but","not","will","says","say","said","after","over",
+                     "new","us","its","their","his","her","s","how","why","what","who"}
+            _title_words = set(w for w in article["title"].lower().split() if w not in _stop and len(w) > 2)
             _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).total_seconds() < 10800}
             used_topics = _recent
-            _is_similar = any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent)
+            _is_similar = any(len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2 for t in _recent)
             if not _is_similar:
                 import requests as _rq
                 _sb_url = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
                 _sb_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
                 _h = {"apikey": _sb_key, "Authorization": f"Bearer {_sb_key}"}
-                _cutoff = (_now - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+                _cutoff = (_now - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S")
                 _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=100", headers=_h, timeout=5)
                 _recent_posts = _res.json() if isinstance(_res.json(), list) else []
                 _recent_titles = [p.get("title","") for p in _recent_posts]
                 _recent_urls = [p.get("source_url","") or "" for p in _recent_posts]
-                # URLのクエリパラメータを除去して比較
                 import urllib.parse as _up
                 _article_url_base = _up.urlparse(article["url"])._replace(query="", fragment="").geturl()
                 _recent_urls_base = [_up.urlparse(u)._replace(query="", fragment="").geturl() for u in _recent_urls]
-                _is_similar = (_article_url_base in _recent_urls_base) or any(len(_title_words & set(t.lower().split())) >= 3 for t in _recent_titles)
+                # 日本語タイトルでも比較（生成済みタイトルと照合）
+                _is_similar = (_article_url_base in _recent_urls_base) or any(
+                    len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
+                    for t in _recent_titles
+                )
             if _is_similar:
                 seen.add(article["id"])
                 save_seen(seen, seen_images)
