@@ -61,6 +61,12 @@ for i, post in enumerate(posts):
         )
         result = res2.json()
         if "error" in result:
+            err_msg = str(result['error'])
+            if 'rate_limit' in err_msg:
+                key = GROQ_API_KEYS[(GROQ_API_KEYS.index(key) + 1) % len(GROQ_API_KEYS)]
+                print(f"⏳ レート制限 → キー切り替え")
+                time.sleep(3)
+                continue
             print(f"⚠️ APIエラー: {result['error']}")
             time.sleep(2)
             continue
