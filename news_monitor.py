@@ -671,6 +671,51 @@ def post_process_article(result):
     """生成された記事の後処理（最小限のセーフティネット）"""
     return {k: _process_value(v) for k, v in result.items()}
 
+def score_article(result):
+    """記事品質スコアリング（0-10点）低品質記事を弾く"""
+    score = 10
+    reasons = []
+    title = result.get("title", "") or ""
+    body = result.get("body", "") or ""
+    excerpt = result.get("excerpt", "") or ""
+
+    # タイトルチェック
+    if len(title) < 10:
+        score -= 3
+        reasons.append("タイトルが短すぎる")
+    if not any(c.isdigit() or '一' <= c <= '鿿' or '゠' <= c <= 'ヿ' for c in title):
+        score -= 2
+        reasons.append("タイトルに固有情報なし")
+
+    # 禁止ワードチェック
+    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる"]
+    found = [w for w in forbidden if w in body]
+    if found:
+        score -= len(found)
+        reasons.append(f"禁止ワード: {', '.join(found[:3])}")
+
+    # bodyの長さチェック
+    if len(body) < 200:
+        score -= 3
+        reasons.append("本文が短すぎる")
+
+    # JapanTruthの視点チェック
+    if "JapanTruthの視点" not in body:
+        score -= 2
+        reasons.append("JapanTruthの視点なし")
+
+    # excerptチェック
+    if len(excerpt) < 20:
+        score -= 1
+        reasons.append("excerptが短すぎる")
+    bad_excerpts = ["が発表された", "が明らかになった", "が行われた", "が報じられた"]
+    if any(w in excerpt for w in bad_excerpts):
+        score -= 1
+        reasons.append("excerptが平凡")
+
+    score = max(0, score)
+    return score, reasons
+
 def verify_and_fix_proper_nouns(source_title, result):
     """8bモデルで固有名詞の誤訳をチェック・修正"""
     import requests as _req
