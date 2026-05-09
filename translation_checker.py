@@ -257,7 +257,7 @@ for post in posts[:10]:
     src_numbers = set(re.findall(r'\d+(?:,\d+)*(?:\.\d+)?', source_text))
 
     # 日本語記事にあってソースにない数字（4桁以上の数字は年として除外）
-    suspicious = {n for n in jp_numbers - src_numbers if len(n) != 4 and int(n.replace(',','')) > 100}
+    suspicious = {n for n in jp_numbers - src_numbers if len(n) != 4 and n.replace(',','').replace('.','').isdigit() and int(n.replace(',','').split('.')[0]) > 100}
 
     if suspicious:
         source_mismatch_issues.append({
