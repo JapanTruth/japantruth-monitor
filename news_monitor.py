@@ -65,6 +65,9 @@ RSS_FEEDS = [
     # 文化
     {"url": "https://www.theguardian.com/culture/rss", "category": "culture", "source": "The Guardian"},
     {"url": "https://www.theatlantic.com/feed/all/", "category": "culture", "source": "The Atlantic"},
+    {"url": "https://www.channelnewsasia.com/rssfeeds/8395884", "category": "international", "source": "Channel News Asia"},
+    {"url": "https://foreignpolicy.com/feed", "category": "politics", "source": "Foreign Policy"},
+    {"url": "https://www.middleeasteye.net/rss", "category": "international", "source": "Middle East Eye"},
 ]
 
 def load_seen():
