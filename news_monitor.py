@@ -202,10 +202,10 @@ def summarize_article(title, content, category):
         "  Must be one of: policy inconsistency, historical precedent contradiction, corporate incentive, or geopolitical subtext.\n"
         "  Must cite a specific fact. Never vague.\n"
         "Sentence 3 — SHARP CONCLUSION (vary across articles, do not always use same ending):\n"
-        "  If facts support conclusion: 〜が予想される / 〜と見られる / 〜は避けられない状況だ / 〜という判断は妥当だ\n"
-        "  If facts do not support conclusion: question ending 〜はどう動くべきか / 〜はこのリスクに備えられているか / 〜はどこへ向かうのか / 〜という問いに答えが出ていない\n"
-        "  NEVER use the same ending as the previous article. Never end with abstract philosophical statement. Never repeat sentence 1 or 2.\n"
-        "  BANNED ENDINGS: 〜はどこへ向かうのか / 〜はどこに向かうのか / 〜方向性はどこへ / 英国政治はどこへ / 日本はどこへ\n\n"
+        "  If facts support conclusion: 〜が予想される / 〜と見られる / 〜という判断は妥当だ / 〜が試される局面だ\n"
+        "  If facts do not support conclusion: 〜はどう動くべきか / 〜はこのリスクに備えられているか / 〜という問いに答えが出ていない\n"
+        "  NEVER use the same ending twice in a row. Never end with abstract statement.\n"
+        "  STRICTLY BANNED: 〜はどこへ向かうのか / 避けられない / 直結する / 〜とされる / 〜といわれる\n\n"
         "CATEGORY-SPECIFIC RULES:\n"
         "- politics: elections, government policy, diplomacy, military, security — NOT financial markets\n"
         "- economy: GDP, employment, trade volume, corporate earnings, inflation, industry — NOT stock prices\n"
@@ -572,12 +572,8 @@ FORBIDDEN_REPLACEMENTS = {
 }
 
 def _safe_replace(text, wrong, correct):
-    """日本語対応の安全な置換（前後の文字を確認）"""
-    return _re.sub(
-        rf'(?<![ァ-ンぁ-ん一-龥ー]){_re.escape(wrong)}(?![ァ-ンぁ-ん一-龥ー])',
-        correct,
-        text
-    )
+    """禁止表現の安全な置換"""
+    return text.replace(wrong, correct)
 
 def _safe_proper_noun(text, wrong, correct):
     """固有名詞の安全な置換"""
@@ -999,6 +995,8 @@ def main():
             # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
+            if result and result.get("title"):
+                used_topics[result["title"]] = datetime.now(JST)
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
             time.sleep(20)
