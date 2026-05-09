@@ -1061,6 +1061,41 @@ def main():
                 len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
                 for t in _recent_titles
             )
+
+            # ① トピッククラスタリング：固有名詞2語一致でスキップ（6時間以内）
+            if not _is_similar:
+                _cutoff6h = (_now - timedelta(hours=6)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                _res6h = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff6h}&order=created_at.desc&limit=200", headers=_h, timeout=5)
+                _posts6h = _res6h.json() if isinstance(_res6h.json(), list) else []
+                _proper_nouns = set(w for w in _title_words if w[0].isupper() or len(w) >= 5)
+                for _p6h in _posts6h:
+                    _pt = (_p6h.get("title","") or "").lower()
+                    _pt_words = set(w for w in _pt.split() if w not in _stop and len(w) > 2)
+                    _common_proper = _proper_nouns & _pt_words
+                    if len(_common_proper) >= 2:
+                        _is_similar = True
+                        print(f"⏭️ トピック一致（6時間）: {list(_common_proper)[:3]}")
+                        break
+
+            # ③ 生成済み日本語タイトルでも比較（6時間以内）
+            if not _is_similar:
+                _jp_recent = [p.get("title","") or "" for p in _posts6h]
+                _is_similar = any(
+                    len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
+                    for t in _jp_recent
+                )
+
+            # ④ カテゴリ×キーワード組み合わせ（2時間以内）
+            if not _is_similar:
+                _cutoff2h = (_now - timedelta(hours=2)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                _res2h = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,tags,categories&created_at=gte.{_cutoff2h}&categories=eq.{article['category']}&limit=50", headers=_h, timeout=5)
+                _posts2h = _res2h.json() if isinstance(_res2h.json(), list) else []
+                for _p2h in _posts2h:
+                    _pt_words = set(w for w in (_p2h.get("title","") or "").lower().split() if w not in _stop and len(w) > 3)
+                    if len(_title_words & _pt_words) >= 2:
+                        _is_similar = True
+                        print(f"⏭️ 同カテゴリ類似（2時間）: {article['category']}")
+                        break
             if _is_similar:
                 # 3時間以内は完全スキップ、3〜6時間は続報として掲載
                 _age_hours = 0
