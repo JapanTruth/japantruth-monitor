@@ -79,7 +79,7 @@ for i, post in enumerate(posts):
         else:
             print(f"✅ OK: {slug[:40]}")
 
-        time.sleep(1)
+        time.sleep(2)
 
     except Exception as e:
         print(f"⚠️ エラー: {e}")
