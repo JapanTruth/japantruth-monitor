@@ -110,6 +110,38 @@ if not forbidden_issues:
     print("✅ 禁止ワードなし")
 
 # =============================
+# 2.5 キリル文字混入チェック
+# =============================
+print(f"
+{'=' * 50}")
+print('🔤 キリル文字混入チェック')
+print('=' * 50)
+
+import re as _re
+cyrillic_pattern = _re.compile(r'[А-Яа-яЁёІіЇїЄєҐґ]+')
+
+cyrillic_issues = []
+for post in posts:
+    slug = post.get('slug', '')
+    title = post.get('title', '') or ''
+    body = post.get('body', '') or ''
+    excerpt = post.get('excerpt', '') or ''
+    full_text = title + body + excerpt
+    matches = cyrillic_pattern.findall(full_text)
+    if matches:
+        cyrillic_issues.append({
+            'slug': slug,
+            'title': title,
+            'matches': list(set(matches))[:5],
+            'url': f'https://www.japan-truth.com/posts/{slug}'
+        })
+        print(f'🔴 キリル文字検出: {title[:40]}')
+        print(f'   検出文字: {list(set(matches))[:5]}')
+
+if not cyrillic_issues:
+    print('✅ キリル文字なし')
+
+# =============================
 # 3. 既知誤訳パターンチェック
 # =============================
 print(f"\n{'=' * 50}")
@@ -238,6 +270,7 @@ with open("translation_check_result.json", "w", encoding="utf-8") as f:
         "checked": len(posts),
         "duplicates": duplicates,
         "forbidden_issues": forbidden_issues,
+        "cyrillic_issues": cyrillic_issues,
         "known_issues": known_issues,
         "translation_issues": translation_issues,
     }, f, ensure_ascii=False, indent=2)
