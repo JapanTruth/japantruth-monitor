@@ -1,4 +1,4 @@
-import os, requests, json, time
+import os, requests, json, time, re
 
 SUPABASE_URL = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
@@ -7,6 +7,13 @@ GROQ_API_KEYS = [
     os.environ.get("GROQ_API_KEY_2", ""),
     os.environ.get("GROQ_API_KEY_3", ""),
 ]
+key_index = 0
+
+def get_key():
+    global key_index
+    k = GROQ_API_KEYS[key_index % 3]
+    key_index += 1
+    return k
 
 headers_sb = {
     "apikey": SUPABASE_KEY,
@@ -15,94 +22,224 @@ headers_sb = {
 }
 
 res = requests.get(
-    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt&order=date.desc&limit=100",
+    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt,source_url&order=date.desc&limit=100",
     headers=headers_sb
 )
 posts = res.json()
-print(f"✅ 取得完了: {len(posts)}件をスキャン")
+print(f"✅ 取得完了: {len(posts)}件をスキャン\n")
 
-issues = []
+# =============================
+# 1. 重複記事チェック
+# =============================
+print("=" * 50)
+print("📋 重複記事チェック")
+print("=" * 50)
+
+url_seen = {}
+title_seen = {}
+duplicates = []
+
+for post in posts:
+    slug = post.get("slug", "")
+    title = post.get("title", "") or ""
+    url = post.get("source_url", "") or ""
+    url_base = re.sub(r'[?#].*$', '', url)
+
+    if url_base and url_base in url_seen:
+        duplicates.append({
+            "type": "URL重複",
+            "slug1": url_seen[url_base],
+            "slug2": slug,
+            "title": title,
+        })
+        print(f"🔴 URL重複: {slug[:50]}")
+        print(f"   重複元: {url_seen[url_base][:50]}")
+    elif url_base:
+        url_seen[url_base] = slug
+
+    title_words = set(title.split())
+    for prev_title, prev_slug in list(title_seen.items()):
+        prev_words = set(prev_title.split())
+        if len(title_words & prev_words) >= 4 and slug != prev_slug:
+            duplicates.append({
+                "type": "タイトル類似",
+                "slug1": prev_slug,
+                "slug2": slug,
+                "title": title,
+            })
+            print(f"🟡 タイトル類似: {title[:40]}")
+            print(f"   類似元: {prev_title[:40]}")
+            break
+    title_seen[title] = slug
+
+if not duplicates:
+    print("✅ 重複なし")
+
+# =============================
+# 2. 禁止ワードチェック
+# =============================
+print(f"\n{'=' * 50}")
+print("🚫 禁止ワードチェック")
+print("=" * 50)
+
+FORBIDDEN = [
+    "可能性がある", "かもしれない", "見守る", "注視する",
+    "注目が集まる", "懸念される", "期待が高まる",
+    "避けられない", "直結する", "国際社会", "国際秩序",
+    "グローバル市場", "どこへ向かうのか", "どこに向かうのか",
+    "とされる", "といわれる",
+]
+
+forbidden_issues = []
+for post in posts:
+    slug = post.get("slug", "")
+    title = post.get("title", "") or ""
+    body = post.get("body", "") or ""
+    found = [w for w in FORBIDDEN if w in body or w in title]
+    if found:
+        forbidden_issues.append({
+            "slug": slug,
+            "title": title,
+            "found": found,
+            "url": f"https://www.japan-truth.com/posts/{slug}"
+        })
+        print(f"🚫 {title[:40]}")
+        print(f"   検出: {', '.join(found)}")
+
+if not forbidden_issues:
+    print("✅ 禁止ワードなし")
+
+# =============================
+# 3. 既知誤訳パターンチェック
+# =============================
+print(f"\n{'=' * 50}")
+print("📖 既知誤訳パターンチェック（PROPER_NOUN_FIXES）")
+print("=" * 50)
+
+try:
+    _code = open("news_monitor.py").read()
+    _start = _code.index("PROPER_NOUN_FIXES = {")
+    _end = _code.index("\n}", _start) + 2
+    exec(_code[_start:_end])
+    print(f"✅ {len(PROPER_NOUN_FIXES)}パターン読み込み完了")
+except Exception as e:
+    print(f"⚠️ 読み込み失敗: {e}")
+    PROPER_NOUN_FIXES = {}
+
+known_issues = []
+for post in posts:
+    slug = post.get("slug", "")
+    title = post.get("title", "") or ""
+    body = post.get("body", "") or ""
+    excerpt = post.get("excerpt", "") or ""
+    full_text = title + body + excerpt
+    found = {wrong: correct for wrong, correct in PROPER_NOUN_FIXES.items() if wrong in full_text}
+    if found:
+        known_issues.append({
+            "slug": slug,
+            "title": title,
+            "fixes": found,
+            "url": f"https://www.japan-truth.com/posts/{slug}"
+        })
+        print(f"🔴 {title[:40]}")
+        for w, c in found.items():
+            print(f"   「{w}」→「{c}」")
+
+if not known_issues:
+    print("✅ 既知誤訳なし")
+
+# =============================
+# 4. AI誤訳チェック（補助）
+# =============================
+print(f"\n{'=' * 50}")
+print("🔍 AI誤訳チェック（補助）")
+print("=" * 50)
+
+translation_issues = []
 
 for i, post in enumerate(posts):
     slug = post.get("slug", "")
-    title_jp = post.get("title", "")
-    body = post.get("body", "")[:1000]
-    source_title = slug.replace("-", " ").strip()
+    title_jp = post.get("title", "") or ""
+    body = post.get("body", "")[:600]
+    source_title = re.sub(r'^\d{4}-\d{2}-\d{2}-\d{6}-', '', slug).replace("-", " ")
 
     prompt = (
-        f"You are a Japanese translation quality checker.\n"
-        f"Source (English slug): {source_title}\n"
+        f"Japanese translation quality check.\n"
+        f"English source: {source_title}\n"
         f"Japanese title: {title_jp}\n"
-        f"Japanese body (first 1000 chars): {body}\n\n"
-        f"Check for these specific issues:\n"
-        f"1. Person names that appear to be mistransliterated (wrong katakana)\n"
-        f"2. Role/title mistranslations (e.g. Senate vs House confusion)\n"
-        f"3. Legal term errors (e.g. 'pleads guilty' mistranslated as 起訴)\n"
-        f"4. Organization names that seem wrong\n"
-        f"5. Any English words left untranslated\n\n"
-        f"If you find issues, respond in this exact format:\n"
-        f"ISSUE: [wrong text] -> [correct text] | reason\n"
-        f"If no issues found, respond with: OK\n"
-        f"Be strict but only flag clear errors, not style differences."
+        f"Japanese body: {body}\n\n"
+        f"Flag ONLY clear errors:\n"
+        f"1. Person names with clearly wrong katakana\n"
+        f"2. Senate/House confusion\n"
+        f"3. pleads guilty mistranslated as 起訴\n"
+        f"4. English in brackets like [Name] still remaining\n\n"
+        f"Format: FIX: [wrong] -> [correct] | reason\n"
+        f"If nothing wrong: OK\n"
+        f"Max 2 issues."
     )
 
-    key = GROQ_API_KEYS[i % 3]
-    try:
-        res2 = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-            json={
-                "model": "llama-3.1-8b-instant",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 200,
-                "temperature": 0
-            },
-            timeout=15
-        )
-        result = res2.json()
-        if "error" in result:
-            err_msg = str(result['error'])
-            if 'rate_limit' in err_msg:
-                key = GROQ_API_KEYS[(GROQ_API_KEYS.index(key) + 1) % len(GROQ_API_KEYS)]
-                print(f"⏳ レート制限 → キー切り替え")
-                time.sleep(3)
-                continue
-            print(f"⚠️ APIエラー: {result['error']}")
-            time.sleep(2)
-            continue
+    key = get_key()
+    for attempt in range(3):
+        try:
+            res2 = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json={
+                    "model": "llama-3.1-8b-instant",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 120,
+                    "temperature": 0
+                },
+                timeout=15
+            )
+            result = res2.json()
+            if "error" in result:
+                if "rate_limit" in str(result["error"]):
+                    key = GROQ_API_KEYS[(key_index) % 3]
+                    key_index += 1
+                    print(f"⏳ レート制限 → キー切り替え")
+                    time.sleep(5)
+                    continue
+                break
 
-        response = result["choices"][0]["message"]["content"].strip()
+            response = result["choices"][0]["message"]["content"].strip()
+            if response != "OK" and "FIX:" in response:
+                translation_issues.append({
+                    "slug": slug,
+                    "title": title_jp,
+                    "issues": response,
+                    "url": f"https://www.japan-truth.com/posts/{slug}"
+                })
+                print(f"🚨 {slug[:40]}")
+                print(f"   {response[:120]}")
+            else:
+                print(f"✅ OK: {slug[:40]}")
+            break
 
-        if response != "OK" and "ISSUE:" in response:
-            issues.append({
-                "slug": slug,
-                "title": title_jp,
-                "issues": response,
-                "url": f"https://www.japan-truth.com/posts/{slug}"
-            })
-            print(f"🚨 問題検出: {slug[:40]}")
-            print(f"   {response[:200]}")
-        else:
-            print(f"✅ OK: {slug[:40]}")
+        except Exception as e:
+            print(f"⚠️ エラー: {e}")
+            break
 
-        time.sleep(2)
+    time.sleep(2)
 
-    except Exception as e:
-        print(f"⚠️ エラー: {e}")
-        time.sleep(2)
-
-print(f"\n{'='*50}")
-print(f"📊 スキャン完了: {len(posts)}件中 {len(issues)}件に問題の可能性")
-print(f"{'='*50}")
-
-if issues:
-    print("\n🚨 要確認リスト:")
-    for item in issues:
-        print(f"\n📰 {item['title']}")
-        print(f"   URL: {item['url']}")
-        print(f"   {item['issues']}")
+# =============================
+# サマリー
+# =============================
+print(f"\n{'=' * 50}")
+print(f"📊 スキャン完了: {len(posts)}件")
+print(f"  🔴 重複記事:    {len(duplicates)}件")
+print(f"  🚫 禁止ワード:  {len(forbidden_issues)}件")
+print(f"  📖 既知誤訳:    {len(known_issues)}件")
+print(f"  🚨 AI誤訳疑い: {len(translation_issues)}件")
+print("=" * 50)
 
 with open("translation_check_result.json", "w", encoding="utf-8") as f:
-    json.dump({"checked": len(posts), "issues_count": len(issues), "issues": issues}, f, ensure_ascii=False, indent=2)
+    json.dump({
+        "checked": len(posts),
+        "duplicates": duplicates,
+        "forbidden_issues": forbidden_issues,
+        "known_issues": known_issues,
+        "translation_issues": translation_issues,
+    }, f, ensure_ascii=False, indent=2)
 
 print("\n✅ 結果をtranslation_check_result.jsonに保存")
