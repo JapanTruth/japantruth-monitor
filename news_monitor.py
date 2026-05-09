@@ -169,6 +169,8 @@ def summarize_article(title, content, category):
         "- Senate Majority/Minority Leader=上院多数党/少数党院内総務\n"
         "- Secretary of State=国務長官（外務大臣ではない）\n"
         "- Kyiv=キーウ（キエフは誤り）\n"
+        "- Hantavirus=ハンタウイルス（ハンターバイラス・ハンタナウス・ハンターウイルスは全て誤り）\n"
+        "- GameStop=ゲームストップ（ゲーマーストップは誤り）\n"
         "- Attorney General=司法長官（検事総長ではない）\n"
         "- Chief of Staff=首席補佐官\n"
         "- National Security Advisor=国家安全保障担当大統領補佐官\n"
