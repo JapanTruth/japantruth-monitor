@@ -112,10 +112,9 @@ if not forbidden_issues:
 # =============================
 # 2.5 キリル文字混入チェック
 # =============================
-print(f"
-{'=' * 50}")
-print('🔤 キリル文字混入チェック')
-print('=' * 50)
+print("=" * 50)
+print("🔤 キリル文字・ハングル混入チェック")
+print("=" * 50)
 
 import re as _re
 cyrillic_pattern = _re.compile(r'[А-Яа-яЁёІіЇїЄєҐґ]+')
