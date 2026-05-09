@@ -373,6 +373,41 @@ if new_proper_noun_suggestions:
     for s in new_proper_noun_suggestions:
         print(f"  {s}")
 
+# PROPER_NOUN_FIXESに自動追加（FIX:形式のみ）
+auto_added = []
+try:
+    nm_content = open("news_monitor.py").read()
+    for suggestion in new_proper_noun_suggestions:
+        # "FIX: [wrong] -> [correct] | reason" 形式を解析
+        match = re.search(r'FIX:\s*([^->]+?)\s*->\s*([^|]+?)(?:\s*\|.*)?$', suggestion)
+        if not match:
+            continue
+        wrong = match.group(1).strip()
+        correct = match.group(2).strip()
+        # 既に登録済みならスキップ
+        if wrong in nm_content or len(wrong) < 3 or len(correct) < 3:
+            continue
+        # PROPER_NOUN_FIXESに追加
+        insert_line = '    "カシュ・パテル": "カッシュ・パテル",'
+        new_line = f'    "{wrong}": "{correct}",'
+        nm_content = nm_content.replace(insert_line, insert_line + "\n" + new_line)
+        auto_added.append(f"{wrong} → {correct}")
+    
+    if auto_added:
+        open("news_monitor.py", "w").write(nm_content)
+        import ast
+        ast.parse(nm_content)
+        print(f"\n✅ PROPER_NOUN_FIXESに{len(auto_added)}件自動追加:")
+        for a in auto_added:
+            print(f"  {a}")
+        # Gitコミット
+        import subprocess
+        subprocess.run(["git", "add", "news_monitor.py"], cwd=".")
+        subprocess.run(["git", "commit", "-m", f"fix: translation_checkerが{len(auto_added)}件の誤訳パターンを自動追加"], cwd=".")
+        subprocess.run(["git", "push", "origin", "main"], cwd=".")
+except Exception as e:
+    print(f"⚠️ 自動追加失敗: {e}")
+
 # =============================
 # 5.5 excerpt品質チェック＋自動再生成
 # =============================
