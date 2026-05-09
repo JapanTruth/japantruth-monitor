@@ -68,18 +68,44 @@ RSS_FEEDS = [
 ]
 
 def load_seen():
-    if os.path.exists(SEEN_FILE):
-        with open(SEEN_FILE) as f:
-            data = json.load(f)
-            if isinstance(data, dict):
-                return set(data.get("articles", [])), set(data.get("images", []))
-            return set(data), set()
-    return set(), set()
+    """Supabaseから過去7日間の掲載済みURLを取得してseenセットを構築"""
+    seen = set()
+    seen_images = set()
+    try:
+        import requests as _rq
+        from datetime import datetime, timezone, timedelta
+        _sb_url = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
+        _sb_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
+        _h = {"apikey": _sb_key, "Authorization": f"Bearer {_sb_key}"}
+        _cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        _res = _rq.get(
+            f"{_sb_url}/rest/v1/posts?select=source_url,slug&created_at=gte.{_cutoff}&limit=1000",
+            headers=_h, timeout=10
+        )
+        for p in _res.json():
+            if p.get("source_url"):
+                seen.add(p["source_url"])
+            if p.get("slug"):
+                seen.add(p["slug"])
+        print(f"✅ Supabaseから{len(seen)}件の既掲載記事を読み込み")
+    except Exception as e:
+        print(f"⚠️ Supabase読み込み失敗: {e}")
+        # フォールバック: seen_articles.jsonから読み込み
+        if os.path.exists(SEEN_FILE):
+            with open(SEEN_FILE) as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    seen = set(data.get("articles", []))
+                    seen_images = set(data.get("images", []))
+    return seen, seen_images
 
 def save_seen(seen, seen_images):
-    with open(SEEN_FILE, "w") as f:
-        json.dump({"articles": list(seen)[-500:], "images": list(seen_images)[-200:]}, f)
-    print("✅ seen_articles.json保存完了")
+    """seen_imagesのみローカル保存（記事IDはSupabaseで管理）"""
+    try:
+        with open(SEEN_FILE, "w") as f:
+            json.dump({"articles": [], "images": list(seen_images)[-200:]}, f)
+    except Exception as e:
+        print(f"⚠️ seen保存失敗: {e}")
 
 
 def parse_rate_limit_msg(msg):
@@ -898,7 +924,7 @@ def collect_new_articles(seen):
                 summary = getattr(entry, "summary", entry.title)
                 if len(summary) < 100:
                     continue
-                if article_id not in seen:
+                if article_id not in seen and article.get("url","") not in seen:
                     new_articles.append({
                         "id": article_id,
                         "title": entry.title,
