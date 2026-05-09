@@ -1052,10 +1052,21 @@ def main():
                 for t in _recent_titles
             )
             if _is_similar:
-                seen.add(article["id"])
-                save_seen(seen, seen_images)
-                print(f"⏭️ 類似トピック（3時間以内）をスキップ: {article['title'][:50]}")
-                continue
+                # 3時間以内は完全スキップ、3〜6時間は続報として掲載
+                _age_hours = 0
+                for _recent_post in _recent_posts:
+                    _ru = _up.urlparse(_recent_post.get("source_url","") or "")._replace(query="", fragment="").geturl()
+                    if _ru == _article_url_base:
+                        _age_hours = 99  # 同一URL→完全スキップ
+                        break
+                if _age_hours >= 99 or (_now - timedelta(hours=3)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") > _cutoff:
+                    seen.add(article["id"])
+                    save_seen(seen, seen_images)
+                    print(f"⏭️ 類似トピック（3時間以内）をスキップ: {article['title'][:50]}")
+                    continue
+                else:
+                    article["is_followup"] = True
+                    print(f"📰 続報として処理: {article['title'][:50]}")
             seen.add(article["id"])
             save_seen(seen, seen_images)
             print(f"🔎 判定中 [8b]: {article['title'][:60]}")
@@ -1130,6 +1141,9 @@ def main():
             # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
+            if article.get("is_followup") and result and result.get("title"):
+                if not result["title"].startswith("【続報】"):
+                    result["title"] = "【続報】" + result["title"]
             if result and result.get("title"):
                 used_topics[result["title"]] = datetime.now(JST)
             cycle_count += 1
