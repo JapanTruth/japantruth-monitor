@@ -97,19 +97,25 @@ def parse_rate_limit_msg(msg):
         reset_time = reset_match.group(1)
     return remaining, reset_time
 
-def screen_article(title, summary=""):
-    """ブレイキングニュースか判定＋画像キーワード生成（8bモデル）"""
+def screen_article(title, summary="", recent_titles=None):
+    """ブレイキングニュースか判定＋既報チェック＋画像キーワード生成（8bモデル）"""
     snippet = summary[:100] if summary else ""
+    recent_block = ""
+    if recent_titles:
+        recent_block = "Recently covered articles (last 3 hours):\n"
+        for t in recent_titles[:15]:
+            recent_block += f"- {t}\n"
+        recent_block += "\n"
     prompt = (
-        f"Title: {title}\nSnippet: {snippet}\n\n"
+        f"{recent_block}"
+        f"New article title: {title}\nSnippet: {snippet}\n\n"
         "1. Is this newsworthy? Answer yes if: war/conflict, diplomacy/summit, economic news, politics, business/corporate news, crime, social issues, sports, science/tech, environment. Answer no if: clearly trivial, opinion pieces, roundups/summaries of already-known events, or 'what to watch' preview articles.\n"
-        "2. Best 2-3 English words for Unsplash photo search. No abbreviations, acronyms, or proper nouns. Use common visual concepts only (e.g. parliament building, politician speech, protest crowd, military ship, stock market).\n\n"
+        "2. Is this topic already covered in the recently covered articles above? Answer yes if the same EVENT (not just same topic) was already reported. Answer no if it has new information, different angle, or no recent articles listed.\n"
+        "3. Best 2-3 English words for Unsplash photo search. No abbreviations, acronyms, or proper nouns. Use common visual concepts only (e.g. parliament building, politician speech, protest crowd, military ship, stock market).\n\n"
         "Reply in exactly this format:\n"
         "NEWSWORTHY: yes\n"
-        "IMAGE: parliament building\n"
-        "or\n"
-        "NEWSWORTHY: no\n"
-        "IMAGE: soccer match"
+        "ALREADY_COVERED: no\n"
+        "IMAGE: parliament building"
     )
     data = {
         "model": "llama-3.1-8b-instant",
@@ -136,6 +142,10 @@ def screen_article(title, summary=""):
                 return False, ""
             text = result["choices"][0]["message"]["content"].strip().lower()
             is_breaking = "newsworthy: yes" in text
+            already_covered = "already_covered: yes" in text
+            if already_covered:
+                print(f"⏭️ 既報と判定（8b）: {title[:50]}")
+                return False, ""
             image_kw = ""
             for line in text.split("\n"):
                 if line.startswith("image:"):
@@ -964,7 +974,7 @@ def main():
             seen.add(article["id"])
             save_seen(seen, seen_images)
             print(f"🔎 判定中 [8b]: {article['title'][:60]}")
-            is_breaking, image_kw = screen_article(article["title"], article.get("content", ""))
+            is_breaking, image_kw = screen_article(article["title"], article.get("content", ""), recent_titles=_recent_titles)
             if not is_breaking:
                 print("⏭️ ブレイキングニュースではないのでスキップ")
                 continue
