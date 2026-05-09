@@ -373,6 +373,26 @@ if new_proper_noun_suggestions:
     for s in new_proper_noun_suggestions:
         print(f"  {s}")
 
+# =============================
+# 6. 重複記事の自動削除
+# =============================
+if duplicates:
+    print(f"\n{'=' * 50}")
+    print("🗑️ 重複記事の自動削除")
+    print("=" * 50)
+    for dup in duplicates:
+        slug = dup.get("slug2","")
+        if not slug:
+            continue
+        res_del = requests.delete(
+            f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
+            headers=headers_sb
+        )
+        if res_del.status_code == 204:
+            print(f"✅ 自動削除: {slug[:55]}")
+        else:
+            print(f"❌ 削除失敗: {slug[:55]}")
+
 with open("translation_check_result.json", "w", encoding="utf-8") as f:
     json.dump({
         "checked": len(posts),
