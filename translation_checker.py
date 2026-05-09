@@ -374,6 +374,33 @@ if new_proper_noun_suggestions:
         print(f"  {s}")
 
 # =============================
+# 5.5 excerpt品質チェック＋自動再生成
+# =============================
+print(f"\n{'=' * 50}")
+print("📝 excerpt品質チェック")
+print("=" * 50)
+
+bad_excerpt_patterns = [
+    "が発表された", "が明らかになった", "が行われた", "が報じられた",
+    "が開催された", "が示された", "が確認された", "について述べた",
+]
+excerpt_issues = []
+for post in posts:
+    slug = post.get("slug", "")
+    title = post.get("title", "") or ""
+    excerpt = post.get("excerpt", "") or ""
+    if len(excerpt) < 20:
+        excerpt_issues.append({"slug": slug, "title": title, "reason": "短すぎる", "excerpt": excerpt})
+        print(f"⚠️ 短いexcerpt: {title[:40]}")
+    elif any(w in excerpt for w in bad_excerpt_patterns):
+        found = [w for w in bad_excerpt_patterns if w in excerpt]
+        excerpt_issues.append({"slug": slug, "title": title, "reason": f"平凡: {found[0]}", "excerpt": excerpt})
+        print(f"⚠️ 平凡なexcerpt: {title[:40]} → {found[0]}")
+
+if not excerpt_issues:
+    print("✅ excerpt問題なし")
+
+# =============================
 # 6. 重複記事の自動削除
 # =============================
 if duplicates:
