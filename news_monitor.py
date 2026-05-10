@@ -1052,6 +1052,8 @@ def main():
             _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=100", headers=_h, timeout=5)
             _recent_posts = _res.json() if isinstance(_res.json(), list) else []
             _recent_titles = [p.get("title","") for p in _recent_posts]
+            # source_urlのスラグも英語比較用に追加
+            _recent_slugs = [p.get("source_url","").split("/")[-1].replace("-"," ").split("?")[0] for p in _recent_posts]
             _recent_urls = [p.get("source_url","") or "" for p in _recent_posts]
             _article_url_base = _up.urlparse(article["url"])._replace(query="", fragment="").geturl()
             _recent_urls_base = [_up.urlparse(u)._replace(query="", fragment="").geturl() for u in _recent_urls]
@@ -1063,6 +1065,11 @@ def main():
                 len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
                 for t in _recent_titles
             ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 2 for t in _recent_titles)
+            # 英語スラグとの比較
+            _is_similar = _is_similar or any(
+                len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 2
+                for s in _recent_slugs
+            )
 
             # 同一ドメインからの類似記事チェック
             import urllib.parse as _up2
