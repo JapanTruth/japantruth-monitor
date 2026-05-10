@@ -79,12 +79,15 @@ for post in posts:
     elif url:
         url_seen[url] = slug
 
-    title_words = set(title.split())
+    import re as _re2
+    stop_ja = {"の","が","を","に","は","で","と","も","な","する","した","て","や","へ","から","まで","より","として","による","大統領","首相","氏","戦争","問題","発言","表明"}
+    title_words = set(w for w in _re2.findall(r"[ァ-ヴー]{3,}|[一-龥]{2,}", title) if w not in stop_ja)
     for prev_title, prev_slug in list(title_seen.items()):
-        prev_words = set(prev_title.split())
-        if len(title_words & prev_words) >= 4 and slug != prev_slug:
+        prev_words = set(w for w in _re2.findall(r"[ァ-ヴー]{3,}|[一-龥]{2,}", prev_title) if w not in stop_ja)
+        if len(title_words & prev_words) >= 2 and slug != prev_slug:
             duplicates.append({"type": "タイトル類似", "slug1": prev_slug, "slug2": slug, "title": title})
             print(f"🟡 タイトル類似: {title[:40]}")
+            print(f"   残す: {prev_title[:40]}")
             break
     title_seen[title] = slug
 
