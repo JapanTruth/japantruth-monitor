@@ -523,6 +523,11 @@ if duplicates:
         slug = dup.get("slug2","")
         if not slug:
             continue
+        # プレミアム記事は削除しない
+        res_check = requests.get(f"{SUPABASE_URL}/rest/v1/posts?select=premium&slug=eq.{slug}", headers=headers_sb)
+        if res_check.json() and res_check.json()[0].get("premium"):
+            print(f"⏭️ プレミアム記事はスキップ: {slug[:55]}")
+            continue
         res_del = requests.delete(
             f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
             headers=headers_sb
