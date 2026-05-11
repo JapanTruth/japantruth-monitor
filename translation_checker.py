@@ -411,6 +411,56 @@ try:
 except Exception as e:
     print(f"⚠️ 自動追加失敗: {e}")
 
+
+# =============================
+# 2.7 カタカナ表記揺れチェック
+# =============================
+print(f"\n{'=' * 50}")
+print("🔤 2.7 カタカナ表記揺れチェック")
+print("=" * 50)
+
+import re as _re
+from collections import Counter as _Counter
+
+# 全タイトルからカタカナ固有名詞を抽出
+katakana_counter = _Counter()
+slug_map = {}
+for post in posts:
+    title = post.get("title", "") or ""
+    words = _re.findall(r"[ァ-ヴー]{4,}", title)
+    for w in words:
+        katakana_counter[w] += 1
+        if w not in slug_map:
+            slug_map[w] = (post.get("slug",""), title[:40])
+
+# 既知の表記揺れペアをチェック
+known_variants = [
+    ("ヘグゼス", "ヘグセス"),
+    ("アラーグチ", "アラグチ"),
+    ("スピアス", "スピアーズ"),
+    ("スピアーズ", "スピアーズ"),
+    ("マダウィ", "マフダウィ"),
+    ("チアハナ", "ティファナ"),
+    ("ユースフ", "ユーサフ"),
+    ("トレウアメニ", "チュアメニ"),
+]
+
+variant_issues = []
+for wrong, correct in known_variants:
+    if wrong in katakana_counter:
+        variant_issues.append((wrong, correct, slug_map.get(wrong, ("",""))[1]))
+        print(f"⚠️ 表記揺れ: 「{wrong}」→「{correct}」が正しい")
+
+# 出現1回のみの珍しい固有名詞を報告
+rare_words = [(w, c, slug_map.get(w,("",""))[1]) for w, c in katakana_counter.items() if c == 1 and len(w) >= 5]
+if rare_words:
+    print(f"\n💡 要確認の固有名詞（出現1回）: {len(rare_words)}件")
+    for w, c, title in rare_words[:10]:
+        print(f"  「{w}」: {title[:40]}")
+
+if not variant_issues and not rare_words:
+    print("✅ 表記揺れなし")
+
 # =============================
 # 5.5 excerpt品質チェック＋自動再生成
 # =============================
