@@ -357,6 +357,30 @@ for i, post in enumerate(posts):
     time.sleep(2)
 
 # =============================
+
+# =============================
+# 英語・アルファベット混入チェック
+# =============================
+import re as _re2
+print(f"\n{'=' * 50}")
+print("🔤 英語・アルファベット混入チェック")
+print("=" * 50)
+alpha_issues = []
+ok_words = {"BBC","CNN","GDP","IMF","WHO","NATO","SNS","AI","CEO","USA","FBI","CIA","LNG","KOSPI","MAGA","EV","UK","EU","MV","CSL","OOH","RSF","UAE","PKK","NXP","BRC","BGP","IBM","AWS","API"}
+for post in posts:
+    title = post.get("title","") or ""
+    alpha_words = _re2.findall(r"[A-Za-z]{3,}", title)
+    bad_words = [w for w in alpha_words if w.upper() not in ok_words and not w.isupper()]
+    if bad_words:
+        alpha_issues.append((post.get("slug",""), title[:45], bad_words))
+if alpha_issues:
+    print(f"⚠️ 英語混入: {len(alpha_issues)}件")
+    for slug, title, words in alpha_issues[:10]:
+        print(f"  {title}")
+        print(f"  混入: {words}")
+else:
+    print("✅ 英語混入なし")
+
 # サマリー
 # =============================
 print(f"\n{'=' * 50}")
