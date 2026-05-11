@@ -300,13 +300,28 @@ def auto_select_theme():
     titles = [a.get("title", "") for a in all_articles[:30] if a.get("title")]
     titles_text = "\n".join(f"- {t}" for t in titles)
 
+    # 過去のプレミアム記事テーマを取得して除外
+    past_themes = []
+    try:
+        import requests as _rq
+        _sb_url = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
+        _sb_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
+        _h = {"apikey": _sb_key, "Authorization": f"Bearer {_sb_key}"}
+        _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title&premium=eq.true&order=date.desc&limit=10", headers=_h, timeout=5)
+        past_themes = [p.get("title","") for p in _res.json()]
+        print(f"📋 過去のプレミアム記事: {len(past_themes)}件除外")
+    except Exception as e:
+        print(f"⚠️ 過去テーマ取得失敗: {e}")
+    past_themes_text = "
+".join(f"- {t}" for t in past_themes)
+
     key = GROQ_API_KEYS[0]
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     data = {
         "model": "llama-3.1-8b-instant",
         "messages": [
             {"role": "system", "content": "You are a Japanese financial analyst. Output only a JSON object."},
-            {"role": "user", "content": f"以下のニュースから日本人投資家・資産防衛の観点で最も重要なテーマを1つ選び、日本語で具体的なテーマ名を返せ。\n\nニュース一覧:\n{titles_text}\n\n出力形式: {{\"theme\": \"テーマ名\"}}"}
+            {"role": "user", "content": f"以下のニュースから日本人投資家・資産防衛の観点で最も重要なテーマを1つ選び、日本語で具体的なテーマ名を返せ。\n\n【過去に書いたテーマ（重複禁止）】\n{past_themes_text}\n\nニュース一覧:\n{titles_text}\n\n出力形式: {{\"theme\": \"テーマ名\"}}"}
         ],
         "max_tokens": 100,
         "temperature": 0.3,
