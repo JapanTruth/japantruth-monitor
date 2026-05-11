@@ -24,7 +24,7 @@ headers_sb = {
 
 # 記事取得
 res = requests.get(
-    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt,source_url&order=date.desc&limit=100",
+    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt,source_url&order=date.desc&limit=200",
     headers=headers_sb
 )
 posts = res.json()
