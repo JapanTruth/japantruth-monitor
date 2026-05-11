@@ -361,6 +361,36 @@ def summarize_article(title, content, category):
             # _processed = verify_and_fix_proper_nouns(title, _processed)
             _score, _reasons = score_article(_processed)
             print(f"📊 記事品質スコア: {_score}/10" + (f" | {chr(39).join(_reasons)}" if _reasons else " | 問題なし"))
+            # AIによる追加品質評価
+            if _score >= 5:
+                try:
+                    _ai_prompt = (
+                        f"以下の記事を品質評価せよ。1-10点で採点しJSONで返せ。\n\n"
+                        f"タイトル: {_processed.get('title','')}\n"
+                        f"本文: {(_processed.get('body','') or '')[:500]}\n\n"
+                        f"評価基準:\n"
+                        f"- 具体的な事実・数字・固有名詞があるか\n"
+                        f"- 論理が一貫しているか\n"
+                        f"- 曖昧・省略・的外れな内容がないか\n"
+                        f"- ニュースとして価値があるか\n\n"
+                        f"出力形式: {{\"score\": 数字, \"reason\": \"理由\"}}"
+                    )
+                    _gkey = GROQ_API_KEYS[0]
+                    _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
+                    _gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": _ai_prompt}], "max_tokens": 100, "temperature": 0.1}
+                    _gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_gh, json=_gd, timeout=15)
+                    _graw = _gr.json()["choices"][0]["message"]["content"]
+                    _graw = re.sub(r"<think>.*?</think>", "", _graw, flags=re.DOTALL).strip()
+                    _graw = re.sub(r"```json|```", "", _graw).strip()
+                    _gresult = json.loads(_graw)
+                    _ai_score = int(_gresult.get("score", 7))
+                    _ai_reason = _gresult.get("reason", "")
+                    print(f"🤖 AI品質スコア: {_ai_score}/10 | {_ai_reason[:50]}")
+                    if _ai_score < 5:
+                        print(f"⏭️ AI判定で低品質記事をスキップ（スコア{_ai_score}）")
+                        return None
+                except Exception as _ge:
+                    print(f"⚠️ AI品質評価失敗: {_ge}")
             if _score < 5:
                 print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
                 return None
