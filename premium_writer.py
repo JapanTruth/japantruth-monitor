@@ -312,8 +312,7 @@ def auto_select_theme():
         print(f"📋 過去のプレミアム記事: {len(past_themes)}件除外")
     except Exception as e:
         print(f"⚠️ 過去テーマ取得失敗: {e}")
-    past_themes_text = "
-".join(f"- {t}" for t in past_themes)
+    past_themes_text = "\n".join(f"- {t}" for t in past_themes)
 
     key = GROQ_API_KEYS[0]
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
