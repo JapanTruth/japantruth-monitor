@@ -427,7 +427,7 @@ katakana_counter = _Counter()
 slug_map = {}
 for post in posts:
     title = post.get("title", "") or ""
-    words = _re.findall(r"[ァ-ヴー]{4,}", title)
+    words = _re.findall(r"[ァ-ヴー]{3,}", title)
     for w in words:
         katakana_counter[w] += 1
         if w not in slug_map:
