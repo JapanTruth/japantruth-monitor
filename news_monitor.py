@@ -738,6 +738,11 @@ def score_article(result):
         score -= 2
         reasons.append("JapanTruthの視点なし")
 
+    # 省略チェック
+    if "省略" in body or "省略" in excerpt:
+        score -= 2
+        reasons.append("本文に省略あり")
+
     # excerptチェック
     if len(excerpt) < 20:
         score -= 1
