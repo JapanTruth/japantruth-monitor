@@ -865,7 +865,7 @@ def upload_to_cloudinary(local_path, slug):
         # バージョン番号なしのURLに変換
         raw_url = result.get("secure_url", "")
         public_id = result.get("public_id", "")
-        url = f"https://res.cloudinary.com/dnqswecpg/image/upload/f_webp,q_auto/{public_id}" if public_id else raw_url
+        url = f"https://res.cloudinary.com/dnqswecpg/image/upload/f_webp,q_auto/{public_id}.webp" if public_id else raw_url
         print(f"☁️ Cloudinaryアップロード完了: {url}")
         return url
     except Exception as e:
