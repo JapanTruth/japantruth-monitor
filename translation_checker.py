@@ -524,10 +524,33 @@ if duplicates:
         if not slug:
             continue
         # プレミアム記事は削除しない
-        res_check = requests.get(f"{SUPABASE_URL}/rest/v1/posts?select=premium&slug=eq.{slug}", headers=headers_sb)
-        if res_check.json() and res_check.json()[0].get("premium"):
+        res_check = requests.get(f"{SUPABASE_URL}/rest/v1/posts?select=premium,title,body&slug=eq.{slug}", headers=headers_sb)
+        post_data = res_check.json()[0] if res_check.json() else {}
+        if post_data.get("premium"):
             print(f"⏭️ プレミアム記事はスキップ: {slug[:55]}")
             continue
+        # AI判定で本当に重複かチェック
+        try:
+            slug1 = dup.get("slug1","")
+            res1 = requests.get(f"{SUPABASE_URL}/rest/v1/posts?select=title,body&slug=eq.{slug1}", headers=headers_sb)
+            post1 = res1.json()[0] if res1.json() else {}
+            post2 = post_data
+            ai_prompt = (
+                f"以下の2つの記事は同じ内容か？YESかNOのみ答えよ。\n\n"
+                f"記事1: {post1.get('title','')}\n{(post1.get('body','') or '')[:200]}\n\n"
+                f"記事2: {post2.get('title','')}\n{(post2.get('body','') or '')[:200]}"
+            )
+            gkey = GROQ_API_KEYS[0]
+            gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
+            gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
+            gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
+            ai_ans = gr.json()["choices"][0]["message"]["content"].strip().upper()
+            if "NO" in ai_ans:
+                print(f"⏭️ AI判定で別記事: {slug[:55]}")
+                continue
+            print(f"🤖 AI判定で重複確認: {slug[:55]}")
+        except Exception as e:
+            print(f"⚠️ AI判定失敗（削除続行）: {e}")
         res_del = requests.delete(
             f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
             headers=headers_sb
