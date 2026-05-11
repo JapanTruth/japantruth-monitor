@@ -560,6 +560,85 @@ if duplicates:
         else:
             print(f"❌ 削除失敗: {slug[:55]}")
 
+
+# =============================
+# 7. 記事品質スコアリング・低品質削除
+# =============================
+print(f"\n{'=' * 50}")
+print("📊 記事品質スコアリング（6点以下を削除）")
+print("=" * 50)
+
+forbidden_score = ["可能性がある","かもしれない","どこへ向かうのか","避けられない","とされる","求められている","注目が集まる","懸念される"]
+low_quality = []
+
+for post in posts:
+    score = 10
+    slug = post.get("slug","")
+    title = post.get("title","") or ""
+    body = post.get("body","") or ""
+    excerpt = post.get("excerpt","") or ""
+    reasons = []
+
+    if len(body) < 200:
+        score -= 3
+        reasons.append("本文短すぎ")
+    elif len(body) < 300:
+        score -= 1
+        reasons.append("本文やや短い")
+    if "JapanTruthの視点" not in body:
+        score -= 2
+        reasons.append("視点なし")
+    fw = [w for w in forbidden_score if w in body]
+    if fw:
+        score -= len(fw)
+        reasons.append(f"禁止ワード:{len(fw)}個")
+    if "省略" in body or "省略" in excerpt:
+        score -= 2
+        reasons.append("省略あり")
+    if len(excerpt) < 20:
+        score -= 1
+        reasons.append("excerpt短い")
+
+    if score <= 6:
+        low_quality.append((score, slug, title, reasons))
+
+print(f"6点以下: {len(low_quality)}件")
+for score, slug, title, reasons in low_quality:
+    print(f"  スコア{score}: {title[:40]} | {', '.join(reasons)}")
+
+# プレミアム除外・AI判定後に削除
+deleted_lq = 0
+for score, slug, title, reasons in low_quality:
+    # プレミアム記事はスキップ
+    res_check = requests.get(f"{SUPABASE_URL}/rest/v1/posts?select=premium&slug=eq.{slug}", headers=headers_sb)
+    if res_check.json() and res_check.json()[0].get("premium"):
+        print(f"⏭️ プレミアム記事はスキップ: {slug[:50]}")
+        continue
+    # AI判定
+    try:
+        ai_prompt = (
+            f"以下の記事は品質が低いか？YESかNOのみ答えよ。\n\n"
+            f"タイトル: {title}\n"
+            f"問題点: {', '.join(reasons)}\n"
+            f"削除すべきか？"
+        )
+        gkey = GROQ_API_KEYS[0]
+        gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
+        gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
+        gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
+        ai_ans = gr.json()["choices"][0]["message"]["content"].strip().upper()
+        if "NO" in ai_ans:
+            print(f"⏭️ AI判定で保護: {slug[:50]}")
+            continue
+    except Exception as e:
+        print(f"⚠️ AI判定失敗（削除続行）: {e}")
+    res_del = requests.delete(f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}", headers=headers_sb)
+    if res_del.status_code == 204:
+        print(f"🗑️ 低品質削除: {title[:40]}")
+        deleted_lq += 1
+
+print(f"\n✅ 低品質記事削除: {deleted_lq}件")
+
 with open("translation_check_result.json", "w", encoding="utf-8") as f:
     json.dump({
         "checked": len(posts),
