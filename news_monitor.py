@@ -1092,6 +1092,7 @@ def main():
         # 全件チェック（最大10件）
 
         cycle_count = 0
+        _cycle_generated_titles = []  # 同一サイクル内の生成済みタイトル
         for article in new_articles:
             if cycle_count >= 2:
                 break
@@ -1133,6 +1134,13 @@ def main():
             _is_similar = _is_similar or any(
                 len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 2
                 for s in _recent_slugs
+            )
+            # 同一サイクル内の生成済みタイトルと比較
+            import re as _re2
+            _jp_words2 = lambda t: set(w for w in _re2.findall(r"[ァ-ヴー]{3,}|[一-龥]{2,}", t) if w not in _stop_ja)
+            _is_similar = _is_similar or any(
+                len(_jp_words2(article["title"]) & _jp_words2(t)) >= 2
+                for t in _cycle_generated_titles
             )
 
             # 同一ドメインからの類似記事チェック
@@ -1279,6 +1287,7 @@ def main():
                 used_topics[result["title"]] = datetime.now(JST)
                 # 生成済み日本語タイトルをSupabaseの_recent_titlesに即座に追加
                 _recent_titles.append(result["title"])
+                _cycle_generated_titles.append(result["title"])
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
             time.sleep(20)
