@@ -1000,7 +1000,7 @@ def collect_new_articles(seen):
             _h2 = {"apikey": _sb_key2, "Authorization": f"Bearer {_sb_key2}", "Prefer": "count=exact"}
             _count_res = requests.get(f"{_sb_url2}/rest/v1/posts?select=count&source_url=like.*{_domain}*&created_at=gte.{_cutoff6h}", headers=_h2, timeout=5)
             _domain_count = int(_count_res.headers.get("content-range", "0-0/0").split("/")[-1])
-            if _domain_count >= 3:
+            if _domain_count >= 5:
                 print(f"⏭️ {_domain}は過去6時間に{_domain_count}件済み → スキップ")
                 continue
             for entry in feed.entries[:2]:
