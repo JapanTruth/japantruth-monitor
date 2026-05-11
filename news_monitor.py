@@ -991,6 +991,18 @@ def collect_new_articles(seen):
                 print(f"⚠️ タイムアウト: {feed_info['source']} → スキップ ({e})")
                 time.sleep(2)
                 continue
+            # 過去6時間の同一ドメイン記事数チェック（最大3件まで）
+            import urllib.parse as _ulp
+            _domain = _ulp.urlparse(feed_info["url"]).netloc
+            _cutoff6h = (datetime.now(JST) - timedelta(hours=6)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            _sb_url2 = "https://xhvvxfvxkqcadqhdqtmn.supabase.co"
+            _sb_key2 = os.environ.get("SUPABASE_SERVICE_KEY", "")
+            _h2 = {"apikey": _sb_key2, "Authorization": f"Bearer {_sb_key2}", "Prefer": "count=exact"}
+            _count_res = requests.get(f"{_sb_url2}/rest/v1/posts?select=count&source_url=like.*{_domain}*&created_at=gte.{_cutoff6h}", headers=_h2, timeout=5)
+            _domain_count = int(_count_res.headers.get("content-range", "0-0/0").split("/")[-1])
+            if _domain_count >= 3:
+                print(f"⏭️ {_domain}は過去6時間に{_domain_count}件済み → スキップ")
+                continue
             for entry in feed.entries[:2]:
                 url = entry.link
                 article_id = hashlib.md5(url.encode()).hexdigest()
