@@ -759,7 +759,41 @@ def _process_value(value):
 
 def post_process_article(result):
     """生成された記事の後処理（最小限のセーフティネット）"""
-    return {k: _process_value(v) for k, v in result.items()}
+    processed = {k: _process_value(v) for k, v in result.items()}
+
+    # JapanTruthの視点の締め方が連続して同じ場合に修正
+    body = processed.get("body", "") or ""
+    endings = [
+        "が問われる局面だ",
+        "が試される局面だ",
+        "が注目される",
+        "注目される",
+    ]
+    replacements = {
+        "が問われる局面だ": "はこのリスクに備えられているか",
+        "が試される局面だ": "という判断は妥当だ",
+        "が注目される": "という問いに答えが出ていない",
+        "注目される": "という問いに答えが出ていない",
+    }
+    import re as _re
+    # 視点セクションを抽出
+    view_match = _re.search(r'(## JapanTruthの視点
+)(.*?)($|
+##)', body, _re.DOTALL)
+    if view_match:
+        view_text = view_match.group(2)
+        found_endings = [e for e in endings if view_text.count(e) >= 2]
+        for e in found_endings:
+            # 2回目以降の出現を別の表現に置換
+            first = view_text.find(e)
+            second = view_text.find(e, first + 1)
+            if second >= 0:
+                new_ending = replacements.get(e, "という判断は妥当だ")
+                view_text = view_text[:second] + view_text[second:].replace(e, new_ending, 1)
+        body = body[:view_match.start(2)] + view_text + body[view_match.end(2):]
+        processed["body"] = body
+
+    return processed
 
 def score_article(result):
     """記事品質スコアリング（0-10点）低品質記事を弾く"""
