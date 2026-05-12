@@ -201,6 +201,8 @@ def summarize_article(title, content, category):
         "CRITICAL PROPER NOUN RULES:\n"
         "- ALL person names, place names, org names: transliterate from EXACT spelling in source. Do NOT guess.\n"
         "- If you are unsure of Japanese rendering: write the English name in katakana phonetically from spelling, do not invent.\n"
+        "- ALL English words in body/title MUST be converted to katakana or Japanese. NO English words allowed in output except: AI, GDP, SNS, IMF, WHO, NATO, EV, IPO, CEO, CFO, KOSPI, LNG, RSF, UAE, BBC, CNN.\n"
+        "- Band names, museum names, song titles, product names: ALL must be katakana. e.g. Look Mum No Computer=ルック・マム・ノー・コンピューター, Furby=ファービー, Megadrone=メガドローン\n"
         "CRITICAL ROLE/INSTITUTION TRANSLATIONS:\n"
         "- Senate=上院、House of Representatives=下院（混同厳禁）\n"
         "- Speaker of the House=下院議長\n"
