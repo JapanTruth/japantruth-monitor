@@ -543,6 +543,7 @@ if duplicates:
             gkey = GROQ_API_KEYS[0]
             gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
             gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
+            time.sleep(2)  # レート制限対策
             gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
             _gr_json = gr.json()
             if not _gr_json.get("choices"):
