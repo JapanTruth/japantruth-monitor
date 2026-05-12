@@ -777,9 +777,7 @@ def post_process_article(result):
     }
     import re as _re
     # 視点セクションを抽出
-    view_match = _re.search(r'(## JapanTruthの視点
-)(.*?)($|
-##)', body, _re.DOTALL)
+    view_match = _re.search(r'(## JapanTruth' + 'の視点' + r'\n)(.*?)($|\n##)', body, _re.DOTALL)
     if view_match:
         view_text = view_match.group(2)
         found_endings = [e for e in endings if view_text.count(e) >= 2]
