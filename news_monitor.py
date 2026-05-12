@@ -632,6 +632,7 @@ PROPER_NOUN_FIXES = {
     "White Circle": "ホワイト・サークル",
     "Look Mum No Computer": "ルック・マム・ノー・コンピューター",
     "Furby": "ファービー",
+    "JPモーガン": "JPモルガン",
     "Megadrone": "メガドローン",
     "Zibra": "ザイブラ",
     "Sam Battle": "サム・バトル",
