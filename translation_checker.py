@@ -544,7 +544,10 @@ if duplicates:
             gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
             gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
             gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
-            ai_ans = gr.json()["choices"][0]["message"]["content"].strip().upper()
+            _gr_json = gr.json()
+            if not _gr_json.get("choices"):
+                raise Exception(f"空レスポンス: {_gr_json}")
+            ai_ans = _gr_json["choices"][0]["message"]["content"].strip().upper()
             if "NO" in ai_ans:
                 print(f"⏭️ AI判定で別記事: {slug[:55]}")
                 continue
@@ -627,7 +630,10 @@ for score, slug, title, reasons in low_quality:
         gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
         gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
         gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
-        ai_ans = gr.json()["choices"][0]["message"]["content"].strip().upper()
+        _gr_json2 = gr.json()
+        if not _gr_json2.get("choices"):
+            raise Exception(f"空レスポンス: {_gr_json2}")
+        ai_ans = _gr_json2["choices"][0]["message"]["content"].strip().upper()
         if "NO" in ai_ans:
             print(f"⏭️ AI判定で保護: {slug[:50]}")
             continue
