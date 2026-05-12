@@ -550,7 +550,8 @@ if duplicates:
                 continue
             print(f"🤖 AI判定で重複確認: {slug[:55]}")
         except Exception as e:
-            print(f"⚠️ AI判定失敗（削除続行）: {e}")
+            print(f"⚠️ AI判定失敗（保護）: {e}")
+            continue
         res_del = requests.delete(
             f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
             headers=headers_sb
