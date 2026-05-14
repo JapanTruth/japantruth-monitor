@@ -358,8 +358,8 @@ def summarize_article(title, content, category):
                 try:
                     _ai_prompt = (
                         f"以下の記事を品質評価せよ。1-10点で採点しJSONで返せ。\n\n"
-                        f"タイトル: {_processed.get('title','')}\n"
-                        f"本文: {(_processed.get('body','') or '')[:500]}\n\n"
+                        f"タイトル: {repr(_processed.get('title',''))[:100]}\n"
+                        f"本文: {repr((_processed.get('body','') or '')[:300])}\n\n"
                         f"評価基準:\n"
                         f"- 具体的な事実・数字・固有名詞があるか\n"
                         f"- 論理が一貫しているか\n"
