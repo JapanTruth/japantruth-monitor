@@ -665,27 +665,9 @@ for score, slug, title, reasons in low_quality:
     if res_check.json() and res_check.json()[0].get("premium"):
         print(f"⏭️ プレミアム記事はスキップ: {slug[:50]}")
         continue
-    # AI判定
-    try:
-        ai_prompt = (
-            f"以下の記事は品質が低いか？YESかNOのみ答えよ。\n\n"
-            f"タイトル: {title}\n"
-            f"問題点: {', '.join(reasons)}\n"
-            f"削除すべきか？"
-        )
-        gkey = GROQ_API_KEYS[0]
-        gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
-        gd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
-        gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
-        _gr_json2 = gr.json()
-        if not _gr_json2.get("choices"):
-            raise Exception(f"空レスポンス: {_gr_json2}")
-        ai_ans = _gr_json2["choices"][0]["message"]["content"].strip().upper()
-        if "NO" in ai_ans:
-            print(f"⏭️ AI判定で保護: {slug[:50]}")
-            continue
-    except Exception as e:
-        print(f"⚠️ AI判定失敗（削除続行）: {e}")
+    # スコア5以下のみ削除（6点は保護）
+    if score >= 6:
+        continue
     res_del = requests.delete(f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}", headers=headers_sb)
     if res_del.status_code == 204:
         print(f"🗑️ 低品質削除: {title[:40]}")
