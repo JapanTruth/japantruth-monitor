@@ -272,7 +272,7 @@ def summarize_article(title, content, category):
         "/no_think\n"
         f"Title: {title}\nContent: {content[:3500]}\n\n"
         "JSON fields:\n"
-        "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり.\n"
+        "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり. NEVER include dates (年/月/日) in the title.\n"
         "- excerpt: The single most surprising or counterintuitive fact. MUST contain specific number, name, or paradox.\n"
         "  GOOD: '停戦宣言から2時間で1000件超の違反が報告された' / '元CIA長官が自社株を売却した翌日に捜査開始'\n"
         "  BAD: 〜が発表された / 〜が明らかになった / 〜が行われた / 〜が報じられた\n"
