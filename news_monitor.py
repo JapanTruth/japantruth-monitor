@@ -374,6 +374,7 @@ def summarize_article(title, content, category):
                     _graw = _gr.json()["choices"][0]["message"]["content"]
                     _graw = re.sub(r"<think>.*?</think>", "", _graw, flags=re.DOTALL).strip()
                     _graw = re.sub(r"```json|```", "", _graw).strip()
+                    _graw = _graw.encode("utf-8", errors="ignore").decode("utf-8")
                     _gresult = json.loads(_graw)
                     _ai_score = int(_gresult.get("score", 7))
                     _ai_reason = _gresult.get("reason", "")
