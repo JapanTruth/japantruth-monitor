@@ -356,16 +356,12 @@ def summarize_article(title, content, category):
             # AIによる追加品質評価
             if _score >= 5:
                 try:
+                    _title_short = (_processed.get('title','') or '')[:80]
                     _ai_prompt = (
-                        f"以下の記事を品質評価せよ。1-10点で採点しJSONで返せ。\n\n"
-                        f"タイトル: {repr(_processed.get('title',''))[:100]}\n"
-                        f"本文: {repr((_processed.get('body','') or '')[:300])}\n\n"
-                        f"評価基準:\n"
-                        f"- 具体的な事実・数字・固有名詞があるか\n"
-                        f"- 論理が一貫しているか\n"
-                        f"- 曖昧・省略・的外れな内容がないか\n"
-                        f"- ニュースとして価値があるか\n\n"
-                        f"出力形式: {{\"score\": 数字, \"reason\": \"理由\"}}"
+                        f"Rate this Japanese news article quality from 1-10. Reply with ONLY a single integer.\n"
+                        f"Title: {_title_short}\n"
+                        f"Criteria: has specific facts/numbers, logical, no vague language, newsworthy\n"
+                        f"Reply format: just the number, e.g. 8"
                     )
                     _gkey = GROQ_API_KEYS[0]
                     _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
@@ -374,11 +370,8 @@ def summarize_article(title, content, category):
                     _graw = _gr.json()["choices"][0]["message"]["content"]
                     _graw = re.sub(r"<think>.*?</think>", "", _graw, flags=re.DOTALL).strip()
                     _graw = re.sub(r"```json|```", "", _graw).strip()
-                    _graw = _graw.encode("utf-8", errors="ignore").decode("utf-8")
-                    _gresult = json.loads(_graw)
-                    _ai_score = int(_gresult.get("score", 7))
-                    _ai_reason = _gresult.get("reason", "")
-                    print(f"🤖 AI品質スコア: {_ai_score}/10 | {_ai_reason[:50]}")
+                    _ai_score = int(''.join(filter(str.isdigit, _graw.strip()[:3])) or '7')
+                    print(f"🤖 AI品質スコア: {_ai_score}/10")
                     if _ai_score < 5:
                         print(f"⏭️ AI判定で低品質記事をスキップ（スコア{_ai_score}）")
                         return None
