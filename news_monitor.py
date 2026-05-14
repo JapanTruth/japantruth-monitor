@@ -270,7 +270,7 @@ def summarize_article(title, content, category):
         f"Convert the following English article into a Japanese article and return as JSON.\n"
         f"CRITICAL: Do NOT add any proper nouns, numbers, or dates not in the source. If source lacks detail, write fewer sentences.\n\n"
         "/no_think\n"
-        f"Title: {title}\nContent: {content[:2800]}\n\n"
+        f"Title: {title}\nContent: {content[:3500]}\n\n"
         "JSON fields:\n"
         "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり. NEVER include dates (年/月/日) in the title.\n"
         "- excerpt: The single most surprising or counterintuitive fact. MUST contain specific number, name, or paradox.\n"
@@ -384,71 +384,6 @@ def summarize_article(title, content, category):
             if _score < 5:
                 print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
                 return None
-
-            # 2段階レビュー：70bで禁止ワード・数字・ハルシネーションを修正
-            try:
-                # JapanTruthの視点部分のみ抽出
-                _body = _processed.get('body','') or ''
-                _perspective = ''
-                if 'JapanTruthの視点' in _body:
-                    _perspective = _body.split('JapanTruthの視点')[-1][:500]
-                _title = (_processed.get('title','') or '')[:80]
-                _excerpt = (_processed.get('excerpt','') or '')[:100]
-                _perspective_safe = _perspective.replace(chr(10),' ').replace(chr(13),' ').replace(chr(34),chr(39)).replace(chr(92),' ').replace(chr(0),'')[:400]
-                _system_msg = "Fix this Japanese news article. Return ONLY valid JSON with keys: title, excerpt, perspective."
-                _rules = (
-                    "RULES:\n"
-                    "1. FORBIDDEN - replace: とされる→と報じられた, とみられる→と分析される, 示唆している→示している\n"
-                    "   懸念される→懸念が広がる, 注目される→注目を集める, 必要とされる→必要だ\n"
-                    "   報じられた→伝えられた, 可能性がある→見通しだ, が問われる→が試される\n"
-                    "   Rewrite entire sentence if vague. Output must be assertive だ/である style.\n"
-                    "2. NUMBERS: trillion=兆, billion=十億, million=百万\n"
-                    "3. ENGLISH words→katakana (except AI,GDP,SNS,NATO,EV,IPO,CEO,CFO,BBC,CNN)\n"
-                    "4. JapanTruthの視点: EXACTLY 3 sentences. NEVER add dates to title.\n"
-                    "5. excerpt: min 50 chars, no banned endings\n"
-                )
-                _user_msg = _rules + "\ntitle: " + _title + "\nexcerpt: " + _excerpt + "\nperspective: " + _perspective_safe
-                _review_messages = [
-                    {"role": "system", "content": _system_msg},
-                    {"role": "user", "content": _user_msg}
-                ]
-                # 2段階レビューはkey2→key3→key1の順で試す（レート制限時に切り替え）
-                _rkeys = GROQ_API_KEYS[1:] + [GROQ_API_KEYS[0]] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS
-                _rkey = None
-                for _k in _rkeys:
-                    _test = requests.post("https://api.groq.com/openai/v1/chat/completions",
-                        headers={"Authorization": f"Bearer {_k}", "Content-Type": "application/json"},
-                        json={"model": "qwen/qwen3-32b", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1},
-                        timeout=5)
-                    if "error" not in _test.json():
-                        _rkey = _k
-                        break
-                if not _rkey:
-                    _rkey = _rkeys[0]
-                _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
-                _rd = {"model": "qwen/qwen3-32b", "messages": _review_messages, "max_tokens": 500, "temperature": 0.3}
-                _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
-                _rjson = _rr.json()
-                if "choices" not in _rjson:
-                    raise Exception(f"choices not found: {_rjson.get('error',{}).get('message','')[:100]}")
-                _rraw = _rjson["choices"][0]["message"]["content"]
-                _rraw = re.sub(r"<think>.*?</think>", "", _rraw, flags=re.DOTALL).strip()
-                _rraw = re.sub(r"```json|```", "", _rraw).strip()
-                _rresult = json.loads(_rraw)
-                if isinstance(_rresult, list): _rresult = _rresult[0] if _rresult else {}
-                if _rresult.get("title"):
-                    _processed["title"] = _rresult.get("title", _processed["title"])
-                if _rresult.get("excerpt"):
-                    _processed["excerpt"] = _rresult.get("excerpt", _processed["excerpt"])
-                # perspectiveをbodyのJapanTruthの視点セクションに反映
-                if _rresult.get("perspective") and "JapanTruthの視点" in (_processed.get("body","") or ""):
-                    _body_parts = (_processed.get("body","") or "").split("## JapanTruthの視点")
-                    _processed["body"] = _body_parts[0] + "## JapanTruthの視点" + "\n" + _rresult["perspective"]
-                elif _rresult.get("body"):
-                    _processed["body"] = _rresult.get("body", _processed["body"])
-                print(f"✅ 2段階レビュー完了: {_processed['title'][:40]}")
-            except Exception as _re:
-                print(f"⚠️ 2段階レビュー失敗（元の記事を使用）: {_re}")
 
             return _processed
         except Exception as e:
