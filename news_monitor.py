@@ -415,7 +415,10 @@ def summarize_article(title, content, category):
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
                 _rd = {"model": "qwen/qwen3-32b", "messages": [{"role": "user", "content": _review_prompt}], "max_tokens": 2000, "temperature": 0.3}
                 _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
-                _rraw = _rr.json()["choices"][0]["message"]["content"]
+                _rjson = _rr.json()
+                if "choices" not in _rjson:
+                    raise Exception(f"choices not found: {_rjson.get('error',{}).get('message','')[:100]}")
+                _rraw = _rjson["choices"][0]["message"]["content"]
                 _rraw = re.sub(r"<think>.*?</think>", "", _rraw, flags=re.DOTALL).strip()
                 _rraw = re.sub(r"```json|```", "", _rraw).strip()
                 _rresult = json.loads(_rraw)
