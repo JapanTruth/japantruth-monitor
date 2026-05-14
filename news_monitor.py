@@ -420,6 +420,42 @@ def summarize_article(title, content, category):
             if _score < 5:
                 print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
                 return None
+
+            # 2段階レビュー：70bで禁止ワード・数字・ハルシネーションを修正
+            try:
+                _review_prompt = (
+                    f"以下の日本語ニュース記事を校正せよ。修正済みJSONのみ返せ。\n\n"
+                    f"修正ルール:\n"
+                    f"1. 禁止ワードを修正: とされる→と報じられた、かもしれない→と見られる、懸念される→懸念が高まっている\n"
+                    f"2. 数字の単位確認: trillion=兆、billion=十億、million=百万\n"
+                    f"3. 英語単語をカタカナに変換（AI/GDP/SNS等の略語は除く）\n"
+                    f"4. JapanTruthの視点は必ず3文のみ\n"
+                    f"5. 来日/訪日/帰国は原文に明記がない場合は削除\n"
+                    f"6. 省略という文字列があれば削除して内容を補完\n\n"
+                    f"元の記事JSON:\n"
+                    f"{{\"title\": \"{_processed.get('title','')}\", "
+                    f"\"excerpt\": \"{_processed.get('excerpt','')}\", "
+                    f"\"body\": \"{(_processed.get('body','') or '')[:2000]}\"}}"
+                    f"\n\n修正済みJSONのみ出力せよ。"
+                )
+                _rkey = GROQ_API_KEYS[0]
+                _rh = {{"Authorization": f"Bearer {{_rkey}}", "Content-Type": "application/json"}}
+                _rd = {{"model": "llama-3.3-70b-versatile", "messages": [{{"role": "user", "content": _review_prompt}}], "max_tokens": 2000, "temperature": 0.1}}
+                _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
+                _rraw = _rr.json()["choices"][0]["message"]["content"]
+                _rraw = re.sub(r"<think>.*?</think>", "", _rraw, flags=re.DOTALL).strip()
+                _rraw = re.sub(r"```json|```", "", _rraw).strip()
+                _rresult = json.loads(_rraw)
+                if _rresult.get("title") and _rresult.get("body"):
+                    _processed["title"] = _rresult.get("title", _processed["title"])
+                    _processed["excerpt"] = _rresult.get("excerpt", _processed["excerpt"])
+                    _processed["body"] = _rresult.get("body", _processed["body"])
+                    print(f"✅ 2段階レビュー完了: {_processed['title'][:40]}")
+                else:
+                    print(f"⚠️ 2段階レビュー結果が不完全、元の記事を使用")
+            except Exception as _re:
+                print(f"⚠️ 2段階レビュー失敗（元の記事を使用）: {_re}")
+
             return _processed
         except Exception as e:
             import traceback
