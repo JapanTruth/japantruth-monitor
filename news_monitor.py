@@ -401,9 +401,6 @@ def summarize_article(title, content, category):
                     f"7. TITLE: must contain specific number, name, or place. Remove endings like 〜が発表/〜が明らかに.\n"
                     f"8. EXCERPT: minimum 50 chars. No banned endings like 〜が発表された/〜が確認された.\n"
                     f"9. CONSECUTIVE ENDINGS: if sentences 2 and 3 of perspective end the same way, vary sentence 3.\n\n"
-                _title_safe = (_processed.get("title","") or "").replace('"',"'")
-                _excerpt_safe = (_processed.get("excerpt","") or "").replace('"',"'")
-                _body_safe = (_processed.get("body","") or "")[:2000].replace("\n"," ").replace("\r"," ").replace('"',"'")
                     f"INPUT JSON:\n"
                     f"{{\"title\": \"{_processed.get('title','')}\", "
                     f"\"excerpt\": \"{_processed.get('excerpt','')}\", "
