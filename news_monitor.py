@@ -284,7 +284,7 @@ def summarize_article(title, content, category):
         "   NEVER invent statistics, percentages, or context not in source.)\\n\\n"
         "  ## JapanTruthの視点\\n\n"
         "  (Exactly 3 sentences. No lists. No bullet points.\n"
-        "   Sentence 1: BEGIN with specific number/company/country from source. Never: 同社/同国/同氏/この/その.\n"
+        "   Sentence 1: BEGIN with a SPECIFIC NUMBER or NAMED ENTITY from source (e.g. '米国の関税率145%が', 'ブラックストーンの20億ドルが', 'キューバの電力網崩壊で'). Never vague. Never: 同社/同国/同氏/この/その/この動き/この問題.\n"
         "   Sentence 2: Hidden context — policy inconsistency, historical contradiction, or corporate incentive. Must be specific.\n"
         "   Sentence 3: ONE of these ONLY (rotate, never repeat same ending twice):\n"
         "     〜が予想される / 〜と見られる / 〜は避けられない状況だ / 〜という判断は妥当だ\n"
