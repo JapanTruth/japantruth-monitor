@@ -386,7 +386,11 @@ def summarize_article(title, content, category):
                 _review_prompt = (
                     f"You are a Japanese news editor. Review and fix the article below. Return ONLY valid JSON, no explanation.\n\n"
                     f"RULES TO ENFORCE:\n"
-                    f"1. FORBIDDEN WORDS - replace ALL of these:\n"
+                    f"1. LANGUAGE QUALITY - rewrite any vague/passive sentence to be DIRECT and ASSERTIVE:\n"
+                    f"   BAD: 〜されている/〜とされる/〜といわれる/〜とみられる/〜が高まっている/〜が広がっている\n"
+                    f"   BAD: 〜示唆している/〜指摘されている/〜報じられた/〜報告された/〜必要とされる\n"
+                    f"   GOOD: specific subject + specific verb + specific fact (declarative だ/である)\n"
+                    f"   REPLACE these specifically:\n"
                     f"   とされる→と報じられた, といわれる→と伝えられた, とみられる→と分析される\n"
                     f"   かもしれない→と見られる, 示唆している→示している, 指摘されている→と報告された\n"
                     f"   懸念される→懸念が広がっている, 注目される→注目を集めている, 再評価されている→評価が高まっている\n"
