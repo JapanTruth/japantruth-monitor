@@ -408,7 +408,7 @@ def summarize_article(title, content, category):
                     f"4. PERSPECTIVE: JapanTruthの視点 must be EXACTLY 3 sentences. Never 2, never 4.\n"
                     f"5. HALLUCINATION: remove 来日/訪日/帰国 unless source explicitly states Japan travel.\n"
                     f"6. OMISSION: if 省略 appears, expand with available facts.\n"
-                    f"7. TITLE: must contain specific number, name, or place. Remove endings like 〜が発表/〜が明らかに.\n"
+                    f"7. TITLE: must contain specific person name, place, or company name. NEVER add dates to title. Remove endings like 〜が発表/〜が明らかに.\n"
                     f"8. EXCERPT: minimum 50 chars. No banned endings like 〜が発表された/〜が確認された.\n"
                     f"9. CONSECUTIVE ENDINGS: if sentences 2 and 3 of perspective end the same way, vary sentence 3.\n\n"
                     f"INPUT JSON:\n"
