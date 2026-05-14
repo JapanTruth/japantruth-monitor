@@ -411,7 +411,9 @@ def summarize_article(title, content, category):
                     f"perspective: {_perspective_safe}\n\n"
                     f"Return JSON: {{\"title\": \"...\", \"excerpt\": \"...\", \"perspective\": \"...\"}}"
                 )
-                _rkey = GROQ_API_KEYS[1] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS[0]
+                # 2段階レビューはkey2→key3→key1の順で試す
+                _rkeys = GROQ_API_KEYS[1:] + [GROQ_API_KEYS[0]] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS
+                _rkey = _rkeys[0]
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
                 _rd = {"model": "qwen/qwen3-32b", "messages": [{"role": "user", "content": _review_prompt}], "max_tokens": 2000, "temperature": 0.3}
                 _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
