@@ -387,35 +387,29 @@ def summarize_article(title, content, category):
 
             # 2段階レビュー：70bで禁止ワード・数字・ハルシネーションを修正
             try:
+                # JapanTruthの視点部分のみ抽出
+                _body = _processed.get('body','') or ''
+                _perspective = ''
+                if 'JapanTruthの視点' in _body:
+                    _perspective = _body.split('JapanTruthの視点')[-1][:500]
+                _title = (_processed.get('title','') or '')[:80]
+                _excerpt = (_processed.get('excerpt','') or '')[:100]
+                _perspective_safe = _perspective.replace(chr(10),' ').replace(chr(34),chr(39))
                 _review_prompt = (
-                    f"You are a Japanese news editor. Review and fix the article below. Return ONLY valid JSON, no explanation.\n\n"
-                    f"RULES TO ENFORCE:\n"
-                    f"1. LANGUAGE QUALITY - rewrite any vague/passive sentence to be DIRECT and ASSERTIVE:\n"
-                    f"   BAD: 〜されている/〜とされる/〜といわれる/〜とみられる/〜が高まっている/〜が広がっている\n"
-                    f"   BAD: 〜示唆している/〜指摘されている/〜報じられた/〜報告された/〜必要とされる\n"
-                    f"   GOOD: specific subject + specific verb + specific fact (declarative だ/である)\n"
-                    f"   REPLACE these specifically:\n"
-                    f"   とされる→と報じられた, といわれる→と伝えられた, とみられる→と分析される\n"
-                    f"   かもしれない→と見られる, 示唆している→示している, 指摘されている→と報告された\n"
-                    f"   懸念される→懸念が広がっている, 注目される→注目を集めている, 再評価されている→評価が高まっている\n"
-                    f"   可能性がある→見通しだ, 見守る→追跡する, 求められている→必要だ\n"
-                    f"   必要とされる→必要だ, 直結している→関係している, 注目を集めている→注目されている\n"
-                    f"   報じられた→明らかになった, 報告された→発表された\n"
-                    f"   CRITICAL: S3 of JapanTruthの視点 must be ONE sentence only. Split into two if needed but keep as one.\n"
-                    f"   IMPORTANT: Do not just replace the word — rewrite the ENTIRE SENTENCE to remove vague language.\n"
-                    f"2. NUMBERS: trillion=兆, billion=十億, million=百万. Fix any wrong units.\n"
-                    f"3. ENGLISH: convert all English words to katakana EXCEPT: AI,GDP,SNS,IMF,WHO,NATO,EV,IPO,CEO,CFO,BBC,CNN\n"
-                    f"4. PERSPECTIVE: JapanTruthの視点 must be EXACTLY 3 sentences. Never 2, never 4.\n"
-                    f"5. HALLUCINATION: remove 来日/訪日/帰国 unless source explicitly states Japan travel.\n"
-                    f"6. OMISSION: if 省略 appears, expand with available facts.\n"
-                    f"7. TITLE: must contain specific person name, place, or company name. NEVER add dates to title. Remove endings like 〜が発表/〜が明らかに.\n"
-                    f"8. EXCERPT: minimum 50 chars. No banned endings like 〜が発表された/〜が確認された.\n"
-                    f"9. CONSECUTIVE ENDINGS: if sentences 2 and 3 of perspective end the same way, vary sentence 3.\n\n"
-                    f"INPUT JSON:\n"
-                    f"INPUT:\ntitle: {(_processed.get('title','') or '')[:80]}\n"
-                    f"excerpt: {(_processed.get('excerpt','') or '')[:100]}\n"
-                    f"body: {(_processed.get('body','') or '')[:1500].replace(chr(10),' ').replace(chr(34),chr(39))}\n\n"
-                    f"Return ONLY corrected JSON with keys title, excerpt, body."
+                    f"Fix this Japanese news article. Return ONLY valid JSON.\n\n"
+                    f"RULES:\n"
+                    f"1. FORBIDDEN - replace: とされる→と報じられた, とみられる→と分析される, 示唆している→示している\n"
+                    f"   懸念される→懸念が広がる, 注目される→注目を集める, 必要とされる→必要だ\n"
+                    f"   報じられた→伝えられた, 可能性がある→見通しだ, が問われる→が試される\n"
+                    f"   Rewrite entire sentence if vague. Output must be assertive だ/である style.\n"
+                    f"2. NUMBERS: trillion=兆, billion=十億, million=百万\n"
+                    f"3. ENGLISH words→katakana (except AI,GDP,SNS,NATO,EV,IPO,CEO,CFO,BBC,CNN)\n"
+                    f"4. JapanTruthの視点: EXACTLY 3 sentences. NEVER add dates to title.\n"
+                    f"5. excerpt: min 50 chars, no banned endings\n\n"
+                    f"title: {_title}\n"
+                    f"excerpt: {_excerpt}\n"
+                    f"perspective: {_perspective_safe}\n\n"
+                    f"Return JSON: {{\"title\": \"...\", \"excerpt\": \"...\", \"perspective\": \"...\"}}"
                 )
                 _rkey = GROQ_API_KEYS[1] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS[0]
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
@@ -426,13 +420,17 @@ def summarize_article(title, content, category):
                 _rraw = re.sub(r"```json|```", "", _rraw).strip()
                 _rresult = json.loads(_rraw)
                 if isinstance(_rresult, list): _rresult = _rresult[0] if _rresult else {}
-                if _rresult.get("title") and _rresult.get("body"):
+                if _rresult.get("title"):
                     _processed["title"] = _rresult.get("title", _processed["title"])
+                if _rresult.get("excerpt"):
                     _processed["excerpt"] = _rresult.get("excerpt", _processed["excerpt"])
+                # perspectiveをbodyのJapanTruthの視点セクションに反映
+                if _rresult.get("perspective") and "JapanTruthの視点" in (_processed.get("body","") or ""):
+                    _body_parts = (_processed.get("body","") or "").split("## JapanTruthの視点")
+                    _processed["body"] = _body_parts[0] + "## JapanTruthの視点" + "\n" + _rresult["perspective"]
+                elif _rresult.get("body"):
                     _processed["body"] = _rresult.get("body", _processed["body"])
-                    print(f"✅ 2段階レビュー完了: {_processed['title'][:40]}")
-                else:
-                    print(f"⚠️ 2段階レビュー結果が不完全、元の記事を使用")
+                print(f"✅ 2段階レビュー完了: {_processed['title'][:40]}")
             except Exception as _re:
                 print(f"⚠️ 2段階レビュー失敗（元の記事を使用）: {_re}")
 
