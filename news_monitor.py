@@ -251,7 +251,6 @@ def summarize_article(title, content, category):
         "- international: cross-border armed conflict, war, UN/international organizations, terrorism\n"
         "- investment: stock prices, bonds, crypto, forex, central bank interest rates, financial markets\n"
         "- culture: sports, entertainment, science, technology, society, environment, health\n\n"
-        "TENSE RULE: Treat the article publication date as 'now'. Do not confuse past events with current status.\n\n"
         "FAILURE MODE PREVENTION:\n"
         "- If data is missing: shorten, do not speculate\n"
         "- If causal link cannot be proven from source: do not state it\n"
