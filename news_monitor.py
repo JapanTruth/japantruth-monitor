@@ -412,9 +412,19 @@ def summarize_article(title, content, category):
                     {"role": "system", "content": _system_msg},
                     {"role": "user", "content": _user_msg}
                 ]
-                # 2段階レビューはkey2→key3→key1の順で試す
+                # 2段階レビューはkey2→key3→key1の順で試す（レート制限時に切り替え）
                 _rkeys = GROQ_API_KEYS[1:] + [GROQ_API_KEYS[0]] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS
-                _rkey = _rkeys[0]
+                _rkey = None
+                for _k in _rkeys:
+                    _test = requests.post("https://api.groq.com/openai/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {_k}", "Content-Type": "application/json"},
+                        json={"model": "qwen/qwen3-32b", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1},
+                        timeout=5)
+                    if "error" not in _test.json():
+                        _rkey = _k
+                        break
+                if not _rkey:
+                    _rkey = _rkeys[0]
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
                 _rd = {"model": "qwen/qwen3-32b", "messages": _review_messages, "max_tokens": 500, "temperature": 0.3}
                 _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
