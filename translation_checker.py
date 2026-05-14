@@ -312,7 +312,7 @@ for i, post in enumerate(posts):
                 "https://api.groq.com/openai/v1/chat/completions",
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                 json={
-                    "model": "llama-3.1-8b-instant",
+                    "model": "llama-3.3-70b-versatile",
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 150,
                     "temperature": 0
@@ -542,7 +542,7 @@ if duplicates:
             )
             gkey = GROQ_API_KEYS[0]
             gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
-            gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
+            gd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
             time.sleep(2)  # レート制限対策
             gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
             _gr_json = gr.json()
@@ -629,7 +629,7 @@ for score, slug, title, reasons in low_quality:
         )
         gkey = GROQ_API_KEYS[0]
         gh = {"Authorization": f"Bearer {gkey}", "Content-Type": "application/json"}
-        gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
+        gd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": ai_prompt}], "max_tokens": 10, "temperature": 0.1}
         gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=gh, json=gd, timeout=15)
         _gr_json2 = gr.json()
         if not _gr_json2.get("choices"):
