@@ -394,7 +394,7 @@ def summarize_article(title, content, category):
                     _perspective = _body.split('JapanTruthの視点')[-1][:500]
                 _title = (_processed.get('title','') or '')[:80]
                 _excerpt = (_processed.get('excerpt','') or '')[:100]
-                _perspective_safe = _perspective.replace(chr(10),' ').replace(chr(34),chr(39))
+                _perspective_safe = _perspective.replace(chr(10),' ').replace(chr(13),' ').replace(chr(34),chr(39)).replace(chr(92),' ').replace(chr(0),'')[:400]
                 _review_prompt = (
                     f"Fix this Japanese news article. Return ONLY valid JSON.\n\n"
                     f"RULES:\n"
