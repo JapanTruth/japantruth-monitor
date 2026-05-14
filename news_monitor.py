@@ -403,7 +403,7 @@ def summarize_article(title, content, category):
                     )
                     _gkey = GROQ_API_KEYS[0]
                     _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
-                    _gd = {"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": _ai_prompt}], "max_tokens": 100, "temperature": 0.1}
+                    _gd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": _ai_prompt}], "max_tokens": 100, "temperature": 0.1}
                     _gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_gh, json=_gd, timeout=15)
                     _graw = _gr.json()["choices"][0]["message"]["content"]
                     _graw = re.sub(r"<think>.*?</think>", "", _graw, flags=re.DOTALL).strip()
@@ -1009,7 +1009,7 @@ def verify_and_fix_proper_nouns(source_title, result):
                 "https://api.groq.com/openai/v1/chat/completions",
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                 json={
-                    "model": "llama-3.1-8b-instant",
+                    "model": "llama-3.3-70b-versatile",
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 200,
                     "temperature": 0
