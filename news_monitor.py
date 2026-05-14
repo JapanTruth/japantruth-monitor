@@ -402,9 +402,9 @@ def summarize_article(title, content, category):
                     f"8. EXCERPT: minimum 50 chars. No banned endings like 〜が発表された/〜が確認された.\n"
                     f"9. CONSECUTIVE ENDINGS: if sentences 2 and 3 of perspective end the same way, vary sentence 3.\n\n"
                     f"INPUT JSON:\n"
-                    f"{{\"title\": \"{_processed.get('title','')}\", "
-                    f"\"excerpt\": \"{_processed.get('excerpt','')}\", "
-                    f"\"body\": \"{(_processed.get('body','') or '')[:2000]}\"}}"
+                    f"INPUT JSON: title={repr(_processed.get('title',''))[:100]} excerpt={repr(_processed.get('excerpt',''))[:100]}"
+                    f"body_preview={repr((_processed.get('body','') or '')[:500])}"
+                    f"\n\nReturn corrected JSON with keys: title, excerpt, body"
                     f"\n\nReturn ONLY the corrected JSON object."
                 )
                 _rkey = GROQ_API_KEYS[0]
