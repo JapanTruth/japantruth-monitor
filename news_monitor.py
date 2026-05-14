@@ -395,27 +395,28 @@ def summarize_article(title, content, category):
                 _title = (_processed.get('title','') or '')[:80]
                 _excerpt = (_processed.get('excerpt','') or '')[:100]
                 _perspective_safe = _perspective.replace(chr(10),' ').replace(chr(13),' ').replace(chr(34),chr(39)).replace(chr(92),' ').replace(chr(0),'')[:400]
-                _review_prompt = (
-                    f"Fix this Japanese news article. Return ONLY valid JSON.\n\n"
-                    f"RULES:\n"
-                    f"1. FORBIDDEN - replace: とされる→と報じられた, とみられる→と分析される, 示唆している→示している\n"
-                    f"   懸念される→懸念が広がる, 注目される→注目を集める, 必要とされる→必要だ\n"
-                    f"   報じられた→伝えられた, 可能性がある→見通しだ, が問われる→が試される\n"
-                    f"   Rewrite entire sentence if vague. Output must be assertive だ/である style.\n"
-                    f"2. NUMBERS: trillion=兆, billion=十億, million=百万\n"
-                    f"3. ENGLISH words→katakana (except AI,GDP,SNS,NATO,EV,IPO,CEO,CFO,BBC,CNN)\n"
-                    f"4. JapanTruthの視点: EXACTLY 3 sentences. NEVER add dates to title.\n"
-                    f"5. excerpt: min 50 chars, no banned endings\n\n"
-                    f"title: {_title}\n"
-                    f"excerpt: {_excerpt}\n"
-                    f"perspective: {_perspective_safe}\n\n"
-                    f"Return JSON: {{\"title\": \"...\", \"excerpt\": \"...\", \"perspective\": \"...\"}}"
+                _system_msg = "Fix this Japanese news article. Return ONLY valid JSON with keys: title, excerpt, perspective."
+                _rules = (
+                    "RULES:\n"
+                    "1. FORBIDDEN - replace: とされる→と報じられた, とみられる→と分析される, 示唆している→示している\n"
+                    "   懸念される→懸念が広がる, 注目される→注目を集める, 必要とされる→必要だ\n"
+                    "   報じられた→伝えられた, 可能性がある→見通しだ, が問われる→が試される\n"
+                    "   Rewrite entire sentence if vague. Output must be assertive だ/である style.\n"
+                    "2. NUMBERS: trillion=兆, billion=十億, million=百万\n"
+                    "3. ENGLISH words→katakana (except AI,GDP,SNS,NATO,EV,IPO,CEO,CFO,BBC,CNN)\n"
+                    "4. JapanTruthの視点: EXACTLY 3 sentences. NEVER add dates to title.\n"
+                    "5. excerpt: min 50 chars, no banned endings\n"
                 )
+                _user_msg = _rules + "\ntitle: " + _title + "\nexcerpt: " + _excerpt + "\nperspective: " + _perspective_safe
+                _review_messages = [
+                    {"role": "system", "content": _system_msg},
+                    {"role": "user", "content": _user_msg}
+                ]
                 # 2段階レビューはkey2→key3→key1の順で試す
                 _rkeys = GROQ_API_KEYS[1:] + [GROQ_API_KEYS[0]] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS
                 _rkey = _rkeys[0]
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
-                _rd = {"model": "qwen/qwen3-32b", "messages": [{"role": "user", "content": _review_prompt}], "max_tokens": 2000, "temperature": 0.3}
+                _rd = {"model": "qwen/qwen3-32b", "messages": _review_messages, "max_tokens": 500, "temperature": 0.3}
                 _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
                 _rjson = _rr.json()
                 if "choices" not in _rjson:
