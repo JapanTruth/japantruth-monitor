@@ -169,7 +169,8 @@ def screen_article(title, summary="", recent_titles=None):
                     print(f"⏳ レート制限 | 残り: {remaining} | リセット: {reset_time}")
                     get_next_key()
                     continue
-                return False, ""
+                get_next_key()
+                continue
             if "choices" not in result:
                 print(f"⚠️ APIエラー: {result.get('error', {}).get('message', str(result))[:200]}")
                 get_next_key()
