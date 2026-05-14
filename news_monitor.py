@@ -176,8 +176,8 @@ def screen_article(title, summary="", recent_titles=None):
                 get_next_key()
                 continue
             text = result["choices"][0]["message"]["content"]
-            is_breaking = "newsworthy: yes" in text
-            already_covered = "already_covered: yes" in text
+            is_breaking = "newsworthy: yes" in text.lower()
+            already_covered = "already_covered: yes" in text.lower()
             if already_covered:
                 print(f"⏭️ 既報と判定（8b）: {title[:50]}")
                 return False, ""
