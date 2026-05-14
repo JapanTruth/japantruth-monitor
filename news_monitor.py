@@ -417,9 +417,9 @@ def summarize_article(title, content, category):
                     f"\n\nReturn corrected JSON with keys: title, excerpt, body"
                     f"\n\nReturn ONLY the corrected JSON object."
                 )
-                _rkey = GROQ_API_KEYS[0]
+                _rkey = GROQ_API_KEYS[1] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS[0]
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
-                _rd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": _review_prompt}], "max_tokens": 2000, "temperature": 0.1}
+                _rd = {"model": "qwen/qwen3-32b", "messages": [{"role": "user", "content": _review_prompt}], "max_tokens": 2000, "temperature": 0.3}
                 _rr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_rh, json=_rd, timeout=30)
                 _rraw = _rr.json()["choices"][0]["message"]["content"]
                 _rraw = re.sub(r"<think>.*?</think>", "", _rraw, flags=re.DOTALL).strip()
