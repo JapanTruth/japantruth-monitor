@@ -1502,6 +1502,14 @@ def main():
 
         print("💤 15分待機中...")
         time.sleep(1800)
+        # translation_checkerを15分ごとに実行
+        try:
+            import subprocess
+            print("🔍 translation_checker実行中...")
+            subprocess.run(["python3", "translation_checker.py"], timeout=120, capture_output=False)
+            print("✅ translation_checker完了")
+        except Exception as _tce:
+            print(f"⚠️ translation_checker失敗: {_tce}")
 
 
 
