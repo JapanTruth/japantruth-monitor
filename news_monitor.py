@@ -906,6 +906,41 @@ def post_process_article(result):
         body = body[:view_match.start(2)] + view_text + body[view_match.end(2):]
         processed["body"] = body
 
+    # 禁止ワード自動修正
+    body = processed.get("body", "") or ""
+    title = processed.get("title", "") or ""
+    excerpt = processed.get("excerpt", "") or ""
+    
+    forbidden_fixes = {
+        "とされる": "と報じられている",
+        "といわれる": "と伝えられている",
+        "とみられる": "と分析される",
+        "示唆している": "示している",
+        "示唆される": "示されている",
+        "指摘されている": "と報告されている",
+        "懸念される": "懸念が広がる",
+        "注目されている": "焦点となっている",
+        "注目を集めている": "注目を浴びている",
+        "が問われている": "が試される",
+        "が問われる": "が試される",
+        "必要とされる": "必要だ",
+        "求められている": "必要だ",
+        "可能性がある": "見通しだ",
+        "かもしれない": "と見られる",
+        "国際社会": "各国政府",
+        "直結する": "関連する",
+        "避けられない": "深刻だ",
+        "が高まっている": "が増している",
+        "が広がっている": "が拡大している",
+    }
+    for wrong, correct in forbidden_fixes.items():
+        body = body.replace(wrong, correct)
+        title = title.replace(wrong, correct)
+        excerpt = excerpt.replace(wrong, correct)
+    processed["body"] = body
+    processed["title"] = title
+    processed["excerpt"] = excerpt
+
     return processed
 
 def score_article(result):
