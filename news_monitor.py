@@ -187,7 +187,8 @@ def screen_article(title, summary="", recent_titles=None):
                     image_kw = line.replace("image:", "").strip()
                     break
             return is_breaking, image_kw
-        except:
+        except Exception as _se:
+            print(f"⚠️ screen_article例外: {_se}")
             return False, ""
     return False, ""  # 全キー失敗時はスキップ扱い
 
