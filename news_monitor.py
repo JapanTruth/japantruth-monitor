@@ -459,7 +459,7 @@ def generate_tags(title, category):
                 continue
             dynamic_tags = result["choices"][0]["message"]["content"].strip()
             return f"{base_tags} {dynamic_tags} #JapanTruth"
-        except:
+        except Exception as _te:
             break
     return f"{base_tags} #JapanTruth"
 
