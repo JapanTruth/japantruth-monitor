@@ -209,7 +209,7 @@ def summarize_article(title, content, category):
         "- million = 百万（1 million = 100万）\n"
         "- NEVER invent numbers. Copy exactly from source. No person has quadrillion-dollar assets.\n"
         "CRITICAL ROLE/INSTITUTION TRANSLATIONS:\n"
-        "- Senate=上院 (NOT 下院), House of Representatives=下院 (NOT 上院). Never confuse these two.\n"
+        "- Senate=上院 (NOT 下院), House of Representatives=下院 (NOT 上院). NEVER confuse these two. Mixing them is a critical error.\n"
         "- Speaker of the House=下院議長 (lower house speaker)\n"
         "- House Minority Leader=下院少数党院内総務\n"
         "- House Majority Leader=下院多数党院内総務\n"
