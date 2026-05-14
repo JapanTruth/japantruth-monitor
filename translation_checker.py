@@ -95,6 +95,34 @@ if not duplicates:
     print("✅ 重複なし")
 
 # =============================
+# 1.5 JSONプレビュー形式のbody検出・修正
+# =============================
+print(f"\n{'=' * 50}")
+print("🔧 1.5 JSONプレビュー形式のbody修正")
+print("=" * 50)
+json_fixed = []
+for post in posts:
+    slug = post.get("slug", "")
+    body = post.get("body", "") or ""
+    if body.strip().startswith("{") and "preview" in body:
+        try:
+            import json as _json
+            parsed = _json.loads(body)
+            real_body = parsed.get("preview", "")
+            if real_body:
+                res2 = requests.patch(
+                    f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
+                    headers=headers_sb,
+                    json={"body": real_body}
+                )
+                if res2.status_code == 204:
+                    json_fixed.append(slug)
+                    print(f"🔧 JSONプレビュー修正: {post.get('title','')[:40]}")
+        except Exception as _je:
+            print(f"⚠️ JSONプレビュー修正失敗: {_je}")
+if not json_fixed:
+    print("✅ JSONプレビュー形式なし")
+
 # 2. 禁止ワードチェック + 自動修正
 # =============================
 print(f"\n{'=' * 50}")
