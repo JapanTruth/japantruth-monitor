@@ -237,7 +237,7 @@ def scrape_source(url):
         text = re.sub(r'<[^>]+>', ' ', r.text)
         text = re.sub(r'\s+', ' ', text)
         return text[:3000]
-    except:
+    except Exception:
         return ""
 
 # 直近10件のみソース照合（負荷軽減）
