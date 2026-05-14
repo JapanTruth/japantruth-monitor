@@ -350,7 +350,6 @@ for post in posts[:10]:
 # =============================
 print(f"\n{'=' * 50}")
 print("🔍 5. AI誤訳チェック（スキップ）")
-if True:
 print("=" * 50)
 
 for i, post in enumerate([]):  # AI誤訳チェック無効化
