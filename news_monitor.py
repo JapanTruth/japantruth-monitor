@@ -441,6 +441,7 @@ def summarize_article(title, content, category):
                 _rraw = re.sub(r"<think>.*?</think>", "", _rraw, flags=re.DOTALL).strip()
                 _rraw = re.sub(r"```json|```", "", _rraw).strip()
                 _rresult = json.loads(_rraw)
+                if isinstance(_rresult, list): _rresult = _rresult[0] if _rresult else {}
                 if _rresult.get("title") and _rresult.get("body"):
                     _processed["title"] = _rresult.get("title", _processed["title"])
                     _processed["excerpt"] = _rresult.get("excerpt", _processed["excerpt"])
