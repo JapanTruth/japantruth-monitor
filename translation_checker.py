@@ -349,10 +349,11 @@ for post in posts[:10]:
 # 5. AI誤訳チェック + 新規パターン提案
 # =============================
 print(f"\n{'=' * 50}")
-print("🔍 5. AI誤訳チェック（新規パターン提案付き）")
+print("🔍 5. AI誤訳チェック（スキップ）")
+if False:
 print("=" * 50)
 
-for i, post in enumerate(posts[:15]):
+for i, post in enumerate([]):  # AI誤訳チェック無効化
     slug = post.get("slug", "")
     title_jp = post.get("title", "") or ""
     body = post.get("body", "")[:3000]
