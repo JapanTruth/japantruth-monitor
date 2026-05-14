@@ -218,7 +218,6 @@ def summarize_article(title, content, category):
         "- Kyiv=キーウ（キエフは誤り）\n"
         "- GameStop=ゲームストップ（ゲーマーストップは誤り）\n"
         "- Hantavirus=ハンタウイルス（ハンターバイラス・ハンタナウス・ハンターウイルスは全て誤り）\n"
-        "- GameStop=ゲームストップ（ゲーマーストップは誤り）\n"
         "- Attorney General=司法長官（検事総長ではない）\n"
         "- Chief of Staff=首席補佐官\n"
         "- National Security Advisor=国家安全保障担当大統領補佐官\n"
