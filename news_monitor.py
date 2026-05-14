@@ -292,7 +292,7 @@ def summarize_article(title, content, category):
         f"Convert the following English article into a Japanese article and return as JSON.\n"
         f"CRITICAL: Do NOT add any proper nouns, numbers, or dates not in the source. If source lacks detail, write fewer sentences.\n\n"
         "/no_think\n"
-        f"Title: {title}\nContent: {content[:3500]}\n\n"
+        f"Title: {title}\nContent: {content[:3000]}\n\n"
         "JSON fields:\n"
         "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり.\n"
         "- excerpt: The single most surprising or counterintuitive fact. MUST contain specific number, name, or paradox.\n"
