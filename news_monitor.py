@@ -170,7 +170,11 @@ def screen_article(title, summary="", recent_titles=None):
                     get_next_key()
                     continue
                 return False, ""
-            text = result["choices"][0]["message"]["content"].strip().lower()
+            if "choices" not in result:
+                print(f"⚠️ APIエラー: {result.get('error', {}).get('message', str(result))[:200]}")
+                get_next_key()
+                continue
+            text = result["choices"][0]["message"]["content"]
             is_breaking = "newsworthy: yes" in text
             already_covered = "already_covered: yes" in text
             if already_covered:
