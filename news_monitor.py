@@ -386,7 +386,11 @@ def summarize_article(title, content, category):
                 _review_prompt = (
                     f"You are a Japanese news editor. Review and fix the article below. Return ONLY valid JSON, no explanation.\n\n"
                     f"RULES TO ENFORCE:\n"
-                    f"1. FORBIDDEN WORDS: replace とされる→と報じられた, かもしれない→と見られる, 懸念される→懸念が高まっている, 注目される→注目されている\n"
+                    f"1. FORBIDDEN WORDS - replace ALL of these:\n"
+                    f"   とされる→と報じられた, といわれる→と伝えられた, とみられる→と分析される\n"
+                    f"   かもしれない→と見られる, 示唆している→示している, 指摘されている→と報告された\n"
+                    f"   懸念される→懸念が広がっている, 注目される→注目を集めている, 再評価されている→評価が高まっている\n"
+                    f"   可能性がある→見通しだ, 見守る→追跡する, 求められている→必要とされる\n"
                     f"2. NUMBERS: trillion=兆, billion=十億, million=百万. Fix any wrong units.\n"
                     f"3. ENGLISH: convert all English words to katakana EXCEPT: AI,GDP,SNS,IMF,WHO,NATO,EV,IPO,CEO,CFO,BBC,CNN\n"
                     f"4. PERSPECTIVE: JapanTruthの視点 must be EXACTLY 3 sentences. Never 2, never 4.\n"
