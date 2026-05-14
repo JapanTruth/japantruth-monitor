@@ -412,10 +412,10 @@ def summarize_article(title, content, category):
                     f"8. EXCERPT: minimum 50 chars. No banned endings like 〜が発表された/〜が確認された.\n"
                     f"9. CONSECUTIVE ENDINGS: if sentences 2 and 3 of perspective end the same way, vary sentence 3.\n\n"
                     f"INPUT JSON:\n"
-                    f"INPUT JSON: title={repr(_processed.get('title',''))[:100]} excerpt={repr(_processed.get('excerpt',''))[:100]}"
-                    f"body_preview={repr((_processed.get('body','') or '')[:500])}"
-                    f"\n\nReturn corrected JSON with keys: title, excerpt, body"
-                    f"\n\nReturn ONLY the corrected JSON object."
+                    f"INPUT:\ntitle: {(_processed.get('title','') or '')[:80]}\n"
+                    f"excerpt: {(_processed.get('excerpt','') or '')[:100]}\n"
+                    f"body: {(_processed.get('body','') or '')[:1500].replace(chr(10),' ').replace(chr(34),chr(39))}\n\n"
+                    f"Return ONLY corrected JSON with keys title, excerpt, body."
                 )
                 _rkey = GROQ_API_KEYS[1] if len(GROQ_API_KEYS) > 1 else GROQ_API_KEYS[0]
                 _rh = {"Authorization": f"Bearer {_rkey}", "Content-Type": "application/json"}
