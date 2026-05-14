@@ -352,7 +352,7 @@ print(f"\n{'=' * 50}")
 print("🔍 5. AI誤訳チェック（新規パターン提案付き）")
 print("=" * 50)
 
-for i, post in enumerate(posts):
+for i, post in enumerate(posts[:15]):
     slug = post.get("slug", "")
     title_jp = post.get("title", "") or ""
     body = post.get("body", "")[:3000]
