@@ -201,7 +201,7 @@ def summarize_article(title, content, category):
         "- Output language: Japanese only, declarative style (da/de-aru form, NOT desu/masu). No exceptions. (except keyword field which must be English)\n"
         "- title field MUST be Japanese. Never output English in the title field.\n"
         "- Only use numbers, dates, and proper nouns explicitly present in the source article.\n"
-        "- Never fabricate. Never speculate beyond source. If information is insufficient, reduce output length rather than speculate.\n"
+        "- Never fabricate. Never speculate beyond source. If information is insufficient, use what IS in the source. Never speculate beyond source.\n"
         "- Never use numbered lists or bullet points anywhere in the body text.\n"
         "- All newline characters inside JSON values MUST be escaped as \\n, never actual line breaks.\n\n"
         "CRITICAL PROPER NOUN RULES:\n"
