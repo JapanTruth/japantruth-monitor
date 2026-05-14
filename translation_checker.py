@@ -22,13 +22,16 @@ headers_sb = {
     "Content-Type": "application/json"
 }
 
-# 記事取得
+# 記事取得（tc_checked=falseの未チェック記事のみ）
 res = requests.get(
-    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt,source_url&order=date.desc&limit=200",
+    f"{SUPABASE_URL}/rest/v1/posts?select=slug,title,body,excerpt,source_url&tc_checked=eq.false&order=date.desc&limit=100",
     headers=headers_sb
 )
 posts = res.json()
-print(f"✅ 取得完了: {len(posts)}件をスキャン\n")
+print(f"✅ 取得完了: {len(posts)}件をスキャン（未チェックのみ）\n")
+if not posts:
+    print("✅ 未チェック記事なし。終了します。")
+    import sys; sys.exit(0)
 
 # PROPER_NOUN_FIXESを読み込む
 try:
@@ -674,6 +677,17 @@ for score, slug, title, reasons in low_quality:
         deleted_lq += 1
 
 print(f"\n✅ 低品質記事削除: {deleted_lq}件")
+
+# チェック済みフラグを更新
+print("\n🔖 チェック済みフラグを更新中...")
+checked_slugs = [p.get("slug","") for p in posts if p.get("slug")]
+for slug in checked_slugs:
+    requests.patch(
+        f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
+        headers=headers_sb,
+        json={"tc_checked": True}
+    )
+print(f"✅ {len(checked_slugs)}件をチェック済みに更新")
 
 with open("translation_check_result.json", "w", encoding="utf-8") as f:
     json.dump({
