@@ -424,19 +424,22 @@ def summarize_article(title, content, category):
             # 2段階レビュー：70bで禁止ワード・数字・ハルシネーションを修正
             try:
                 _review_prompt = (
-                    f"以下の日本語ニュース記事を校正せよ。修正済みJSONのみ返せ。\n\n"
-                    f"修正ルール:\n"
-                    f"1. 禁止ワードを修正: とされる→と報じられた、かもしれない→と見られる、懸念される→懸念が高まっている\n"
-                    f"2. 数字の単位確認: trillion=兆、billion=十億、million=百万\n"
-                    f"3. 英語単語をカタカナに変換（AI/GDP/SNS等の略語は除く）\n"
-                    f"4. JapanTruthの視点は必ず3文のみ\n"
-                    f"5. 来日/訪日/帰国は原文に明記がない場合は削除\n"
-                    f"6. 省略という文字列があれば削除して内容を補完\n\n"
-                    f"元の記事JSON:\n"
+                    f"You are a Japanese news editor. Review and fix the article below. Return ONLY valid JSON, no explanation.\n\n"
+                    f"RULES TO ENFORCE:\n"
+                    f"1. FORBIDDEN WORDS: replace とされる→と報じられた, かもしれない→と見られる, 懸念される→懸念が高まっている, 注目される→注目されている\n"
+                    f"2. NUMBERS: trillion=兆, billion=十億, million=百万. Fix any wrong units.\n"
+                    f"3. ENGLISH: convert all English words to katakana EXCEPT: AI,GDP,SNS,IMF,WHO,NATO,EV,IPO,CEO,CFO,BBC,CNN\n"
+                    f"4. PERSPECTIVE: JapanTruthの視点 must be EXACTLY 3 sentences. Never 2, never 4.\n"
+                    f"5. HALLUCINATION: remove 来日/訪日/帰国 unless source explicitly states Japan travel.\n"
+                    f"6. OMISSION: if 省略 appears, expand with available facts.\n"
+                    f"7. TITLE: must contain specific number, name, or place. Remove endings like 〜が発表/〜が明らかに.\n"
+                    f"8. EXCERPT: minimum 50 chars. No banned endings like 〜が発表された/〜が確認された.\n"
+                    f"9. CONSECUTIVE ENDINGS: if sentences 2 and 3 of perspective end the same way, vary sentence 3.\n\n"
+                    f"INPUT JSON:\n"
                     f"{{\"title\": \"{_processed.get('title','')}\", "
                     f"\"excerpt\": \"{_processed.get('excerpt','')}\", "
                     f"\"body\": \"{(_processed.get('body','') or '')[:2000]}\"}}"
-                    f"\n\n修正済みJSONのみ出力せよ。"
+                    f"\n\nReturn ONLY the corrected JSON object."
                 )
                 _rkey = GROQ_API_KEYS[0]
                 _rh = {{"Authorization": f"Bearer {{_rkey}}", "Content-Type": "application/json"}}
