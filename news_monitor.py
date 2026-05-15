@@ -365,12 +365,12 @@ def summarize_article(title, content, category):
                     _graw = re.sub(r"```json|```", "", _graw).strip()
                     _ai_score = int(''.join(filter(str.isdigit, _graw.strip()[:3])) or '7')
                     print(f"🤖 AI品質スコア: {_ai_score}/10")
-                    if _ai_score < 5:
+                    if _ai_score < 6:
                         print(f"⏭️ AI判定で低品質記事をスキップ（スコア{_ai_score}）")
                         return None
                 except Exception as _ge:
                     print(f"⚠️ AI品質評価失敗: {_ge}")
-            if _score < 5:
+            if _score < 6:
                 print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
                 return None
 
@@ -961,7 +961,7 @@ def score_article(result):
         reasons.append("タイトルに固有情報なし")
 
     # 禁止ワードチェック
-    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる"]
+    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる", "とみられる", "示唆している", "が問われる", "注目されている", "必要とされる", "と報じられた", "が高まっている", "が広がっている"]
     found = [w for w in forbidden if w in body]
     if found:
         score -= len(found)
