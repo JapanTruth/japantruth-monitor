@@ -1483,8 +1483,8 @@ def main():
                 print(f"⚠️ スクレイピング失敗 → スキップ")
                 continue
             print(f"📰 処理中 [Qwen3-32b]: {article['title'][:60]}")
-            result = summarize_article(article["title"], article["content"], article["category"])
-            # summarize_articleはrate_limit時もNoneを返す（rate_limit文字列は返さない）
+            _processed = summarize_article(article["title"], article["content"], article["category"])
+            result = _processed  # 互換性のため
             if not result:
                 print("⚠️ 要約失敗（レート制限以外の原因）、スキップ")
                 continue
