@@ -1532,10 +1532,10 @@ def main():
             if image_path != "/japantruth.png":
                 seen_images.add(image_path)
             save_to_supabase(
-                slug, result.get("title", article["title"]),
+                slug, _processed.get("title", article["title"]),
                 date_str, time_str, cat,
-                result.get("excerpt", ""), image_path,
-                article["url"], result.get("body", ""),
+                _processed.get("excerpt", ""), image_path,
+                article["url"], _processed.get("body", ""),
                 article["source"], tags
             )
             article_url = f"https://www.japan-truth.com/posts/{slug}"
