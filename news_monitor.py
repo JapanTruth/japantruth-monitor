@@ -1497,7 +1497,7 @@ def main():
             print(f"🌐 記事本文スクレイピング中: {article['url'][:60]}")
             # 古い記事（2年以上前）をスキップ
             import re as _re_year
-            _year_match = _re_year.search(r'/20(\d{2})/', article["url"])
+            _year_match = _re_year.search(r"/20(\\d{2})/", article["url"])
             if _year_match:
                 _article_year = int("20" + _year_match.group(1))
                 from datetime import datetime as _dt
