@@ -347,7 +347,7 @@ def summarize_article(title, content, category):
             _processed = post_process_article(_article)
             print(f"📊 記事品質スコア: {_score}/10" + (f" | {chr(39).join(_reasons)}" if _reasons else " | 問題なし"))
             # AIによる追加品質評価
-            if _score >= 5:
+            if _score >= 6:
                 try:
                     _title_short = (_processed.get('title','') or '')[:80]
                     _ai_prompt = (
