@@ -1482,7 +1482,8 @@ def main():
                 print(f"✅ スクレイピング成功: {len(scraped)}文字取得")
                 article["content"] = scraped
             else:
-                print(f"⚠️ スクレイピング失敗 → RSSサマリーで代替")
+                print(f"⚠️ スクレイピング失敗 → スキップ")
+                continue
             print(f"📰 処理中 [Qwen3-32b]: {article['title'][:60]}")
             result = summarize_article(article["title"], article["content"], article["category"])
             # summarize_articleはrate_limit時もNoneを返す（rate_limit文字列は返さない）
