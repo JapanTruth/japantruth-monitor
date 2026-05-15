@@ -972,7 +972,10 @@ def score_article(result):
     # bodyの長さチェック
     if len(body) < 200:
         score -= 3
-        reasons.append("本文が短すぎる")
+        reasons.append("本文短すぎ")
+    elif len(body) < 400:
+        score -= 1
+        reasons.append("本文やや短い")
 
     # JapanTruthの視点チェック
     if "JapanTruthの視点" not in body:
@@ -982,16 +985,34 @@ def score_article(result):
     # 省略チェック
     if "省略" in body or "省略" in excerpt:
         score -= 2
-        reasons.append("本文に省略あり")
+        reasons.append("省略あり")
+
+    # 背景セクションチェック
+    if "## 背景" not in body:
+        score -= 1
+        reasons.append("背景なし")
+
+    # 何が起きているのかセクションチェック
+    if "## 何が起きているのか" not in body:
+        score -= 2
+        reasons.append("何が起きているのかなし")
 
     # excerptチェック
     if len(excerpt) < 20:
         score -= 1
-        reasons.append("excerptが短すぎる")
-    bad_excerpts = ["が発表された", "が明らかになった", "が行われた", "が報じられた"]
+        reasons.append("excerpt短い")
+    elif len(excerpt) < 50:
+        score -= 1
+        reasons.append("excerptやや短い")
+    bad_excerpts = ["が発表された", "が明らかになった", "が行われた", "が報じられた", "が確認された"]
     if any(w in excerpt for w in bad_excerpts):
         score -= 1
-        reasons.append("excerptが平凡")
+        reasons.append("excerpt平凡")
+
+    # 禁止ワード追加ペナルティ（多いほど重い）
+    if len(found) >= 3:
+        score -= 2
+        reasons.append("禁止ワード多数")
 
     score = max(0, score)
     return score, reasons
