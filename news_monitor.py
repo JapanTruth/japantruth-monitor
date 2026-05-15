@@ -1528,7 +1528,7 @@ def main():
                     if cloud_url:
                         image_path = cloud_url
             print(f"🏷️ タグ生成中 [8b]...")
-            tags = generate_tags(result.get("title", article["title"]), cat)
+            tags = generate_tags(_processed.get("title", article["title"]), cat)
             if image_path != "/japantruth.png":
                 seen_images.add(image_path)
             save_to_supabase(
