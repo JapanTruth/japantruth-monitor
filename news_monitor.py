@@ -1375,7 +1375,7 @@ def main():
             _sb_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
             _h = {"apikey": _sb_key, "Authorization": f"Bearer {_sb_key}"}
             _cutoff = (_now - timedelta(hours=3)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-            _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url&created_at=gte.{_cutoff}&order=created_at.desc&limit=100", headers=_h, timeout=5)
+            _res = _rq.get(f"{_sb_url}/rest/v1/posts?select=title,source_url,created_at&created_at=gte.{_cutoff}&order=created_at.desc&limit=100", headers=_h, timeout=5)
             _recent_posts = _res.json() if isinstance(_res.json(), list) else []
             _recent_titles = [p.get("title","") for p in _recent_posts]
             # source_urlのスラグも英語比較用に追加
@@ -1462,7 +1462,18 @@ def main():
                     if _ru == _article_url_base:
                         _age_hours = 99  # 同一URL→完全スキップ
                         break
-                if _age_hours >= 99:
+                    # created_atで経過時間を計算
+                    _cat = _recent_post.get("created_at","")
+                    if _cat:
+                        try:
+                            from dateutil import parser as _dp
+                            _post_time = _dp.parse(_cat).replace(tzinfo=timezone.utc)
+                            _hours = (_now.astimezone(timezone.utc) - _post_time).total_seconds() / 3600
+                            if _hours < _age_hours or _age_hours == 0:
+                                _age_hours = _hours
+                        except:
+                            pass
+                if _age_hours >= 99 or _age_hours < 3:
                     seen.add(article["id"])
                     save_seen(seen, seen_images)
                     print(f"⏭️ 類似トピック（3時間以内）をスキップ: {article['title'][:50]}")
