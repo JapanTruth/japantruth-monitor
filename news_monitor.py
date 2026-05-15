@@ -1495,6 +1495,15 @@ def main():
             article["image_kw"] = image_kw
             time.sleep(3)  # TPM制限対策
             print(f"🌐 記事本文スクレイピング中: {article['url'][:60]}")
+            # 古い記事（2年以上前）をスキップ
+            import re as _re_year
+            _year_match = _re_year.search(r'/20(\d{2})/', article["url"])
+            if _year_match:
+                _article_year = int("20" + _year_match.group(1))
+                from datetime import datetime as _dt
+                if _dt.now().year - _article_year >= 2:
+                    print(f"⏭️ 古い記事をスキップ（{_article_year}年）: {article['title'][:50]}")
+                    continue
             scraped = scrape_article(article["url"])
             if scraped:
                 print(f"✅ スクレイピング成功: {len(scraped)}文字取得")
