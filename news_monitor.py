@@ -346,37 +346,34 @@ def summarize_article(title, content, category):
             # _processed = verify_and_fix_proper_nouns(title, _processed)
             _processed = post_process_article(_article)
             print(f"📊 記事品質スコア: {_score}/10" + (f" | {chr(39).join(_reasons)}" if _reasons else " | 問題なし"))
-            # AIによる追加品質評価
-            if _score >= 6:
-                try:
-                    _title_short = (_processed.get('title','') or '')[:80]
-                    _ai_prompt = (
-                        f"Rate this Japanese news article quality from 1-10. Reply with ONLY a single integer.\n"
-                        f"Title: {_title_short}\n"
-                        f"Criteria: has specific facts/numbers, logical, no vague language, newsworthy\n"
-                        f"Reply format: just the number, e.g. 8"
-                    )
-                    _gkey = GROQ_API_KEYS[0]
-                    _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
-                    _gd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": _ai_prompt}], "max_tokens": 100, "temperature": 0.1}
-                    _gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_gh, json=_gd, timeout=15)
-                    _graw = _gr.json()["choices"][0]["message"]["content"]
-                    _graw = re.sub(r"<think>.*?</think>", "", _graw, flags=re.DOTALL).strip()
-                    _graw = re.sub(r"```json|```", "", _graw).strip()
-                    _ai_score = int(''.join(filter(str.isdigit, _graw.strip()[:3])) or '7')
-                    print(f"🤖 AI品質スコア: {_ai_score}/10")
-                    if _ai_score < 6:
-                        print(f"⏭️ AI判定で低品質記事をスキップ（スコア{_ai_score}）")
-                        return None
-                except Exception as _ge:
-                    print(f"⚠️ AI品質評価失敗: {_ge}")
             if _score < 6:
                 print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
                 return None
+            # AIによる追加品質評価
+            try:
+                _title_short = (_processed.get('title','') or '')[:80]
+                _ai_prompt = (
+                    f"Rate this Japanese news article quality from 1-10. Reply with ONLY a single integer.\n"
+                    f"Title: {_title_short}\n"
+                    f"Criteria: has specific facts/numbers, logical, no vague language, newsworthy\n"
+                    f"Reply format: just the number, e.g. 8"
+                )
+                _gkey = GROQ_API_KEYS[0]
+                _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
+                _gd = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": _ai_prompt}], "max_tokens": 100, "temperature": 0.1}
+                _gr = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=_gh, json=_gd, timeout=15)
+                _graw = _gr.json()["choices"][0]["message"]["content"]
+                _graw = re.sub(r"<think>.*?</think>", "", _graw, flags=re.DOTALL).strip()
+                _graw = re.sub(r"```json|```", "", _graw).strip()
+                _ai_score = int(''.join(filter(str.isdigit, _graw.strip()[:3])) or '7')
+                print(f"🤖 AI品質スコア: {_ai_score}/10")
+                if _ai_score < 6:
+                    print(f"⏭️ AI判定で低品質記事をスキップ（スコア{_ai_score}）")
+                    return None
+            except Exception as _ge:
+                print(f"⚠️ AI品質評価失敗: {_ge}")
 
             return _processed
-        except Exception as e:
-            import traceback
             print(f"⚠️ 試行{attempt+1}失敗: {type(e).__name__}: {e}")
             traceback.print_exc()
             time.sleep(10)
