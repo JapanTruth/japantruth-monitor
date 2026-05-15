@@ -374,11 +374,11 @@ def summarize_article(title, content, category):
                 print(f"⚠️ AI品質評価失敗: {_ge}")
 
             return _processed
+        except Exception as e:
+            import traceback
             print(f"⚠️ 試行{attempt+1}失敗: {type(e).__name__}: {e}")
             traceback.print_exc()
             time.sleep(10)
-    return None
-
 def generate_tags(title, category):
     category_tags = {
         "politics": "#政治 #外交",
