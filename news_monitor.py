@@ -239,7 +239,7 @@ def summarize_article(title, content, category):
         "JAPANTRUTH PERSPECTIVE — EXACTLY 3 sentences:\n"
         "- S1: BEGIN with specific number/company/country from source. Cite Japan impact if natural (yen/energy/exports), otherwise cite commodity/trade route.\n"
         "- S2: policy inconsistency, historical contradiction, corporate incentive, or geopolitical subtext. Cite specific fact.\n"
-        "- S3: VARY ending each article. OK: 〜が予想される/〜と見られる/〜という判断は妥当だ/〜が試される局面だ/〜はどう動くべきか/〜はこのリスクに備えられているか\n"
+        "- S3: VARY ending each article. OK: 〜が予想される/〜と見られる/〜という判断は妥当だ/〜が試される局面だ/〜はこのリスクに備えられているか\n"
         "- BANNED: 〜はどこへ向かうのか/避けられない/直結する/〜とされる/同社/同国/この/その\n\n"
         "CATEGORY-SPECIFIC RULES:\n"
         "- politics: elections, government policy, diplomacy, military, security — NOT financial markets\n"
@@ -288,7 +288,7 @@ def summarize_article(title, content, category):
         "   Sentence 2: Hidden context — policy inconsistency, historical contradiction, or corporate incentive. Must be specific.\n"
         "   Sentence 3: ONE of these ONLY (rotate, never repeat same ending twice):\n"
         "     〜が予想される / 〜と見られる / 〜は避けられない状況だ / 〜という判断は妥当だ\n"
-        "     〜はどう動くべきか / 〜はこのリスクに備えられているか / 〜という問いに答えが出ていない / 〜が試される局面だ\n"
+        "     〜はこのリスクに備えられているか / 〜という問いに答えが出ていない / 〜が試される局面だ\n"
         "   NEVER: 〜はどこへ向かうのか / 〜方向性はどこへ / 〜はどこに向かうのか)\n"
     )
 
