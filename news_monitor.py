@@ -1540,14 +1540,14 @@ def main():
             # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
-            if article.get("is_followup") and result and result.get("title"):
-                if not result["title"].startswith("【続報】"):
-                    result["title"] = "【続報】" + result["title"]
-            if result and result.get("title"):
-                used_topics[result["title"]] = datetime.now(JST)
+            if article.get("is_followup") and _processed and _processed.get("title"):
+                if not _processed["title"].startswith("【続報】"):
+                    _processed["title"] = "【続報】" + _processed["title"]
+            if _processed and _processed.get("title"):
+                used_topics[_processed["title"]] = datetime.now(JST)
                 # 生成済み日本語タイトルをSupabaseの_recent_titlesに即座に追加
-                _recent_titles.append(result["title"])
-                _cycle_generated_titles.append(result["title"])
+                _recent_titles.append(_processed["title"])
+                _cycle_generated_titles.append(_processed["title"])
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
             time.sleep(20)
