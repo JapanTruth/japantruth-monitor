@@ -1379,7 +1379,7 @@ def main():
             _recent_posts = _res.json() if isinstance(_res.json(), list) else []
             _recent_titles = [p.get("title","") for p in _recent_posts]
             # source_urlのスラグも英語比較用に追加
-            _recent_slugs = [p.get("source_url","").split("/")[-1].replace("-"," ").split("?")[0] for p in _recent_posts]
+            _recent_slugs = [" ".join(p.get("source_url","").replace("-"," ").replace("_"," ").split("/")[-3:]) for p in _recent_posts]
             _recent_urls = [p.get("source_url","") or "" for p in _recent_posts]
             _article_url_base = _up.urlparse(article["url"])._replace(query="", fragment="").geturl()
             _recent_urls_base = [_up.urlparse(u)._replace(query="", fragment="").geturl() for u in _recent_urls]
@@ -1393,7 +1393,7 @@ def main():
             ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 2 for t in _recent_titles)
             # 英語スラグとの比較
             _is_similar = _is_similar or any(
-                len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 1
+                len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 2
                 for s in _recent_slugs
             )
             # 同一サイクル内の生成済みタイトルと比較
