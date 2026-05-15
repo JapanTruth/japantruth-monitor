@@ -1393,7 +1393,7 @@ def main():
             ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 2 for t in _recent_titles)
             # 英語スラグとの比較
             _is_similar = _is_similar or any(
-                len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 2
+                len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 1
                 for s in _recent_slugs
             )
             # 同一サイクル内の生成済みタイトルと比較
