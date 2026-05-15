@@ -970,6 +970,27 @@ def score_article(result):
         score -= 2
         reasons.append("タイトルに固有情報なし")
 
+    # 背景の質チェック
+    bg_match = body.find("## 背景")
+    if bg_match >= 0:
+        bg_text = body[bg_match:bg_match+200]
+        if "省略" in bg_text:
+            score -= 2
+            reasons.append("背景省略")
+        elif len(bg_text) < 80:
+            score -= 1
+            reasons.append("背景が極端に短い")
+
+    # JapanTruthの視点の質チェック
+    vp_match = body.find("## JapanTruthの視点")
+    if vp_match >= 0:
+        vp_text = body[vp_match:vp_match+300]
+        vague = ["この動き", "この問題", "この状況", "どう動くべきか", "どこへ向かう"]
+        found_vague = [w for w in vague if w in vp_text]
+        if found_vague:
+            score -= len(found_vague)
+            reasons.append(f"視点が曖昧: {', '.join(found_vague[:2])}")
+
     # 禁止ワードチェック
     forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる", "とみられる", "示唆している", "が問われる", "注目されている", "必要とされる", "と報じられた", "が高まっている", "が広がっている"]
     found = [w for w in forbidden if w in body]
