@@ -341,10 +341,10 @@ def summarize_article(title, content, category):
                 "tokens_input": result.get("usage", {}).get("prompt_tokens", 0),
                 "tokens_output": result.get("usage", {}).get("completion_tokens", 0),
             }
-            _processed = post_process_article(_article)
+            _score, _reasons = score_article(_article)
             # verify_and_fix_proper_nouns は逆修正のリスクがあるため無効化
             # _processed = verify_and_fix_proper_nouns(title, _processed)
-            _score, _reasons = score_article(_processed)
+            _processed = post_process_article(_article)
             print(f"📊 記事品質スコア: {_score}/10" + (f" | {chr(39).join(_reasons)}" if _reasons else " | 問題なし"))
             # AIによる追加品質評価
             if _score >= 5:
