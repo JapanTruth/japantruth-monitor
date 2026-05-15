@@ -1462,7 +1462,7 @@ def main():
                     if _ru == _article_url_base:
                         _age_hours = 99  # 同一URL→完全スキップ
                         break
-                if _age_hours >= 99 or (_now - timedelta(hours=3)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") > _cutoff:
+                if _age_hours >= 99:
                     seen.add(article["id"])
                     save_seen(seen, seen_images)
                     print(f"⏭️ 類似トピック（3時間以内）をスキップ: {article['title'][:50]}")
