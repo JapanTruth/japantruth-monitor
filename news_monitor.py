@@ -936,6 +936,9 @@ def post_process_article(result):
         "が広がっている": "が拡大している",
         "と伝えられている": "と報じられている",
         "と伝えられた": "と報じられた",
+        "浮き彫りにしている": "示している",
+        "浮き彫りにした": "示した",
+        "と報じられている": "と伝えている",
     }
     for wrong, correct in forbidden_fixes.items():
         body = body.replace(wrong, correct)
