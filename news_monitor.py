@@ -1402,6 +1402,9 @@ def main():
             _is_similar = _is_similar or any(
                 len(_jp_words2(article["title"]) & _jp_words2(t)) >= 2
                 for t in _cycle_generated_titles
+            ) or any(
+                len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
+                for t in _cycle_generated_titles
             )
 
             # 同一ドメインからの類似記事チェック
@@ -1550,6 +1553,7 @@ def main():
                 # 生成済み日本語タイトルをSupabaseの_recent_titlesに即座に追加
                 _recent_titles.append(_processed["title"])
                 _cycle_generated_titles.append(_processed["title"])
+                _cycle_generated_titles.append(article["title"])  # 英語タイトルも追加
             cycle_count += 1
             print(f"📊 本日の投稿数: {daily_count}/100 | スキップ: {skip_count}件")
             time.sleep(20)
