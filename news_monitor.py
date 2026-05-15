@@ -933,6 +933,8 @@ def post_process_article(result):
         "避けられない": "深刻だ",
         "が高まっている": "が増している",
         "が広がっている": "が拡大している",
+        "と伝えられている": "と報告されている",
+        "と伝えられた": "と報告された",
     }
     for wrong, correct in forbidden_fixes.items():
         body = body.replace(wrong, correct)
