@@ -1560,6 +1560,8 @@ def main():
                     print(f"⏭️ 日本語タイトル類似でスキップ: {_jp_title[:40]}")
                     break
             if _jp_dup:
+                seen.add(article["id"])
+                save_seen(seen, seen_images)
                 continue
             date_str = datetime.now(JST).strftime("%Y-%m-%d")
             time_str = datetime.now(JST).strftime("%H:%M")
