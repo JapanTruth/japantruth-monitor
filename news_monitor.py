@@ -90,6 +90,14 @@ def load_seen():
                 seen.add(p["source_url"])
             if p.get("slug"):
                 seen.add(p["slug"])
+        # skipped_urlsも読み込む
+        _res2 = _rq.get(
+            f"{_sb_url}/rest/v1/skipped_urls?select=url&created_at=gte.{_cutoff}&limit=1000",
+            headers=_h, timeout=10
+        )
+        for p in _res2.json():
+            if p.get("url"):
+                seen.add(p["url"])
         print(f"✅ Supabaseから{len(seen)}件の既掲載記事を読み込み")
     except Exception as e:
         print(f"⚠️ Supabase読み込み失敗: {e}")
@@ -1562,6 +1570,16 @@ def main():
             if _jp_dup:
                 seen.add(article["id"])
                 save_seen(seen, seen_images)
+                # skipped_urlsに保存
+                try:
+                    _rq.post(
+                        f"{_sb_url}/rest/v1/skipped_urls",
+                        headers={**_h, "Content-Type": "application/json"},
+                        json={"url": article["id"], "reason": "jp_title_dup"},
+                        timeout=5
+                    )
+                except:
+                    pass
                 continue
             date_str = datetime.now(JST).strftime("%Y-%m-%d")
             time_str = datetime.now(JST).strftime("%H:%M")
