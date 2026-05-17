@@ -235,6 +235,7 @@ def summarize_article(title, content, category):
         "- 〜が広がっている / 〜が高まっている / 〜が求められている / 〜が必要とされる\n"
         "- 〜が報じられた / 〜と報告された / 〜が明らかになった / 〜が確認された\n"
         "- 試される局面だ / この判断は妥当だ / 再び高まっている / 深刻な局面だ / 妥当だと考えられる / 浮き彫りになっている\n"
+        "- [任意の主語]が試される / [任意の主語]に備えられているか / [任意の主語]への影響が試される\n"
         "- 〜に注目が集まる / 〜への関心が高まる / 〜の動向が注目される\n"
         "*** VIOLATION of any above = automatic rewrite. These are ABSOLUTE bans. ***\n\n"
         "BACKGROUND: Only source facts + universally known facts. Never invent. If insufficient: omit entire section.\n\n"
