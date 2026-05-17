@@ -247,7 +247,7 @@ def summarize_article(title, content, category):
         "- If you cannot write background using only (A) and (B): omit the entire section. Do not guess.\n\n"
         "JAPANTRUTH PERSPECTIVE — EXACTLY 3 sentences:\n"
         "- S1: BEGIN with specific number/company/country from source. Cite Japan impact if natural (yen/energy/exports/supply chain), otherwise cite commodity/trade route/geopolitical angle.\n"
-        "- S2: Choose the most natural angle from source: (A) Who benefits financially? (B) What past policy does this contradict? (C) Hidden context not in headline? (D) Japan impact (yen/energy/exports/security)? If none fit naturally, state what the numbers reveal. Always cite one specific fact.\n"
+        "- S2: Choose the most natural angle from source: (A) Who benefits financially? (B) What past policy does this contradict? (C) Hidden context not in headline? (D) Japan impact (yen/energy/exports/security)? (E) For culture/sports/entertainment: what does this reveal about society, industry structure, or human behavior? Always cite one specific fact from source.\n"
         "- S3: One sharp conclusion grounded in S1+S2. Prefer: 〜という判断は妥当だ/〜が本質的な問題だ/〜には無理がある/〜が示している. AVOID: 〜試される局面だ/〜に備えられているか/〜が予想される\n"
         "- BANNED in ALL sentences: 〜はどこへ向かうのか/避けられない/直結する/〜とされる/同社/同国/この/その\n\n"
         "CATEGORY-SPECIFIC RULES:\n"
