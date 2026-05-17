@@ -1539,6 +1539,20 @@ def main():
             if not any(_ud.name(c, '').startswith(('CJK', 'HIRAGANA', 'KATAKANA')) for c in result["title"]):
                 print(f"⚠️ タイトルが日本語でない: {result['title'][:50]} → スキップ")
                 continue
+            # 日本語タイトルで重複チェック（生成後）
+            import re as _re_jp
+            _stop_ja2 = {"の","が","を","に","は","で","と","も","な","する","した","て","や","へ","から","まで","より","として","による","大統領","首相","氏","問題","発言","表明","報告","発表"}
+            _jp_title = result.get("title","") or ""
+            _jp_title_words = set(w for w in _re_jp.findall(r"[ァ-ヴー]{3,}|[一-龥]{2,}", _jp_title) if w not in _stop_ja2)
+            _jp_dup = False
+            for _rt in _recent_titles + list(_cycle_generated_titles):
+                _rt_words = set(w for w in _re_jp.findall(r"[ァ-ヴー]{3,}|[一-龥]{2,}", _rt) if w not in _stop_ja2)
+                if len(_jp_title_words & _rt_words) >= 2:
+                    _jp_dup = True
+                    print(f"⏭️ 日本語タイトル類似でスキップ: {_jp_title[:40]}")
+                    break
+            if _jp_dup:
+                continue
             date_str = datetime.now(JST).strftime("%Y-%m-%d")
             time_str = datetime.now(JST).strftime("%H:%M")
             # Unicodeクォートを正規化
