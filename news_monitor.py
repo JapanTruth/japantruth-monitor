@@ -56,7 +56,7 @@ RSS_FEEDS = [
     {"url": "https://rss.dw.com/rdf/rss-en-all", "category": "economy", "source": "DW News"},
     # 投資
     {"url": "https://fortune.com/feed/", "category": "investment", "source": "Fortune"},
-    {"url": "https://feeds.bloomberg.com/markets/news.rss", "category": "investment", "source": "Bloomberg"},
+    {"url": "https://feeds.businessinsider.com/custom/all", "category": "investment", "source": "Business Insider"},
     {"url": "https://www.fool.com/feeds/index.aspx", "category": "investment", "source": "Motley Fool"},
     # 政治
     {"url": "https://feeds.bbci.co.uk/news/politics/rss.xml", "category": "politics", "source": "BBC Politics"},
