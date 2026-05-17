@@ -130,6 +130,26 @@ for post in posts:
 if not json_fixed:
     print("✅ JSONプレビュー形式なし")
 
+# 1.6 body重複セクションチェック
+# =============================
+for post in posts:
+    slug = post.get("slug", "")
+    body = post.get("body", "") or ""
+    # 「## 何が起きているのか」が2回以上出現する場合は最初の記事のみ抽出
+    marker = "## 何が起きているのか"
+    count = body.count(marker)
+    if count >= 2:
+        # 2回目の出現位置で切り取る
+        first = body.find(marker)
+        second = body.find(marker, first + len(marker))
+        clean_body = body[:second].strip()
+        requests.patch(
+            f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}",
+            headers=headers_sb,
+            json={"body": clean_body}
+        )
+        print(f"🔧 重複セクション修正: {post.get('title','')[:40]}")
+
 # 2. 禁止ワードチェック + 自動修正
 # =============================
 print(f"\n{'=' * 50}")
