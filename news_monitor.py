@@ -60,7 +60,8 @@ RSS_FEEDS = [
     {"url": "https://www.fool.com/feeds/index.aspx", "category": "investment", "source": "Motley Fool"},
     # 政治
     {"url": "https://feeds.bbci.co.uk/news/politics/rss.xml", "category": "politics", "source": "BBC Politics"},
-    {"url": "https://rss.politico.com/politics-news.xml", "category": "politics", "source": "Politico"},
+    {"url": "https://abcnews.go.com/abcnews/topstories", "category": "politics", "source": "ABC News"},
+    {"url": "https://www.independent.co.uk/news/world/rss", "category": "international", "source": "The Independent"},
     {"url": "https://feeds.npr.org/1004/rss.xml", "category": "politics", "source": "NPR World"},
     # 文化
     {"url": "https://www.theguardian.com/culture/rss", "category": "culture", "source": "The Guardian"},
