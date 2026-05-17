@@ -56,7 +56,7 @@ RSS_FEEDS = [
     {"url": "https://rss.dw.com/rdf/rss-en-all", "category": "economy", "source": "DW News"},
     # 投資
     {"url": "https://fortune.com/feed/", "category": "investment", "source": "Fortune"},
-    {"url": "https://feeds.businessinsider.com/custom/all", "category": "investment", "source": "Business Insider"},
+    {"url": "https://feeds.businessinsider.com/custom/all", "category": "culture", "source": "Business Insider"},
     {"url": "https://www.fool.com/feeds/index.aspx", "category": "investment", "source": "Motley Fool"},
     # 政治
     {"url": "https://feeds.bbci.co.uk/news/politics/rss.xml", "category": "politics", "source": "BBC Politics"},
@@ -241,6 +241,7 @@ def summarize_article(title, content, category):
         "- 〜とみられる / 〜が示唆される / 〜が指摘されている / 〜が懸念される\n"
         "- 〜が広がっている / 〜が高まっている / 〜が求められている / 〜が必要とされる\n"
         "- 〜が報じられた / 〜と報告された / 〜が明らかになった / 〜が確認された\n"
+        "- 試される局面だ / この判断は妥当だ / 再び高まっている / 深刻な局面だ / 妥当だと考えられる / 浮き彫りになっている\n"
         "- 〜に注目が集まる / 〜への関心が高まる / 〜の動向が注目される\n"
         "*** VIOLATION of any above = automatic rewrite. These are ABSOLUTE bans. ***\n\n"
         "BACKGROUND: Only source facts + universally known facts (capitals, WWII). Never invent. If insufficient: omit.\n\n"
@@ -1041,7 +1042,7 @@ def score_article(result):
             reasons.append(f"視点が曖昧: {', '.join(found_vague[:2])}")
 
     # 禁止ワードチェック
-    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる", "とみられる", "示唆している", "が問われる", "注目されている", "必要とされる", "が高まっている", "が広がっている", "と伝えられている", "懸念される", "指摘されている", "と分析されている", "浮き彫りにしている", "求められる", "直結する"]
+    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる", "とみられる", "示唆している", "が問われる", "注目されている", "必要とされる", "が高まっている", "が広がっている", "と伝えられている", "懸念される", "指摘されている", "と分析されている", "浮き彫りにしている", "求められる", "直結する", "試される局面だ", "この判断は妥当だ", "再び高まっている", "深刻な局面だ", "妥当だと考えられる", "浮き彫りになっている"]
     found = [w for w in forbidden if w in body]
     if found:
         score -= len(found)
