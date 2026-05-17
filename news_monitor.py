@@ -308,7 +308,7 @@ def summarize_article(title, content, category):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt}
         ],
-        "max_tokens": 1000,
+        "max_tokens": 1500,
         "temperature": 0.3,
         "response_format": {"type": "json_object"}
     }
