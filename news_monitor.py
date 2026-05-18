@@ -245,8 +245,7 @@ def summarize_article(title, content, category):
         "- S2: MUST add NEW information not already in 何が起きているのか or 背景. Choose: (A) Who benefits financially? (B) What past policy contradicts this? (C) Hidden context not in headline? (D) Japan impact only if source mentions Japan explicitly. (E) Culture/sports: what does this reveal about society or industry? Cite one specific fact NOT already mentioned.\n"
         "- S3: EXACTLY 1 sentence. MUST name specific subject (company/country/person). End with ONE of: (B)[具体的事実]が本質的な問題だ (C)[具体的手法]には無理がある (D)[具体的事実]を示している. NEVER: 試される/妥当だ/局面だ/見込まれる/深刻/この/その\n"
         "- BANNED in ALL sentences: 〜はどこへ向かうのか/避けられない/直結する/〜とされる/同社/同国/この/その\n"
-        "GOOD S3: \"米国が停戦支持と武器供与を続ける構図が本質的な問題だ。\" / \"日銀の利上げが輸出競争力を削ぐ矛盾を示している。\"\n"
-        "BAD S3 (NEVER): \"この判断は妥当だ。\"(no subject) / \"[politician]の判断は妥当だ。\"(bias) / \"試される/備えられているか/局面だ\"(banned)\n"
+        
         "NOTE: '妥当だ' only for policy/business/military decisions. NEVER for personal decisions (health/attendance).\n"
         "POLITICAL NEUTRALITY: Never endorse or condemn any government/military/political group. State facts only. NEVER write [country]の判断は妥当だ or [leader]の行動は正しい or [country]の対応は適切だ.\n"
         "AVOID: 迅速である/適切だ/重要なステップ/重要な役割 (editorial opinions). 背景 must NOT repeat 何が起きているのか — add NEW facts only.\n\n"
