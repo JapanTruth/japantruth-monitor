@@ -226,24 +226,30 @@ def summarize_article(title, content, category):
 
 
 
-        f"Convert this English article to Japanese JSON. Source facts only — never fabricate.\n"
+    prompt = (
+        f"Convert this English article to Japanese JSON. Source facts only.\n"
         f"/no_think\n"
         f"Title: {title}\nContent: {content[:3500]}\n\n"
         "JSON fields:\n\n"
-        "title: Japanese, active voice. State the OUTCOME or IMPACT, not the topic. Include a number, name, or striking contrast when possible. Example: \'停戦後も877人死亡、イスラエルの攻撃止まらず\' not \'イスラエルの攻撃について\'. Never: 発表/明らかに/について/に関して/をめぐって/が確認/を否定/を表明. No dates.\n\n"
-        "excerpt: 2 sentences, 80-150 chars total. Lead with the most SURPRISING or COUNTERINTUITIVE fact — the number or detail that makes readers stop. Must contain specific number or name. Never repeat title. Never vague.\n\n"
-        "keyword: 1-3 English words for Unsplash photo. Physical, visual subject only (e.g. \'military drone\', \'stock exchange\', \'protest crowd\'). Never abstract (not \'tensions\', \'concerns\', \'crisis\').\n\n"
+        "title: Active voice. State the OUTCOME or IMPACT with number/name/contrast. "
+        "Example good: '停戦後も877人死亡' / Example bad: 'イスラエルの攻撃について'. "
+        "Never: 発表/明らかに/について/に関して/をめぐって/が確認/を否定/を表明. No dates.\n\n"
+        "excerpt: 2 sentences, 80-150 chars. Lead with the most SURPRISING fact — number or detail that stops readers. Never repeat title.\n\n"
+        "keyword: 1-3 English words for photo. Physical visual only (e.g. military drone, stock exchange, protest crowd). Never abstract.\n\n"
         "category: politics/economy/international/investment/culture\n\n"
-        "body — use EXACTLY this structure:\n\n"
+        "body:\n"
         "## 何が起きているのか\n"
-        "3 sentences. Sentence 1: WHO did WHAT and WHEN with specific number/place. Sentence 2: HOW or key detail. Sentence 3: WHY now or immediate consequence. Never repeat title subject. Facts only.\n\n"
+        "3 sentences. S1: WHO+WHAT+WHEN with specific number/place. S2: HOW or key detail. S3: WHY now or consequence. Never repeat title subject.\n\n"
         "## 背景\n"
-        "2-4 sentences. Context that makes the news meaningful. NEVER repeat 何が起きているのか. Each sentence must add NEW information — historical context, previous policy, scale comparison.\n\n"
+        "2-4 sentences. Context that makes the news meaningful. NEVER repeat 何が起きているのか. Each sentence adds NEW info — history, previous policy, scale.\n\n"
         "## JapanTruthの視点\n"
-        "EXACTLY 3 sentences — the analytical core that distinguishes JapanTruth:\n"
-        "S1: Open with a SPECIFIC NUMBER or NAMED ENTITY that anchors the analysis. Never: この/その/同社/同国/これ/それ.\n"
-        "S2: Expose the hidden angle — (A)who benefits financially and by how much (B)what specific past policy or promise this contradicts (C)what the headline deliberately omits (D)for culture/sports: what structural or social reality this exposes. Must cite specific year, number, or name not already mentioned.\n"
-        "S3: ONE sentence — ABSOLUTE HARD LIMIT. End with exactly ONE of: [具体的事実]が本質的な問題だ / [具体的手法]には無理がある / [X]が[Y]という矛盾を示している / [具体的事実]を示している. BANNED: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない/象徴する\n"
+        "EXACTLY 3 sentences:\n"
+        "S1: Open with SPECIFIC NUMBER or NAMED ENTITY. Never: この/その/同社/同国.\n"
+        "S2: Hidden angle with specific year/number/name not yet mentioned — "
+        "(A)who benefits financially (B)what past policy this contradicts "
+        "(C)what headline omits (D)culture/sports: what structural reality this exposes.\n"
+        "S3: ONE sentence ONLY. End with: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している / [事実]を示している. "
+        "BANNED: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない\n"
     )
 
 
