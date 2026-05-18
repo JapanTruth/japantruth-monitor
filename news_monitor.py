@@ -881,9 +881,9 @@ def score_article(result):
 
     # excerptチェック
     if len(excerpt) < 20:
-        score -= 1
+        score -= 2
         reasons.append("excerpt短い")
-    elif len(excerpt) < 50:
+    elif len(excerpt) < 80:
         score -= 1
         reasons.append("excerptやや短い")
     bad_excerpts = ["が発表された", "が明らかになった", "が行われた", "が報じられた", "が確認された"]
