@@ -1253,7 +1253,7 @@ def main():
                      "new","us","its","their","his","her","s","how","why","what","who"}
             _title_norm = article["title"].lower().replace("three-day","3-day").replace("three day","3 day")
             _title_words = set(w for w in _title_norm.split() if w not in _stop and len(w) > 2)
-            _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).total_seconds() < 10800}
+            _recent = {t: dt for t, dt in used_topics.items() if (_now - dt).total_seconds() < 21600}
             used_topics = _recent
             # 常にSupabaseから過去3時間の記事を取得
             import requests as _rq
