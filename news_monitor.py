@@ -297,10 +297,8 @@ def summarize_article(title, content, category):
         "  (Exactly 3 sentences. No lists. No bullet points.\n"
         "   Sentence 1: BEGIN with a SPECIFIC NUMBER or NAMED ENTITY from source (e.g. '米国の関税率145%が', 'ブラックストーンの20億ドルが', 'キューバの電力網崩壊で'). Never vague. Never: 同社/同国/同氏/この/その/この動き/この問題.\n"
         "   Sentence 2: Hidden context — policy inconsistency, historical contradiction, or corporate incentive. Must be specific.\n"
-        "   Sentence 3: ONE of these ONLY (rotate, never repeat same ending twice):\n"
-        "     〜が予想される / 〜と見られる / 〜は避けられない状況だ / 〜という判断は妥当だ\n"
-        "     〜はこのリスクに備えられているか / 〜という問いに答えが出ていない / 〜が試される局面だ\n"
-        "   NEVER: 〜はどこへ向かうのか / 〜方向性はどこへ / 〜はどこに向かうのか)\n"
+        "   Sentence 3: EXACTLY 1 sentence. End with ONE of: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している.\n"
+        "   NEVER: 試される/妥当だ/局面だ/見込まれる/深刻/この/その/リスクが示されている/と見られる/避けられない)\n"
     )
 
 
