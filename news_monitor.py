@@ -248,7 +248,9 @@ def summarize_article(title, content, category):
         "GOOD S3: \"米国が停戦支持と武器供与を続ける構図が本質的な問題だ。\" / \"日銀の利上げが輸出競争力を削ぐ矛盾を示している。\"\n"
         "BAD S3 (NEVER): \"この判断は妥当だ。\"(no subject) / \"[politician]の判断は妥当だ。\"(bias) / \"試される/備えられているか/局面だ\"(banned)\n"
         "NOTE: '妥当だ' only for policy/business/military decisions. NEVER for personal decisions (health/attendance).\n"
-        "POLITICAL NEUTRALITY: Never endorse or condemn any government/military/political group. State facts only. NEVER write [country]の判断は妥当だ or [leader]の行動は正しい or [country]の対応は適切だ.\n\n"
+        "POLITICAL NEUTRALITY: Never endorse or condemn any government/military/political group. State facts only. NEVER write [country]の判断は妥当だ or [leader]の行動は正しい or [country]の対応は適切だ.\n"
+        "AVOID EVALUATIVE LANGUAGE: NEVER use 迅速である/適切だ/重要なステップ/重要な役割/重要な意味 — these are editorial opinions, not facts.\n"
+        "NO REPETITION: 背景 must NOT repeat any sentence from 何が起きているのか. Each section must add NEW information.\n\n"
         "CATEGORY-SPECIFIC RULES:\n"
         "- politics: elections, government policy, diplomacy, military, security — NOT financial markets\n"
         "- economy: GDP, employment, trade volume, corporate earnings, inflation, industry — NOT stock prices\n"
@@ -954,6 +956,9 @@ def post_process_article(result):
         "注目されている": "焦点となっている",
         "注目される": "注目を浴びる",
         "注目を集めている": "注目を浴びている",
+        "注目を集めていた": "注目を浴びていた",
+        "注目が集まっている": "注目を浴びている",
+        "重要なステップ": "重要な段階",
         # 問われる系
         "が問われている": "が本質的な問題だ",
         "が問われる": "が本質的な問題だ",
