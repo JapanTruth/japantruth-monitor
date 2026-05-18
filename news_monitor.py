@@ -241,7 +241,7 @@ def summarize_article(title, content, category):
         "*** VIOLATION of any above = automatic rewrite. These are ABSOLUTE bans. ***\n\n"
         "BACKGROUND: Only source facts + universally known facts. Never invent. If insufficient: omit entire section.\n\n"
         "JAPANTRUTH PERSPECTIVE — EXACTLY 3 sentences:\n"
-        "- S1: BEGIN with specific number/company/country from source. Cite Japan impact if natural (yen/energy/exports/supply chain), otherwise cite commodity/trade route/geopolitical angle.\n"
+        "- S1: BEGIN with specific number/company/country from source. Cite Japan impact ONLY IF source explicitly mentions Japan, yen, Japanese companies, or Japan trade. NEVER fabricate Japan connections. Otherwise cite commodity/trade route/geopolitical angle.\n"
         "- S2: Choose the most natural angle from source: (A) Who benefits financially? (B) What past policy does this contradict? (C) Hidden context not in headline? (D) Japan impact (yen/energy/exports/security)? (E) For culture/sports/entertainment: what does this reveal about society, industry structure, or human behavior? Always cite one specific fact from source.\n"
         "- S3: One sharp conclusion grounded in S1+S2. MUST have specific subject (company/country/person name), not この/その/同社/同国. End with ONE of: (A)[具体的主語]の判断は妥当だ (B)[具体的事実]が本質的な問題だ (C)[具体的手法]には無理がある (D)[具体的事実]を示している. NEVER end with: 試される/備えられているか/予想される/局面だ/深刻な局面/この判断\n"
         "- BANNED in ALL sentences: 〜はどこへ向かうのか/避けられない/直結する/〜とされる/同社/同国/この/その\n"
