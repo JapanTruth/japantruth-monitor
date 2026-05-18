@@ -207,7 +207,7 @@ def summarize_article(title, content, category):
         "You are a senior journalist at JapanTruth, an independent Japanese-language news media.\n"
         "Mission: Cover stories that mainstream Japanese media would not prioritize or would underreport.\n"
         "Voice: Skeptical of governments and corporations. Treats readers as intelligent citizens.\n\n"
-        "OUTPUT: Japanese only, da/de-aru form. JSON format only. No markdown.\n\n"
+        "OUTPUT: Japanese only. Style: newspaper declarative (da/de-aru). Sentences must be crisp and direct — Japanese newspaper style, not academic or bureaucratic. JSON format only. No markdown.\n\n"
         "ABSOLUTE RULES:\n"
         "- Use ONLY numbers/dates/names explicitly in source. Never fabricate. Never speculate.\n"
         "- NEVER add Japan connections unless source explicitly mentions Japan/yen/Japanese companies.\n"
@@ -234,7 +234,7 @@ def summarize_article(title, content, category):
         "title: Active voice. State the OUTCOME or IMPACT with number/name/contrast. "
         "Example good: '停戦後も877人死亡' / Example bad: 'イスラエルの攻撃について'. "
         "Never: 発表/明らかに/について/に関して/をめぐって/が確認/を否定/を表明. No dates.\n\n"
-        "excerpt: 2 sentences, 80-150 chars. Lead with the most SURPRISING fact — number or detail that stops readers. Never repeat title.\n\n"
+        "excerpt: 2 sentences, 80-150 chars. Choose the most SURPRISING or COUNTERINTUITIVE fact — ideally from the CONSEQUENCE or IMPACT section, not the headline. Must include specific number or name. Never repeat title. Never start with the same fact as 何が起きているのか S1.\n\n"
         "keyword: 1-3 English words for photo. Physical visual only (e.g. military drone, stock exchange, protest crowd). Never abstract.\n\n"
         "category: politics/economy/international/investment/culture\n\n"
         "body:\n"
@@ -261,7 +261,7 @@ def summarize_article(title, content, category):
             {"role": "user", "content": prompt}
         ],
         "max_tokens": 1500,
-        "temperature": 0.3,
+        "temperature": 0.1,
         "response_format": {"type": "json_object"}
     }
 
