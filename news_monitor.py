@@ -305,10 +305,11 @@ def summarize_article(title, content, category):
             try:
                 _title_short = (_processed.get('title','') or '')[:80]
                 _ai_prompt = (
-                    f"Rate this Japanese news article quality from 1-10. Reply with ONLY a single integer.\n"
+                    f"Rate this Japanese news article quality from 1-10. Reply ONLY with a single integer.\n"
                     f"Title: {_title_short}\n"
-                    f"Criteria: (1)has specific facts/numbers/names +3pts (2)JapanTruth perspective adds new insight not in headline +3pts (3)no vague phrases like 試される/局面だ/妥当だ +2pts (4)newsworthy topic +2pts\n"
-                    f"Score 7+ only if all criteria met. Reply format: just the number, e.g. 8"
+                    f"Excerpt: {str(_result.get('excerpt',''))[:100]}\n"
+                    f"Criteria: (1)specific facts/numbers/names in all 3 sections +3pts (2)JapanTruth perspective is unique insight not in headline +3pts (3)no vague phrases(試される/局面だ/妥当だ/とみられる) +2pts (4)newsworthy public interest topic +2pts\n"
+                    f"Score 7+ only if ALL criteria met. Reply: just the number."
                 )
                 _gkey = GROQ_API_KEYS[0]
                 _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
