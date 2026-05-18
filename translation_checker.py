@@ -45,15 +45,9 @@ except Exception as e:
     PROPER_NOUN_FIXES = {}
 
 FORBIDDEN = [
-    "可能性がある", "かもしれない", "見守る", "注視する",
-    "注目が集まる", "懸念される", "期待が高まる",
-    "避けられない", "直結する", "国際社会", "国際秩序",
-    "グローバル市場", "どこへ向かうのか", "どこに向かうのか",
-    "とされる", "といわれる", "とみられる", "示唆している",
-    "示唆される", "指摘されている", "が問われている", "が問われる",
-    "注目されている", "注目を集めている", "が高まっている",
-    "が広がっている", "必要とされる", "求められている",
-    "と報じられた", "と報告された", "が懸念される",
+    "可能性がある", "かもしれない", "とみられる", "とされる",
+    "示唆している", "と見られる", "試される局面だ", "深刻な局面だ",
+    "どこへ向かうのか", "避けられない", "この判断は妥当だ", "妥当だと考えられる",
 ]
 
 duplicates = []
@@ -591,7 +585,7 @@ if duplicates:
 # 7. 記事品質スコアリング・低品質削除
 # =============================
 print(f"\n{'=' * 50}")
-print("📊 記事品質スコアリング（7点以下を削除）")
+print("📊 記事品質スコアリング（8点以上のみ掲載）")
 print("=" * 50)
 
 forbidden_score = ["可能性がある","かもしれない","とみられる","とされる","示唆している","と見られる","試される局面だ","深刻な局面だ","どこへ向かうのか","避けられない","この判断は妥当だ","妥当だと考えられる"]
@@ -621,9 +615,35 @@ for post in posts:
     if "省略" in body or "省略" in excerpt:
         score -= 2
         reasons.append("省略あり")
-    if len(excerpt) < 20:
+
+    # タイトルの禁止表現チェック
+    bad_titles = ["について", "に関して", "をめぐって"]
+    if any(w in title for w in bad_titles):
         score -= 1
+        reasons.append("タイトルに禁止表現")
+
+    # S3の文数チェック（視点セクションが3文以内か）
+    vp_idx = body.find("## JapanTruthの視点")
+    if vp_idx >= 0:
+        vp_end = body.find("\n##", vp_idx + 10)
+        vp_text = body[vp_idx:vp_end if vp_end > 0 else vp_idx+500]
+        vp_sentences = [s for s in vp_text.replace("。", "。|||").split("|||") if s.strip() and not s.startswith("#")]
+        if len(vp_sentences) > 3:
+            score -= 1
+            reasons.append(f"視点が{len(vp_sentences)}文")
+
+    # excerptに数字または固有名詞があるか
+    import re as _re_ex
+    if not (_re_ex.search(r"[0-9]", excerpt) or _re_ex.search(r"[\u30A0-\u30FF]{3,}|[\u4E00-\u9FFF]{2,}", excerpt)):
+        score -= 1
+        reasons.append("excerpt具体性なし")
+
+    if len(excerpt) < 20:
+        score -= 2
         reasons.append("excerpt短い")
+    elif len(excerpt) < 80:
+        score -= 1
+        reasons.append("excerptやや短い")
 
     if score <= 7:
         low_quality.append((score, slug, title, reasons))
@@ -640,8 +660,8 @@ for score, slug, title, reasons in low_quality:
     if res_check.json() and res_check.json()[0].get("premium"):
         print(f"⏭️ プレミアム記事はスキップ: {slug[:50]}")
         continue
-    # スコア5以下のみ削除（6点は保護）
-    if score >= 6:
+    # スコア7超のみ掲載
+    if score > 7:
         continue
     res_del = requests.delete(f"{SUPABASE_URL}/rest/v1/posts?slug=eq.{slug}", headers=headers_sb)
     if res_del.status_code == 204:
