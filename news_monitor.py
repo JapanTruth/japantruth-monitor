@@ -319,7 +319,7 @@ def summarize_article(title, content, category):
                 _graw = re.sub(r"```json|```", "", _graw).strip()
                 _ai_score = int(''.join(filter(str.isdigit, _graw.strip()[:3])) or '7')
                 print(f"🤖 AI品質スコア: {_ai_score}/10")
-                if _ai_score < 6:
+                if _ai_score < 7:
                     print(f"⏭️ AI判定で低品質記事をスキップ（スコア{_ai_score}）")
                     return None
             except Exception as _ge:
