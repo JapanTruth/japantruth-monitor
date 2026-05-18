@@ -208,7 +208,7 @@ def summarize_article(title, content, category):
         "Voice: Skeptical of governments and corporations. Treats readers as intelligent citizens.\n\n"
         "ABSOLUTE RULES:\n"
         "- Output language: Japanese only, declarative style (da/de-aru form, NOT desu/masu). No exceptions. (except keyword field which must be English)\n"
-        "- title field MUST be Japanese. Never output English in the title field. NEVER use 〜について/〜に関して/〜をめぐって as ending. Title must state the FACT, not the topic.\n"
+        "- title field MUST be Japanese. Never output English in the title field. NEVER use 〜について/〜に関して/〜をめぐって/〜を否定/〜を表明. Title must be ACTIVE VOICE stating the OUTCOME (e.g. 「米国がXXXを承認」not「XXXに関する米国の動き」).\n"
         "- Only use numbers, dates, and proper nouns explicitly present in the source article.\n"
         "- Never fabricate. Never speculate beyond source. If information is insufficient, use what IS in the source. Never speculate beyond source. NEVER add Japan connections, comparisons, or implications unless the source explicitly states them.\n"
         "- Never use numbered lists or bullet points anywhere in the body text.\n"
@@ -252,7 +252,7 @@ def summarize_article(title, content, category):
         "- politics: elections, government policy, diplomacy, military, security — NOT financial markets\n"
         "- economy: GDP, employment, trade volume, corporate earnings, inflation, industry — NOT stock prices\n"
         "- international: cross-border armed conflict, war, UN/international organizations, terrorism\n"
-        "- investment: stock prices, bonds, crypto, forex, central bank interest rates, financial markets\n"
+        "- investment: stock prices, bonds, crypto, forex, central bank interest rates, financial markets. NEVER classify company strategy, tech products, or geopolitics as investment.\n"
         "- culture: sports, entertainment, science, technology, society, environment, health\n\n"
         "\n"
         "OUTPUT FORMAT: Respond ONLY with a valid JSON object. No markdown, no extra text.\n"
@@ -269,7 +269,7 @@ def summarize_article(title, content, category):
         f"Title: {title}\nContent: {content[:3500]}\n\n"
         "JSON fields:\n"
         "- title: MUST be Japanese. Assertive title with at least one concrete proper noun, number, or country name from source. Avoid: 発表, 明らかに, 判明, 示す, めぐり. NEVER include dates (年/月/日) in the title.\n"
-        "- excerpt: 2 sentences minimum, 60+ characters. The most surprising or counterintuitive fact with specific number/name/paradox. Never vague. Never repeat title.\n"
+        "- excerpt: 2 sentences, 80+ characters. Most surprising fact with specific number/name/paradox. Never vague. Never repeat title. Never end with 〜局面だ/〜試される/〜見込まれる.\n"
         "  GOOD: '停戦宣言から2時間で1000件超の違反が報告された' / '元CIA長官が自社株を売却した翌日に捜査開始'\n"
         "  BAD: 〜が発表された / 〜が明らかになった / 〜が行われた / 〜が報じられた\n"
         "  MUST start with a number, name, or surprising verb. NEVER copy first sentence of 何が起きているのか.\n"
@@ -284,7 +284,7 @@ def summarize_article(title, content, category):
         "  culture: sports, entertainment, science, technology, society, environment, health\n"
         "- body: Use EXACTLY this format:\n"
         "  ## 何が起きているのか\\n\n"
-        "  (EXACTLY 3 sentences. who/what/when/where/why/how. Source facts only. Each sentence must add NEW information not in the others.)\n\n"
+        "  (EXACTLY 3 sentences. Each sentence MUST contain WHO+WHAT+WHEN or a specific number/name. Source facts only. No vague statements. No repeating background.)\n\n"
         "  ## 背景\\n\n"
         "  (2-4 sentences. ONLY facts explicitly in source + universally known facts like WWII dates, country capitals.\n"
         "   NEVER write 省略. If limited info: use what is available from source.)\n\n"
@@ -362,8 +362,8 @@ def summarize_article(title, content, category):
                 _ai_prompt = (
                     f"Rate this Japanese news article quality from 1-10. Reply with ONLY a single integer.\n"
                     f"Title: {_title_short}\n"
-                    f"Criteria: has specific facts/numbers, logical, no vague language, newsworthy\n"
-                    f"Reply format: just the number, e.g. 8"
+                    f"Criteria: (1)has specific facts/numbers/names +3pts (2)JapanTruth perspective adds new insight not in headline +3pts (3)no vague phrases like 試される/局面だ/妥当だ +2pts (4)newsworthy topic +2pts\n"
+                    f"Score 7+ only if all criteria met. Reply format: just the number, e.g. 8"
                 )
                 _gkey = GROQ_API_KEYS[0]
                 _gh = {"Authorization": f"Bearer {_gkey}", "Content-Type": "application/json"}
