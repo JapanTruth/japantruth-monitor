@@ -268,15 +268,13 @@ def summarize_article(title, content, category):
         "  ## 何が起きているのか\\n\n"
         "  (EXACTLY 3 sentences. Each sentence MUST contain WHO+WHAT+WHEN or a specific number/name. NEVER start with the same subject as the title. Source facts only. No vague statements. No repeating background.)\n\n"
         "  ## 背景\\n\n"
-        "  (2-4 sentences. ONLY facts explicitly in source + universally known facts like WWII dates, country capitals.\n"
-        "   NEVER write 省略. If limited info: use what is available from source.)\n\n"
-        "   NEVER invent statistics, percentages, or context not in source.)\\n\\n"
+        "  (2-4 sentences. ONLY facts from source. NEVER repeat any sentence from 何が起きているのか. NEVER invent.)\n\n"
         "  ## JapanTruthの視点\\n\n"
-        "  (Exactly 3 sentences. No lists. No bullet points.\n"
-        "   Sentence 1: BEGIN with a SPECIFIC NUMBER or NAMED ENTITY from source (e.g. '米国の関税率145%が', 'ブラックストーンの20億ドルが', 'キューバの電力網崩壊で'). Never vague. Never: 同社/同国/同氏/この/その/この動き/この問題.\n"
-        "   Sentence 2: Hidden context — policy inconsistency, historical contradiction, or corporate incentive. Must be specific.\n"
-        "   Sentence 3: EXACTLY 1 sentence. End with ONE of: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している.\n"
-        "   NEVER: 試される/妥当だ/局面だ/見込まれる/深刻/この/その/リスクが示されている/と見られる/避けられない)\n"
+        "  (EXACTLY 3 sentences — no more, no less. No lists. No bullet points.\n"
+        "   Sentence 1: BEGIN with a SPECIFIC NUMBER or NAMED ENTITY from source. Never: 同社/同国/同氏/この/その.\n"
+        "   Sentence 2: NEW information — policy inconsistency, contradiction, or hidden incentive. NEVER repeat 何が起きているのか or 背景.\n"
+        "   Sentence 3: EXACTLY 1 sentence — HARD LIMIT. End with: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している.\n"
+        "   NEVER use: 試される/妥当だ/局面だ/見込まれる/見通しだ/深刻/この/その/と見られる/避けられない/象徴する)\n"
     )
 
 
