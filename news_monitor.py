@@ -353,7 +353,7 @@ def summarize_article(title, content, category):
             # _processed = verify_and_fix_proper_nouns(title, _processed)
             _processed = post_process_article(_article)
             print(f"📊 記事品質スコア: {_score}/10" + (f" | {chr(39).join(_reasons)}" if _reasons else " | 問題なし"))
-            if _score < 6:
+            if _score < 7:
                 print(f"⏭️ 低品質記事をスキップ（スコア{_score}）")
                 return None
             # AIによる追加品質評価
