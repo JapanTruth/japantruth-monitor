@@ -247,8 +247,9 @@ def summarize_article(title, content, category):
         "EXACTLY 3 sentences:\n"
         "S1: Open with SPECIFIC NUMBER or NAMED ENTITY. Never: この/その/同社/同国.\n"
         "S2: Hidden angle with specific year/number/name not yet mentioned — "
-        "(A)who benefits financially (B)what past policy this contradicts "
-        "(C)what headline omits (D)culture/sports: what structural reality this exposes.\n"
+        "(A)who profits financially (B)what specific past policy/promise this contradicts "
+        "(C)whose political agenda this serves (D)what headline omits "
+        "(E)culture/sports: what structural reality this reveals.\n"
         "S3: ONE sentence ONLY. End with: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している / [事実]を示している. "
         "BANNED: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない\n"
     )
