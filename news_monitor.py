@@ -898,6 +898,24 @@ def score_article(result):
     if any(w in excerpt for w in bad_excerpts):
         score -= 1
         reasons.append("excerpt平凡")
+    # excerptに数字または固有名詞があるか
+    import re as _re
+    if not (_re.search(r'\d', excerpt) or _re.search(r'[ァ-ヴー]{3,}|[一-龥]{2,}', excerpt)):
+        score -= 1
+        reasons.append("excerpt具体性なし")
+
+    # JapanTruthの視点の長さチェック
+    if vp_match >= 0:
+        vp_content = body[vp_match+len("## JapanTruthの視点"):vp_match+500]
+        if len(vp_content.strip()) < 80:
+            score -= 1
+            reasons.append("視点が極端に短い")
+
+    # タイトルに禁止表現
+    bad_titles = ["について", "に関して", "をめぐって", "が発表", "が確認"]
+    if any(w in title for w in bad_titles):
+        score -= 1
+        reasons.append("タイトルに禁止表現")
 
     # 禁止ワード追加ペナルティ（多いほど重い）
     if len(found) >= 3:
