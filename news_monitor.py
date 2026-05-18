@@ -226,6 +226,9 @@ def summarize_article(title, content, category):
         "CRITICAL ROLE TRANSLATIONS: Senate=上院(NOT下院), House=下院(NOT上院), Secretary of State=国務長官, Attorney General=司法長官, Chief of Staff=首席補佐官, Treasury Secretary=財務長官\n\n"
         "LEGAL: pleads guilty=有罪を認めた / indicted=起訴された / charged with=訴追された / convicted=有罪 / sentenced=判決 / acquitted=無罪 / arrested=逮捕 / detained=拘束\n\n"
         "STRICTLY FORBIDDEN PHRASES — automatic failure if any appear:\n"
+        "VAGUE/SPECULATIVE: とみられる/とされる/示唆している/かもしれない/と見られている/と分析されている/と伝えられている\n"
+        "EVALUATIVE: 試される/試される局面/避けられない/重要なステップ/重要な役割/迅速である/適切だ/妥当だと考えられる\n"
+        "WEAK ENDINGS: 〜が問われる/〜が高まっている/〜が広がっている/〜が求められている/〜が注目されている\n"
         "- 可能性がある / かもしれない / 見守る / 注視する / 検討する\n"
         "- 注目が集まる / 求められる / 懸念される / 期待が高まる / 重要性を示す\n"
         "- 避けられない / 直結する / 公算が大きい / 注目される / 重要な意味を持つ\n"
@@ -921,31 +924,7 @@ def post_process_article(result):
     title = processed.get("title", "") or ""
     excerpt = processed.get("excerpt", "") or ""
     
-    forbidden_fixes = {
-        # とされる系
-        # 示唆・指摘系
-        # 懸念・注目系
-        # 問われる系
-        # 必要・求められる系
-        # 可能性系
-        # 試される系
-        "試される局面だ": "本質的な問題だ",
-        "この判断は妥当だ": "本質的な問題だ",
-        "が試される。": "が本質的な問題だ。",
-        "に備えられているか。": "への対応が本質的な問題だ。",
-        "に備えられているか": "への対応が本質的な問題だ",
-        "今後深刻な状況だ": "本質的な問題だ",
-        "深刻な局面だ": "重大な問題だ",
-        "深刻な状況だ": "重大な問題だ",
-        # 高まる・広がる系
-        # 妥当系
-        # 国際系
-            # 影響系
-        # 伝えられる系
-        # 浮き彫り系
-        # 主張系
-        # その他
-    }
+    forbidden_fixes = {}
     for wrong, correct in forbidden_fixes.items():
         body = body.replace(wrong, correct)
         title = title.replace(wrong, correct)
