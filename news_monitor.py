@@ -246,7 +246,7 @@ def summarize_article(title, content, category):
         "JAPANTRUTH PERSPECTIVE — EXACTLY 3 sentences:\n"
         "- S1: BEGIN with specific number/company/country from source. Cite Japan impact ONLY IF source explicitly mentions Japan, yen, Japanese companies, or Japan trade. NEVER fabricate Japan connections. Otherwise cite commodity/trade route/geopolitical angle. For 【続報】articles: S1 must state what CHANGED since last report.\n"
         "- S2: MUST add NEW information not already in 何が起きているのか or 背景. Choose: (A) Who benefits financially? (B) What past policy contradicts this? (C) Hidden context not in headline? (D) Japan impact only if source mentions Japan explicitly. (E) Culture/sports: what does this reveal about society or industry? Cite one specific fact NOT already mentioned.\n"
-        "- S3: EXACTLY 1 sentence. MUST name specific subject (company/country/person). End with ONE of: (B)[具体的事実]が本質的な問題だ (C)[具体的手法]には無理がある (D)[具体的事実]を示している. NEVER: 試される/妥当だ/局面だ/見込まれる/深刻/この/その\n"
+        "- S3: EXACTLY 1 sentence. MUST name specific subject (company/country/person). End with ONE of: (B)[具体的事実]が本質的な問題だ (C)[具体的手法]には無理がある (D)[X]が[Y]という矛盾を示している. AVOID weak endings: リスクが示されている/影響を与えている/重要だ. NEVER: 試される/妥当だ/局面だ/見込まれる/深刻/この/その\n"
         "- BANNED in ALL sentences: 〜はどこへ向かうのか/避けられない/直結する/〜とされる/同社/同国/この/その\n"
         
         "NOTE: '妥当だ' only for policy/business/military decisions. NEVER for personal decisions (health/attendance).\n"
