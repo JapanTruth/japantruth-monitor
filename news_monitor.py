@@ -240,8 +240,8 @@ def summarize_article(title, content, category):
         "## 背景\n2-4 sentences. Source facts only. NEVER repeat any sentence from 何が起きているのか. Each sentence adds new information.\n"
         "## JapanTruthの視点\nEXACTLY 3 sentences — no more, no less:\n"
         "S1: Start with specific number or named entity from source. Never: この/その/同社/同国.\n"
-        "S2: New angle ONLY — who profits, what past policy contradicts this, what headline omits. Never repeat S1 or above sections.\n"
-        "S3: ONE sentence HARD LIMIT. Choose: [具体的事実]が本質的な問題だ / [具体的手法]には無理がある / [X]が[Y]という矛盾を示している. Never: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない/象徴する\n"
+        "S2: New angle ONLY — (A)who profits financially (B)what past policy contradicts this (C)what headline omits (D)for culture/sports: what does this reveal about society or industry structure. Never repeat S1 or above sections.\n"
+        "S3: ONE sentence HARD LIMIT. Choose ONE: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している / [事実]を示している. Never: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない\n"
     )
 
 
