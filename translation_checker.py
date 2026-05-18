@@ -591,7 +591,7 @@ if duplicates:
 # 7. 記事品質スコアリング・低品質削除
 # =============================
 print(f"\n{'=' * 50}")
-print("📊 記事品質スコアリング（6点以下を削除）")
+print("📊 記事品質スコアリング（7点以下を削除）")
 print("=" * 50)
 
 forbidden_score = ["可能性がある","かもしれない","とみられる","とされる","示唆している","と見られる","試される局面だ","深刻な局面だ","どこへ向かうのか","避けられない","この判断は妥当だ","妥当だと考えられる"]
@@ -625,7 +625,7 @@ for post in posts:
         score -= 1
         reasons.append("excerpt短い")
 
-    if score <= 6:
+    if score <= 7:
         low_quality.append((score, slug, title, reasons))
 
 print(f"6点以下: {len(low_quality)}件")
