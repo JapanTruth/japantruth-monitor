@@ -226,7 +226,7 @@ def summarize_article(title, content, category):
         "CRITICAL ROLE TRANSLATIONS: Senate=上院(NOT下院), House=下院(NOT上院), Secretary of State=国務長官, Attorney General=司法長官, Chief of Staff=首席補佐官, Treasury Secretary=財務長官\n\n"
         "LEGAL: pleads guilty=有罪を認めた / indicted=起訴された / charged with=訴追された / convicted=有罪 / sentenced=判決 / acquitted=無罪 / arrested=逮捕 / detained=拘束\n\n"
         "STRICTLY FORBIDDEN PHRASES — automatic failure if any appear:\n"
-        "VAGUE: とみられる/とされる/示唆している/かもしれない/と伝えられている\n"
+        "VAGUE: とみられる/とされる/示唆している/かもしれない/と伝えられている/と見られる\n"
         "EVALUATIVE: 試される/避けられない/迅速である/妥当だと考えられる\n"
         "WEAK: 〜が問われる/〜が高まっている/〜が広がっている/〜が注目されている\n"
         "- 可能性がある / かもしれない / 見守る / 注視する / 検討する\n"
@@ -859,7 +859,6 @@ PROPER_NOUN_FIXES = {
 
 # 禁止表現は意味変化リスクが低いものだけ最小限に絞る
 FORBIDDEN_REPLACEMENTS = {
-    "可能性がある": "と見られる",
     "グローバル市場": "世界市場",
 }
 
