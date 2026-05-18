@@ -786,7 +786,7 @@ def post_process_article(result):
             first = view_text.find(e)
             second = view_text.find(e, first + 1)
             if second >= 0:
-                new_ending = replacements.get(e, "という判断は妥当だ")
+                new_ending = replacements.get(e, "が本質的な問題だ")
                 view_text = view_text[:second] + view_text[second:].replace(e, new_ending, 1)
         body = body[:view_match.start(2)] + view_text + body[view_match.end(2):]
         processed["body"] = body
