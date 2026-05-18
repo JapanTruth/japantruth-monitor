@@ -227,8 +227,8 @@ def summarize_article(title, content, category):
         "LEGAL: pleads guilty=有罪を認めた / indicted=起訴された / charged with=訴追された / convicted=有罪 / sentenced=判決 / acquitted=無罪 / arrested=逮捕 / detained=拘束\n\n"
         "STRICTLY FORBIDDEN PHRASES — automatic failure if any appear:\n"
         "VAGUE: とみられる/とされる/示唆している/かもしれない/と伝えられている/と見られる\n"
-        "EVALUATIVE: 試される/避けられない/迅速である/妥当だと考えられる\n"
-        "WEAK: 〜が問われる/〜が高まっている/〜が広がっている/〜が注目されている\n"
+        "EVALUATIVE: 試される/避けられない/迅速である/妥当だと考えられる/注目を浴びている/注目を集めている\n"
+        "WEAK: 〜が問われる/〜が高まっている/〜が広がっている/〜が注目されている/見通しだ/象徴する/反映している\n"
         "*** VIOLATION of any above = automatic rewrite. These are ABSOLUTE bans. ***\n\n"
         "BACKGROUND: MINIMUM 2 sentences. Only source facts + universally known facts. Never invent. If less than 2 sentences possible: omit entire section.\n\n"
         "JAPANTRUTH PERSPECTIVE — EXACTLY 3 sentences:\n"
@@ -879,7 +879,7 @@ def score_article(result):
             reasons.append(f"視点が曖昧: {', '.join(found_vague[:2])}")
 
     # 禁止ワードチェック
-    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる", "とみられる", "示唆している", "が問われる", "注目されている", "必要とされる", "が高まっている", "が広がっている", "と伝えられている", "懸念される", "指摘されている", "と分析されている", "浮き彫りにしている", "求められる", "直結する", "試される局面だ", "この判断は妥当だ", "再び高まっている", "深刻な局面だ", "妥当だと考えられる", "浮き彫りになっている", "と見られる", "迅速である", "試される", "に備えられているか", "が試される", "重要なステップ", "重要な役割"]
+    forbidden = ["可能性がある", "かもしれない", "どこへ向かうのか", "国際社会", "避けられない", "とされる", "とみられる", "示唆している", "が問われる", "注目されている", "必要とされる", "が高まっている", "が広がっている", "と伝えられている", "懸念される", "指摘されている", "と分析されている", "浮き彫りにしている", "求められる", "直結する", "試される局面だ", "この判断は妥当だ", "再び高まっている", "深刻な局面だ", "妥当だと考えられる", "浮き彫りになっている", "と見られる", "迅速である", "試される", "に備えられているか", "が試される", "重要なステップ", "重要な役割", "注目を浴びている", "注目を集めている", "見通しだ", "象徴する"]
     found = [w for w in forbidden if w in body]
     if found:
         score -= len(found)
