@@ -140,7 +140,7 @@ def screen_article(title, summary="", recent_titles=None):
     snippet = summary[:100] if summary else ""
     recent_block = ""
     if recent_titles:
-        recent_block = "Recently covered articles (last 3 hours):\n"
+        recent_block = "Recently covered articles (last 6 hours):\n"
         for t in recent_titles[:15]:
             recent_block += f"- {t}\n"
         recent_block += "\n"
