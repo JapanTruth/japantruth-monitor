@@ -298,7 +298,7 @@ def summarize_article(title, content, category):
                 "excerpt": parsed.get("excerpt", "").strip(),
                 "keyword": parsed.get("keyword", "news"),
                 "category": cat,
-                "body": parsed.get("body", "").strip(),
+                "body": parsed.get("body", "") if isinstance(parsed.get("body", ""), str) else "\n\n".join(str(v) for v in parsed.get("body", {}).values()) if isinstance(parsed.get("body", ""), dict) else "",
                 "tokens": result.get("usage", {}).get("total_tokens", 0),
                 "tokens_input": result.get("usage", {}).get("prompt_tokens", 0),
                 "tokens_output": result.get("usage", {}).get("completion_tokens", 0),
