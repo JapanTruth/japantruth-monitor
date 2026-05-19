@@ -218,7 +218,7 @@ def summarize_article(title, content, category):
         "LEGAL: pleads guilty=有罪を認めた / indicted=起訴された / acquitted=無罪 / arrested=逮捕 / sanctions=制裁 / ceasefire=停戦 / tariff=関税 / deficit=財政赤字\n"
         "MILITARY: airstrike=空爆 / drone=ドローン / casualties=死傷者 / troops=兵士 / missile=ミサイル / warship=軍艦\n\n"
         "FORBIDDEN:\n"
-        "- Speculation: とみられる/とされる/示唆している/かもしれない/と見られる/可能性がある\n"
+        "- Speculation: とみられる/とされる/示唆している/かもしれない/と見られる\n"
         "- Bias: [leader]の判断は妥当だ/避けられない/[country]の行動は正しい\n"
         "- Vague: 試される局面だ/深刻な局面だ/どこへ向かうのか\n\n"
         "NEUTRALITY: Never endorse/condemn any government, military, or political group.\n\n"
