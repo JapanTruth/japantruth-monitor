@@ -461,6 +461,68 @@ def get_image(keyword, slug, category, seen_images=None):
     except:
         return "/japantruth.png"
 
+def post_to_bluesky(title, url, image_url):
+    """Bluesky APIに投稿"""
+    try:
+        import requests as _req
+        BSKY_HANDLE = os.environ.get("BLUESKY_HANDLE", "")
+        BSKY_PASSWORD = os.environ.get("BLUESKY_APP_PASSWORD", "")
+        if not BSKY_HANDLE or not BSKY_PASSWORD:
+            print("⚠️ Bluesky認証情報が未設定")
+            return
+
+        # セッション作成
+        sess = _req.post("https://bsky.social/xrpc/com.atproto.server.createSession",
+            json={"identifier": BSKY_HANDLE, "password": BSKY_PASSWORD}, timeout=10)
+        sess_data = sess.json()
+        token = sess_data.get("accessJwt")
+        did = sess_data.get("did")
+        if not token:
+            print(f"⚠️ Blueskyログイン失敗: {sess_data}")
+            return
+
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+        # 投稿テキスト（300文字制限）
+        text = f"{title}\n\n{url}"
+        if len(text) > 300:
+            text = f"{title[:250]}...\n\n{url}"
+
+        # URLカード（OGPリンクカード）
+        post_data = {
+            "repo": did,
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "text": text,
+                "createdAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "embed": {
+                    "$type": "app.bsky.embed.external",
+                    "external": {
+                        "uri": url,
+                        "title": title,
+                        "description": "",
+                    }
+                },
+                "facets": [
+                    {
+                        "index": {"byteStart": len(title.encode()) + 2, "byteEnd": len(title.encode()) + 2 + len(url.encode())},
+                        "features": [{"$type": "app.bsky.richtext.facet#link", "uri": url}]
+                    }
+                ]
+            }
+        }
+
+        res = _req.post("https://bsky.social/xrpc/com.atproto.repo.createRecord",
+            headers=headers, json=post_data, timeout=10)
+        if res.status_code == 200:
+            print(f"🦋 Bluesky投稿完了: {title[:40]}")
+        else:
+            print(f"⚠️ Bluesky投稿失敗: {res.status_code} {res.text[:100]}")
+    except Exception as e:
+        print(f"⚠️ Bluesky投稿エラー: {e}")
+
+
 def post_to_x(title, url, image_path):
     try:
         import tweepy
@@ -1480,7 +1542,7 @@ def main():
                 article["source"], tags
             )
             article_url = f"https://www.japan-truth.com/posts/{slug}"
-            # post_to_x(result.get("title", article["title"]), article_url, image_path)  # 手動シェア
+            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_url if image_url else "")
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
             if article.get("is_followup") and _processed and _processed.get("title"):
