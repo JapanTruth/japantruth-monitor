@@ -158,7 +158,7 @@ def screen_article(title, summary="", recent_titles=None):
         "IMAGE: parliament building"
     )
     data = {
-        "model": "llama-3.3-70b-versatile",
+        "model": "llama-3.1-8b-instant",
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": 30,
         "temperature": 0
