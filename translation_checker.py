@@ -318,29 +318,27 @@ for post in posts[:10]:
 # 5. AI誤訳チェック + 新規パターン提案
 # =============================
 print(f"\n{'=' * 50}")
-print("🔍 5. AI誤訳チェック（スキップ）")
+print("🔍 5. AI品質レビュー（自動修正付き）")
 print("=" * 50)
 
-for i, post in enumerate([]):  # AI誤訳チェック無効化
+for i, post in enumerate(posts[:5]):  # 直近5件のみ
     slug = post.get("slug", "")
     title_jp = post.get("title", "") or ""
     body = post.get("body", "")[:3000]
     source_title = re.sub(r'^\d{4}-\d{2}-\d{2}-\d{6}-', '', slug).replace("-", " ")
 
     prompt = (
-        f"Japanese translation quality check.\n"
-        f"English source: {source_title}\n"
-        f"Japanese title: {title_jp}\n"
-        f"Japanese body: {body}\n\n"
-        f"STRICT rules - only flag if you are 100%% certain:\n"
-        f"1. English words left untranslated in brackets: [Name] or [Organization]\n"
-        f"2. pleads guilty translated as 起訴 (must be 有罪を認めた)\n"
-        f"3. Senate(上院) and House(下院) are confused\n"
-        f"4. A number in the Japanese article that is clearly different from the source\n\n"
-        f"DO NOT flag: style differences, minor wording choices, correct katakana names\n"
-        f"DO NOT suggest alternative translations unless clearly wrong\n"
-        f"If nothing clearly wrong: respond only with OK\n"
-        f"Max 1 issue. Be conservative."
+        f"You are a Japanese news editor. Review this article for quality issues.\n"
+        f"Title: {title_jp}\n"
+        f"Body: {body}\n\n"
+        f"Check ONLY these specific issues:\n"
+        f"1. S2 in JapanTruthの視点 is vague/generic (no specific year/number/name) → flag as S2_VAGUE\n"
+        f"2. S3 in JapanTruthの視点 is more than 1 sentence → flag as S3_MULTI\n"
+        f"3. 背景 repeats facts from 何が起きているのか → flag as BG_REPEAT\n"
+        f"4. Title contains about/regarding (について/に関して) → flag as TITLE_WEAK\n"
+        f"If none: respond ONLY with OK\n"
+        f"If issue found: respond with FLAG:[issue_type] REASON:[one line reason in Japanese]\n"
+        f"Max 1 flag. Be strict."
     )
 
     key = get_key()
@@ -369,23 +367,20 @@ for i, post in enumerate([]):  # AI誤訳チェック無効化
 
             response = result["choices"][0]["message"]["content"].strip()
 
-            if "SUGGEST:" in response:
-                for line in response.split("\n"):
-                    if line.startswith("SUGGEST:"):
-                        new_proper_noun_suggestions.append(f"{slug[:30]}: {line}")
-                        print(f"💡 新パターン提案: {line[:80]}")
-
-            if response != "OK" and "FIX:" in response:
+            if response == "OK":
+                print(f"✅ OK: {title_jp[:40]}")
+            elif response.startswith("FLAG:"):
+                flag_type = response.split("FLAG:")[1].split(" ")[0].strip()
+                reason = response.split("REASON:")[1].strip() if "REASON:" in response else ""
+                print(f"⚠️ {flag_type}: {title_jp[:40]}")
+                print(f"   理由: {reason[:80]}")
                 translation_issues.append({
                     "slug": slug,
                     "title": title_jp,
                     "issues": response,
+                    "flag_type": flag_type,
                     "url": f"https://www.japan-truth.com/posts/{slug}"
                 })
-                print(f"🚨 {slug[:40]}")
-                print(f"   {response[:120]}")
-            elif "SUGGEST:" not in response:
-                print(f"✅ OK: {slug[:40]}")
             break
 
         except Exception as e:
