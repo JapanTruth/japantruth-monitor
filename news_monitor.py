@@ -236,7 +236,7 @@ def summarize_article(title, content, category):
         "Example good: '停戦後も877人死亡' / Example bad: 'イスラエルの攻撃について'. "
         "Never: 発表/明らかに/について/に関して/をめぐって/が確認/を否定/を表明. No dates.\n\n"
         "excerpt: 2 sentences, 80-150 chars. Choose the most SURPRISING or COUNTERINTUITIVE fact — ideally from the CONSEQUENCE or IMPACT section, not the headline. Must include specific number or name. Never repeat title. Never start with the same fact as 何が起きているのか S1.\n\n"
-        "keyword: 1-3 English words for photo. Physical visual only (e.g. military drone, stock exchange, protest crowd). Never abstract.\n\n"
+        "keyword: 1-3 English words ONLY for Unsplash photo search. Must be English. Physical visual only (e.g. military drone, stock exchange, protest crowd). Never Japanese. Never abstract.\n\n"
         "category: politics/economy/international/investment/culture\n\n"
         "body: Return as a SINGLE STRING (not a JSON object). Format:\n"
         "## 何が起きているのか\n"
