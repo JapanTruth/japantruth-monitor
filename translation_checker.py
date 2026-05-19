@@ -332,7 +332,7 @@ for i, post in enumerate(posts[:5]):  # 直近5件のみ
         f"Title: {title_jp}\n"
         f"Body: {body}\n\n"
         f"Check ONLY these specific issues:\n"
-        f"1. S2 in JapanTruthの視点 is vague/generic (no specific year/number/name) → flag as S2_VAGUE\n"
+        f"1. S2 in JapanTruthの視点 is completely vague with NO numbers/years/names at all → flag as S2_VAGUE. Do NOT flag if S2 contains any specific number, year, temperature, percentage, or proper name.\n"
         f"2. S3 in JapanTruthの視点 is more than 1 sentence → flag as S3_MULTI\n"
         f"3. 背景 repeats facts from 何が起きているのか → flag as BG_REPEAT\n"
         f"4. Title contains about/regarding (について/に関して) → flag as TITLE_WEAK\n"
