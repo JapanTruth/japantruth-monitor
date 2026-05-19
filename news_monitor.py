@@ -1273,7 +1273,7 @@ def main():
             _recent_urls_base = [_up.urlparse(u)._replace(query="", fragment="").geturl() for u in _recent_urls]
             import re as _re
             _stop_ja = {"の","が","を","に","は","で","と","も","な","する","した","て","や","へ","から","まで","より","として","による","大統領","首相","氏","戦争","問題","発言","表明"}
-            _jp_words = lambda t: set(w for w in _re.findall(r"[ァ-ヴー]{3,}|[一-龥]{2,}", t) if w not in _stop_ja)
+            _jp_words = lambda t: set(_re.sub(r"[0-9０-９]+", "", w) for w in _re.findall(r"[ァ-ヴー]{3,}|[一-龥０-９0-9]{2,}", t) if w not in _stop_ja and len(_re.sub(r"[0-9０-９]+", "", w)) >= 2)
             _is_similar = any(len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2 for t in _recent)
             _is_similar = _is_similar or (_article_url_base in _recent_urls_base) or any(
                 len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
