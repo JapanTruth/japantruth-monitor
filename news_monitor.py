@@ -148,7 +148,7 @@ def screen_article(title, summary="", recent_titles=None):
         f"{recent_block}"
         f"New article title: {title}\nSnippet: {snippet}\n\n"
         "1. Is this newsworthy? Answer YES only if: affects many people (war/conflict/policy/crime/disaster/science), involves public figures in official capacity, or reveals important information about institutions/corporations/governments.\n"
-        "   Answer NO if: personal lifestyle story (individual moving/career/life choices), investment filings or stock analysis, stock picks or buy/sell recommendations, reading lists or gift guides, celebrity personal life, building renovation plans, or any story where the main interest is one person's private experience.\n"
+        "   Answer NO if: personal lifestyle story (individual moving/career/life choices), investment filings or stock analysis, stock picks or buy/sell recommendations, reading lists or gift guides, celebrity personal life, building renovation plans, historical trivia or ancient history with no current news relevance, or any story where the main interest is one person's private experience.\n"
         "2. Is this topic already covered in the recently covered articles above? Answer yes ONLY if the EXACT SAME EVENT with the EXACT SAME MAIN SUBJECT is already reported. Answer no if: different angle, new development, different person, or no recent articles.\n"
         "   SAME=YES: Putin ceasefire + Putin announces ceasefire. DIFFERENT=NO: Trump tariffs EU + Trump Iran deal.\n"
         "3. Best 2-3 English words for Unsplash photo search. No abbreviations, acronyms, or proper nouns. Use common visual concepts only (e.g. parliament building, politician speech, protest crowd, military ship, stock market).\n\n"
@@ -218,7 +218,7 @@ def summarize_article(title, content, category):
         "LEGAL: pleads guilty=有罪を認めた / indicted=起訴された / acquitted=無罪 / arrested=逮捕 / sanctions=制裁 / ceasefire=停戦 / tariff=関税 / deficit=財政赤字\n"
         "MILITARY: airstrike=空爆 / drone=ドローン / casualties=死傷者 / troops=兵士 / missile=ミサイル / warship=軍艦\n\n"
         "FORBIDDEN:\n"
-        "- Speculation: とみられる/とされる/示唆している/かもしれない/と見られる\n"
+        "- Speculation: とみられる/とされる/示唆している/かもしれない/と見られる/可能性がある\n"
         "- Bias: [leader]の判断は妥当だ/避けられない/[country]の行動は正しい\n"
         "- Vague: 試される局面だ/深刻な局面だ/どこへ向かうのか\n\n"
         "NEUTRALITY: Never endorse/condemn any government, military, or political group.\n\n"
@@ -1278,7 +1278,7 @@ def main():
             _is_similar = _is_similar or (_article_url_base in _recent_urls_base) or any(
                 len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
                 for t in _recent_titles
-            ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 2 for t in _recent_titles)
+            ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 1 for t in _recent_titles)
             # 英語スラグとの比較
             _is_similar = _is_similar or any(
                 len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 2
