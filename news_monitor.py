@@ -1278,7 +1278,7 @@ def main():
             _is_similar = _is_similar or (_article_url_base in _recent_urls_base) or any(
                 len(_title_words & set(w for w in t.lower().split() if w not in _stop and len(w) > 2)) >= 2
                 for t in _recent_titles
-            ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 1 for t in _recent_titles)
+            ) or any(len(_jp_words(article["title"]) & _jp_words(t)) >= 2 for t in _recent_titles)
             # 英語スラグとの比較
             _is_similar = _is_similar or any(
                 len(_title_words & set(w for w in s.lower().split() if w not in _stop and len(w) > 3)) >= 2
