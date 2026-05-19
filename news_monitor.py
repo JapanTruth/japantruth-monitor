@@ -1392,6 +1392,9 @@ def main():
             scraped = scrape_article(article["url"])
             if scraped:
                 print(f"✅ スクレイピング成功: {len(scraped)}文字取得")
+                if len(scraped) < 2000:
+                    print(f"⏭️ ソース記事が短すぎるためスキップ（{len(scraped)}文字）")
+                    continue
                 article["content"] = scraped
             else:
                 print(f"⚠️ スクレイピング失敗 → スキップ")
