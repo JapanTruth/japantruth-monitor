@@ -250,8 +250,8 @@ def summarize_article(title, content, category):
         "Choose: (A)name who profits and exact amount (B)cite specific past policy by year "
         "(C)name whose political agenda this serves (D)what headline omits with specific detail "
         "(E)culture/sports: name specific structural reality. NEVER vague generalities.\n"
-        "S3: ONE sentence ONLY. End with: [事実]が本質的な問題だ / [手法]には無理がある / [X]が[Y]という矛盾を示している / [事実]を示している. "
-        "BANNED: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない\n"
+        "S3: ONE sentence ONLY. Write a sharp conclusion that logically follows from S1 and S2. Must be factual and specific. "
+        "BANNED: 試される/妥当だ/局面だ/見通しだ/深刻/この/その/と見られる/避けられない/象徴する\n"
     )
 
 
