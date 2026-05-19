@@ -238,7 +238,7 @@ def summarize_article(title, content, category):
         "excerpt: 2 sentences, 80-150 chars. Choose the most SURPRISING or COUNTERINTUITIVE fact — ideally from the CONSEQUENCE or IMPACT section, not the headline. Must include specific number or name. Never repeat title. Never start with the same fact as 何が起きているのか S1.\n\n"
         "keyword: 1-3 English words for photo. Physical visual only (e.g. military drone, stock exchange, protest crowd). Never abstract.\n\n"
         "category: politics/economy/international/investment/culture\n\n"
-        "body:\n"
+        "body: Return as a SINGLE STRING (not a JSON object). Format:\n"
         "## 何が起きているのか\n"
         "3 sentences. S1: WHO+WHAT+WHEN with number/place. S2: HOW or scale. S3: WHY NOW — what triggered this or what changes next. Never repeat title subject.\n\n"
         "## 背景\n"
