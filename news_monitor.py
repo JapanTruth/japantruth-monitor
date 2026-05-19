@@ -148,7 +148,7 @@ def screen_article(title, summary="", recent_titles=None):
         f"{recent_block}"
         f"New article title: {title}\nSnippet: {snippet}\n\n"
         "1. Is this newsworthy? Answer YES only if: affects many people (war/conflict/policy/crime/disaster/science), involves public figures in official capacity, or reveals important information about institutions/corporations/governments.\n"
-        "   Answer NO if: personal lifestyle story (individual moving/career/life choices), investment filings or stock analysis, reading lists or gift guides, celebrity personal life, building renovation plans, or any story where the main interest is one person's private experience.\n"
+        "   Answer NO if: personal lifestyle story (individual moving/career/life choices), investment filings or stock analysis, stock picks or buy/sell recommendations, reading lists or gift guides, celebrity personal life, building renovation plans, or any story where the main interest is one person's private experience.\n"
         "2. Is this topic already covered in the recently covered articles above? Answer yes ONLY if the EXACT SAME EVENT with the EXACT SAME MAIN SUBJECT is already reported. Answer no if: different angle, new development, different person, or no recent articles.\n"
         "   SAME=YES: Putin ceasefire + Putin announces ceasefire. DIFFERENT=NO: Trump tariffs EU + Trump Iran deal.\n"
         "3. Best 2-3 English words for Unsplash photo search. No abbreviations, acronyms, or proper nouns. Use common visual concepts only (e.g. parliament building, politician speech, protest crowd, military ship, stock market).\n\n"
