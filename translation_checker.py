@@ -321,7 +321,7 @@ print(f"\n{'=' * 50}")
 print("🔍 5. AI品質レビュー（自動修正付き）")
 print("=" * 50)
 
-for i, post in enumerate(posts[:5]):  # 直近5件のみ
+for i, post in enumerate([]):  # AI品質レビュー無効化
     slug = post.get("slug", "")
     title_jp = post.get("title", "") or ""
     body = post.get("body", "")[:3000]
