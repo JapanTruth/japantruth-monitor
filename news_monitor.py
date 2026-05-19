@@ -298,7 +298,14 @@ def summarize_article(title, content, category):
                 "excerpt": parsed.get("excerpt", "").strip(),
                 "keyword": parsed.get("keyword", "news"),
                 "category": cat,
-                "body": parsed.get("body", "") if isinstance(parsed.get("body", ""), str) else "\n\n".join(str(v) for v in parsed.get("body", {}).values()) if isinstance(parsed.get("body", ""), dict) else "",
+                "body": (lambda b: b if isinstance(b, str) else (
+                    "\n\n".join(
+                        f"## {k}\n{v}" if isinstance(v, str) else
+                        f"## {k}\n" + "\n".join(str(x) for x in v) if isinstance(v, list) else
+                        f"## {k}\n{str(v)}"
+                        for k, v in b.items()
+                    ) if isinstance(b, dict) else ""
+                ))(parsed.get("body", "")),
                 "tokens": result.get("usage", {}).get("total_tokens", 0),
                 "tokens_input": result.get("usage", {}).get("prompt_tokens", 0),
                 "tokens_output": result.get("usage", {}).get("completion_tokens", 0),
