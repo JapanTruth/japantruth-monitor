@@ -324,7 +324,7 @@ def summarize_article(title, content, category):
                 _ai_prompt = (
                     f"Rate this Japanese news article quality from 1-10. Reply ONLY with a single integer.\n"
                     f"Title: {_title_short}\n"
-                    f"Excerpt: {str(_result.get('excerpt',''))[:100]}\n"
+                    f"Excerpt: {str(_processed.get('excerpt',''))[:100]}\n"
                     f"Criteria: (1)specific facts/numbers/names in all 3 sections +3pts (2)JapanTruth perspective is unique insight not in headline +3pts (3)no vague phrases(試される/局面だ/妥当だ/とみられる) +2pts (4)newsworthy public interest topic +2pts\n"
                     f"Score 7+ only if ALL criteria met. Reply: just the number."
                 )
