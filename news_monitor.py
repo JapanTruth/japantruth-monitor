@@ -529,6 +529,14 @@ def post_to_bluesky(title, url, image_url):
                     {
                         "index": {"byteStart": len(title.encode()) + 2, "byteEnd": len(title.encode()) + 2 + len(url.encode())},
                         "features": [{"$type": "app.bsky.richtext.facet#link", "uri": url}]
+                    },
+                    {
+                        "index": {"byteStart": text.encode().index(b"#JapanTruth"), "byteEnd": text.encode().index(b"#JapanTruth") + len("#JapanTruth".encode())},
+                        "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": "JapanTruth"}]
+                    },
+                    {
+                        "index": {"byteStart": text.encode().index("# 国際ニュース".encode()), "byteEnd": text.encode().index("# 国際ニュース".encode()) + len("# 国際ニュース".encode())},
+                        "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": "国際ニュース"}]
                     }
                 ]
             }
