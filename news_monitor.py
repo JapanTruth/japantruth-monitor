@@ -1542,7 +1542,7 @@ def main():
                 article["source"], tags
             )
             article_url = f"https://www.japan-truth.com/posts/{slug}"
-            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_url if image_url else "")
+            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_path if image_path else "")
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
             if article.get("is_followup") and _processed and _processed.get("title"):
