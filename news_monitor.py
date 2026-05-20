@@ -532,7 +532,7 @@ def post_to_bluesky(title, url, image_url, tags=""):
                 },
                 "facets": (lambda t_enc: [
                     {
-                        "index": {"byteStart": len(title.encode()) + 2, "byteEnd": len(title.encode()) + 2 + len(url.encode())},
+                        "index": {"byteStart": t_enc.index(url.encode()), "byteEnd": t_enc.index(url.encode()) + len(url.encode())},
                         "features": [{"$type": "app.bsky.richtext.facet#link", "uri": url}]
                     }
                 ] + [
