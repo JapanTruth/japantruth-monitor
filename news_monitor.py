@@ -489,6 +489,30 @@ def post_to_bluesky(title, url, image_url):
             text = f"{title[:250]}...\n\n{url}"
 
         # URLカード（OGPリンクカード）
+        # 画像をblobとしてアップロード
+        thumb = None
+        if image_url and image_url.startswith("http"):
+            try:
+                img_res = _req.get(image_url, timeout=10)
+                if img_res.status_code == 200:
+                    blob_res = _req.post(
+                        "https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
+                        headers={"Authorization": f"Bearer {token}", "Content-Type": "image/webp"},
+                        data=img_res.content, timeout=15
+                    )
+                    if blob_res.status_code == 200:
+                        thumb = blob_res.json().get("blob")
+            except Exception as img_e:
+                print(f"⚠️ Bluesky画像アップロード失敗: {img_e}")
+
+        external = {
+            "uri": url,
+            "title": title,
+            "description": "",
+        }
+        if thumb:
+            external["thumb"] = thumb
+
         post_data = {
             "repo": did,
             "collection": "app.bsky.feed.post",
@@ -498,11 +522,7 @@ def post_to_bluesky(title, url, image_url):
                 "createdAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "embed": {
                     "$type": "app.bsky.embed.external",
-                    "external": {
-                        "uri": url,
-                        "title": title,
-                        "description": "",
-                    }
+                    "external": external
                 },
                 "facets": [
                     {
