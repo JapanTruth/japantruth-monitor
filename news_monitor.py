@@ -723,6 +723,7 @@ PROPER_NOUN_FIXES = {
     "トラフィカーラ": "トラフィギュラ",
     "アブダブ": "アブダビ",
     "Lumentum": "ルメンタム",
+    "Diaoyutai State Guesthouse": "釣魚台迎賓館",
     "Diaoyutai": "釣魚台",
     "スタンチャーター": "スタンダードチャータード",
     "シャキラ": "シャキーラ",
