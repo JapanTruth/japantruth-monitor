@@ -365,7 +365,7 @@ def generate_tags(title, category):
                 headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
                 json={
                     "model": "llama-3.1-8b-instant",
-                    "messages": [{"role": "user", "content": f"以下のニュース記事タイトルに関連する日本語ハッシュタグを2つだけ生成せよ。#をつけてスペース区切りで出力せよ。余計な説明は不要。\n\nタイトル: {title}"}],
+                    "messages": [{"role": "user", "content": f"以下のニュースタイトルに登場する固有名詞・キーワードからハッシュタグを2つ生成せよ。タイトルに含まれない語は使うな。#をつけてスペース区切りで出力せよ。説明不要。\n\nタイトル: {title}"}],
                     "max_tokens": 30,
                     "temperature": 0.3
                 })
