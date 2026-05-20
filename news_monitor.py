@@ -484,9 +484,9 @@ def post_to_bluesky(title, url, image_url, tags=""):
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
         # 投稿テキスト（300文字制限）
-        # tagsから#付きハッシュタグを生成
-        tag_list = [t.strip() for t in tags.replace(',', ' ').split() if t.strip() and not t.strip().startswith('#')]
-        tag_str = ' '.join([f'#{t}' for t in tag_list[:4]])  # 最大4つ
+        # tagsから#付きハッシュタグを生成（すでに#付きの形式）
+        tag_list = [t.strip() for t in tags.split() if t.strip().startswith('#')]
+        tag_str = ' '.join(tag_list[:5])  # 最大5つ
         if not tag_str:
             tag_str = "#JapanTruth #国際ニュース"
         hashtags = tag_str
