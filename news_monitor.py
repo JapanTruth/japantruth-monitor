@@ -535,14 +535,14 @@ def post_to_bluesky(title, url, image_url, tags=""):
                         "index": {"byteStart": len(title.encode()) + 2, "byteEnd": len(title.encode()) + 2 + len(url.encode())},
                         "features": [{"$type": "app.bsky.richtext.facet#link", "uri": url}]
                     }
-                ] + ([{
-                    "index": {"byteStart": t_enc.index(b"#JapanTruth"), "byteEnd": t_enc.index(b"#JapanTruth") + 11},
-                    "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": "JapanTruth"}]
-                }] if b"#JapanTruth" in t_enc else []) + ([{
-                    "index": {"byteStart": t_enc.index("#国際ニュース".encode()), "byteEnd": t_enc.index("#国際ニュース".encode()) + len("#国際ニュース".encode())},
-                    "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": "国際ニュース"}]
-                }] if "#国際ニュース".encode() in t_enc else [])
-                )(text.encode())
+                ] + [
+                    {
+                        "index": {"byteStart": t_enc.index(tag.encode()), "byteEnd": t_enc.index(tag.encode()) + len(tag.encode())},
+                        "features": [{"$type": "app.bsky.richtext.facet#tag", "tag": tag[1:]}]
+                    }
+                    for tag in hashtags.split()
+                    if tag.startswith("#") and tag.encode() in t_enc
+                ])(text.encode())
             }
         }
 
