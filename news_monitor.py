@@ -461,7 +461,7 @@ def get_image(keyword, slug, category, seen_images=None):
     except:
         return "/japantruth.png"
 
-def post_to_bluesky(title, url, image_url):
+def post_to_bluesky(title, url, image_url, tags=""):
     """Bluesky APIに投稿"""
     try:
         import requests as _req
@@ -484,7 +484,12 @@ def post_to_bluesky(title, url, image_url):
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
         # 投稿テキスト（300文字制限）
-        hashtags = "#JapanTruth #国際ニュース"
+        # tagsから#付きハッシュタグを生成
+        tag_list = [t.strip() for t in tags.replace(',', ' ').split() if t.strip() and not t.strip().startswith('#')]
+        tag_str = ' '.join([f'#{t}' for t in tag_list[:4]])  # 最大4つ
+        if not tag_str:
+            tag_str = "#JapanTruth #国際ニュース"
+        hashtags = tag_str
         text = f"{title}\n\n{hashtags}\n\n{url}"
         if len(text) > 300:
             text = f"{title[:200]}...\n\n{hashtags}\n\n{url}"
@@ -1572,7 +1577,7 @@ def main():
                 article["source"], tags
             )
             article_url = f"https://www.japan-truth.com/posts/{slug}"
-            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_path if image_path else "")
+            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_path if image_path else "", tags or "")
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
             if article.get("is_followup") and _processed and _processed.get("title"):
