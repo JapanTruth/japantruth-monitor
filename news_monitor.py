@@ -484,9 +484,10 @@ def post_to_bluesky(title, url, image_url):
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
         # 投稿テキスト（300文字制限）
-        text = f"{title}\n\n{url}"
+        hashtags = "#JapanTruth #国際ニュース"
+        text = f"{title}\n\n{hashtags}\n\n{url}"
         if len(text) > 300:
-            text = f"{title[:250]}...\n\n{url}"
+            text = f"{title[:200]}...\n\n{hashtags}\n\n{url}"
 
         # URLカード（OGPリンクカード）
         # 画像をblobとしてアップロード
