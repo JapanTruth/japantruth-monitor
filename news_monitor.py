@@ -461,7 +461,7 @@ def get_image(keyword, slug, category, seen_images=None):
     except:
         return "/japantruth.png"
 
-def post_to_bluesky(title, url, image_url, tags=""):
+def post_to_bluesky(title, url, image_url, tags="", excerpt=""):
     """Bluesky APIに投稿"""
     try:
         import requests as _req
@@ -490,9 +490,22 @@ def post_to_bluesky(title, url, image_url, tags=""):
         if not tag_str:
             tag_str = "#JapanTruth #国際ニュース"
         hashtags = tag_str
-        text = f"{title}\n\n{hashtags}\n\n{url}"
+
+        excerpt_short = ""
+        if excerpt:
+            excerpt_short = excerpt[:60].rstrip("。") + "。" if len(excerpt) > 60 else excerpt
+
+        if excerpt_short:
+            text = f"{title}\n\n{excerpt_short}\n\n{hashtags}\n\n{url}"
+        else:
+            text = f"{title}\n\n{hashtags}\n\n{url}"
+
         if len(text) > 300:
-            text = f"{title[:200]}...\n\n{hashtags}\n\n{url}"
+            if excerpt_short:
+                excerpt_short = excerpt[:30].rstrip("。") + "…"
+                text = f"{title}\n\n{excerpt_short}\n\n{hashtags}\n\n{url}"
+            if len(text) > 300:
+                text = f"{title[:200]}...\n\n{hashtags}\n\n{url}"
 
         # URLカード（OGPリンクカード）
         # 画像をblobとしてアップロード
@@ -1578,7 +1591,7 @@ def main():
                 article["source"], tags
             )
             article_url = f"https://www.japan-truth.com/posts/{slug}"
-            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_path if image_path else "", tags or "")
+            post_to_bluesky(_processed.get("title", article["title"]), article_url, image_path if image_path else "", tags or "", _processed.get("excerpt", ""))
             daily_count += 1
             used_topics[article["title"]] = datetime.now(JST)
             if article.get("is_followup") and _processed and _processed.get("title"):
